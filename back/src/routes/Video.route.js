@@ -11,4 +11,6 @@ videoRouter.post("/upload", (req, res) => {
   res.send("Upload de vidéo");
 }); // User
 
+videoRouter.post("/submit", VideoController.submitVideo); // User - Soumission complète
+
 export default videoRouter;

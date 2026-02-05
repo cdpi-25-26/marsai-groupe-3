@@ -4,4 +4,8 @@ async function getVideos() {
   return await instance.get("videos");
 }
 
-export { getVideos };
+async function submitVideo(videoData) {
+  return await instance.post("videos/submit", videoData);
+}
+
+export { getVideos, submitVideo };

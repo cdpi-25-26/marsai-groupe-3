@@ -10,7 +10,6 @@ import * as z from "zod";
 const registerSchema = z.object({
   username: z.string(),
   password: z.string(),
-  role: z.string().optional().default("PRODUCER"),
 });
 
 export function Register() {

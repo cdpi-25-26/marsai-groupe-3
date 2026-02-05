@@ -1,0 +1,476 @@
+/* Video Submission Page Styles */
+
+html, body {
+  background-color: rgb(2 6 23) !important;
+}
+
+.video-submission-container {
+  min-height: 100vh;
+  background-color: rgb(2 6 23);
+  padding: 3rem 1rem;
+}
+
+.video-submission-wrapper {
+  max-width: 64rem;
+  margin: 0 auto;
+}
+
+/* Header */
+.submission-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.submission-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: rgb(192 132 252);
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.submission-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 0.5rem;
+}
+
+.submission-title-highlight {
+  background: linear-gradient(180deg, #51A2FF 0%, #AD46FF 50%, #FF2B7F 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Form Sections */
+.form-section {
+  background-color: rgb(15 23 42);
+  border: 1px solid rgb(51 65 85);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.section-icon {
+  font-family: "Segoe UI Emoji", "Apple Color Emoji", sans-serif;
+  font-size: 3rem;
+  color: rgb(192 132 252);
+  rotate: calc(90deg);
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: rgb(192 132 252);
+}
+
+/* Info Box */
+.info-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  background-color: rgb(15 23 42);
+  border: 1px solid rgb(51 65 85);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.info-icon {
+  color: rgb(192 132 252);
+  font-size: 1.25rem;
+}
+
+.info-text {
+  color: rgb(255, 255, 255);
+  font-size: 0.875rem;
+}
+
+.info-text-mars {
+  color: rgb(255, 255, 255);
+  font-size: 0.875rem;
+  text-align: left;
+}
+
+/* Form Fields */
+.form-label {
+  display: block;
+  font-size: 0.875rem;
+  color: rgb(203 213 225);
+  margin-bottom: 0.5rem;
+}
+
+.youtube-link-field .form-label {
+  margin-bottom: 0.75rem;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  width: 100%;
+  background-color: rgb(30 41 59);
+  border: 1px solid rgb(71 85 105);
+  color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: rgb(168 85 247);
+}
+
+.form-textarea {
+  resize: none;
+}
+
+.char-counter {
+  text-align: right;
+  font-size: 0.75rem;
+  color: rgb(148 163 184);
+  margin-top: 0.25rem;
+}
+
+/* Radio Cards */
+.radio-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: rgb(30 41 59);
+  border: 1px solid rgb(71 85 105);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.radio-card:hover {
+  border-color: rgb(168 85 247);
+}
+
+.radio-card-label {
+  color: white;
+  font-weight: 600;
+}
+
+/* Team Member Card */
+.team-member-card {
+  background-color: rgb(30 41 59);
+  border: 1px solid rgb(71 85 105);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Add Button */
+.add-button {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px dashed rgb(168 85 247);
+  color: rgb(192 132 252);
+  background-color: transparent;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.add-button:hover {
+  background-color: rgba(168, 85, 247, 0.1);
+}
+
+/* Certificate Box */
+.certificate-box {
+  background-color: rgb(15 23 42);
+  border: 1px solid rgb(202 138 4);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.certificate-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.certificate-icon {
+  color: rgb(250 204 21);
+  font-size: 1.5rem;
+}
+
+.certificate-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 0.5rem;
+}
+
+.certificate-text {
+  color: rgb(203 213 225);
+  font-size: 0.875rem;
+}
+
+.certificate-checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: rgb(30 41 59);
+  border: 1px solid rgb(71 85 105);
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.certificate-checkbox {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.certificate-label {
+  color: white;
+  font-size: 0.875rem;
+}
+
+/* Error Message */
+.error-message {
+  background-color: rgba(127, 29, 29, 0.2);
+  border: 1px solid rgb(239 68 68);
+  color: rgb(252 165 165);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 2rem;
+}
+
+/* Submit Button */
+.submit-button-wrapper {
+  text-align: center;
+}
+
+.submit-button {
+  background-color: rgb(234 179 8);
+  color: black;
+  font-weight: bold;
+  padding: 1rem 3rem;
+  border-radius: 0.5rem;
+  font-size: 1.125rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submit-button:hover:not(:disabled) {
+  background-color: rgb(202 138 4);
+}
+
+.submit-button:disabled {
+  background-color: rgb(51 65 85);
+  color: rgb(100 116 139);
+  cursor: not-allowed;
+}
+
+/* Success Screen */
+.success-screen {
+  min-height: 100vh;
+  background-color: rgb(2 6 23);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.success-card {
+  max-width: 28rem;
+  width: 100%;
+  background-color: rgb(15 23 42);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: 0.5rem;
+  padding: 2rem;
+  text-align: center;
+}
+
+.success-emoji {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.success-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 1rem;
+}
+
+.success-text {
+  color: rgb(203 213 225);
+  margin-bottom: 1.5rem;
+}
+
+.success-button {
+  background-color: rgb(168 85 247);
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.success-button:hover {
+  background-color: rgb(147 51 234);
+}
+
+/* Upload Area */
+.upload-area {
+  width: 100%;
+  background-color: rgb(30 41 59);
+  border: 2px dashed rgb(71 85 105);
+  border-radius: 0.5rem;
+  padding: 2rem;
+  text-align: center;
+}
+
+.upload-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.upload-title {
+  color: rgb(148 163 184);
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.upload-subtitle {
+  color: rgb(100 116 139);
+  font-size: 0.75rem;
+}
+
+/* Media Gallery */
+.media-gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.media-item {
+  aspect-ratio: 16 / 9;
+  background-color: rgb(30 41 59);
+  border: 2px dashed rgb(71 85 105);
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.media-item-content {
+  text-align: center;
+  padding: 0.5rem;
+  width: 100%;
+}
+
+.media-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.media-input {
+  width: 100%;
+  background-color: rgb(51 65 85);
+  border: 1px solid rgb(71 85 105);
+  color: white;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.media-input:focus {
+  outline: none;
+  border-color: rgb(168 85 247);
+}
+
+/* File Input */
+.file-input-hidden {
+  display: none;
+}
+
+.file-input-label {
+  display: block;
+  cursor: pointer;
+  margin-top: 0;
+}
+
+.file-input-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background-color: rgb(30 41 59);
+  border: 2px dashed rgb(71 85 105);
+  border-radius: 0.5rem;
+  color: rgb(203 213 225);
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.file-input-button:hover {
+  border-color: rgb(168 85 247);
+  background-color: rgba(168, 85, 247, 0.05);
+}
+
+.file-input-icon {
+  font-size: 1.25rem;
+}
+
+.file-input-name {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: rgb(148 163 184);
+  word-break: break-all;
+}
+
+/* Subtitle Checkbox */
+.subtitle-checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  cursor: pointer;
+}
+
+.subtitle-checkbox {
+  width: 1rem;
+  height: 1rem;
+  cursor: pointer;
+  accent-color: rgb(168 85 247);
+}
+
+.subtitle-checkbox-label {
+  color: rgb(203 213 225);
+  font-size: 0.875rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Responsive */
+@media (min-width: 768px) {
+  .submission-title {
+    font-size: 3rem;
+  }
+}
