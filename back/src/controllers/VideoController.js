@@ -1,4 +1,4 @@
-import Video from "../models/Video.js";
+import { Video } from "../models/index.js";
 
 // Liste
 function getVideos(req, res) {

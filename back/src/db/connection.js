@@ -1,5 +1,7 @@
 import { Sequelize } from "sequelize";
-import "dotenv/config";
+import { configDotenv } from "dotenv";
+
+configDotenv(); // Charger les variables d'environnement depuis le fichier .env
 
 const sequelize = new Sequelize(
   process.env.DB_NAME,
