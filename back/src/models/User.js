@@ -16,6 +16,7 @@ const User = sequelize.define("User", {
     defaultValue: "PRODUCER",
     allowNull: false,
   },
-});
+}
+);
 
 export default User;
