@@ -22,3 +22,7 @@ app.listen(PORT, () => {
 
   console.log(`Le serveur est lancé sur http://localhost:${PORT}`);
 });
+
+console.log(process.env.DB_USER);
+console.log(process.env.DB_PASSWORD);
+console.log(process.env.DB_NAME);
