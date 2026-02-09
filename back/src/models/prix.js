@@ -12,12 +12,13 @@ const Prix = sequelize.define("Prix", {
         allowNull: true,
     },
     year_edition: {
-        type: DataTypes.YEAR,
+        type: DataTypes.DATE,
         allowNull: false,
     },
-    id_film: {
+    id_video: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        foreignKey: true,
     }
 });
 
