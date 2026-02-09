@@ -1,5 +1,10 @@
 import User from "./User.js";
-import Video from "./Video.js";
+import Film from "./Film.js";
+import Evaluation from "./Evaluation.js";
+import Reservation from "./reservation.js";
+import Evenement from "./Evenement.js";
+import Collaborateur from "./Collaborateur.js";
+import Categories from "./Categories.js";
 
 
 //Exemples d'associations : 
@@ -29,4 +34,4 @@ Category.belongsToMany(Video, {
 Video.hasMany(Award, { foreignKey: "videoId", as: "awards" });
 Award.belongsTo(Video, { foreignKey: "videoId", as: "video" });*/
 
-export { User, Video };
+export { User, Film, Evaluation, Reservation, Evenement, Collaborateur, Categories};
