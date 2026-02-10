@@ -1,17 +1,19 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../db/connection.js";
 
-const Collaborateur_video = sequelize.define("Collaborateur_video", {
-    id_collaborateur: {
+const Video_Category = sequelize.define("Video_Category", {
+    id_video: {
         type: DataTypes.INTEGER,
+        primaryKey: true,
         allowNull: false,
         foreignKey: true,
     },
-    id_video: {
+    id_categorie: {
         type: DataTypes.INTEGER,
+        primaryKey: true,
         allowNull: false,
         foreignKey: true,
     }
 });
 
-export default Collaborateur_video;
+export default Video_Category;

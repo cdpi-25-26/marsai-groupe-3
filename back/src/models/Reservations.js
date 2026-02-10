@@ -7,14 +7,14 @@ const Reservations = sequelize.define("Reservations", {
         primaryKey: true,
         autoIncrement: true,
     },
-    nom: {
+    surname: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
             len: [2, 100],
         },
     },
-    prenom: {
+    name: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
@@ -29,7 +29,7 @@ const Reservations = sequelize.define("Reservations", {
             len: [5, 255],
         },
     },
-    id_evenement: {
+    id_event: {
         type: DataTypes.INTEGER,
         allowNull: false,
     }

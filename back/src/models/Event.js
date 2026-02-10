@@ -1,13 +1,13 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../db/connection.js";
 
-const Evenement = sequelize.define("Evenement", {
-    id_evenement: {
+const Event = sequelize.define("Event", {
+    id_event: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
     },
-    titre: {
+    title: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
@@ -22,7 +22,7 @@ const Evenement = sequelize.define("Evenement", {
         type: DataTypes.DATE,
         allowNull: false,
     },
-    lieu: {
+    location: {
         type: DataTypes.STRING,
         allowNull: true,
     },
@@ -32,4 +32,4 @@ const Evenement = sequelize.define("Evenement", {
     },
 });
 
-export default Evenement;
+export default Event;

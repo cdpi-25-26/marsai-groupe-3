@@ -2,7 +2,7 @@ import { DataTypes } from "sequelize";
 import sequelize from "../db/connection.js";
 
 const Users = sequelize.define("Users", {
-  nom: {
+  surname: {
     type: DataTypes.STRING,
     allowNull: false,
     unique: true,
@@ -10,7 +10,7 @@ const Users = sequelize.define("Users", {
       len: [2, 100],
     },
   },
-  prenom: {
+  name: {
     type: DataTypes.STRING,
     allowNull: false,
     validate: {
@@ -45,7 +45,7 @@ const Users = sequelize.define("Users", {
     type: DataTypes.DATEONLY,
     allowNull: false,
   },
-  rue : {
+  street : {
     type: DataTypes.STRING,
     allowNull: true,
     validate: {
@@ -59,28 +59,28 @@ const Users = sequelize.define("Users", {
       len: [5, 10],
     },
   },
-  ville : {
+  city : {
     type: DataTypes.STRING,
     allowNull: true,
     validate: {
       len: [2, 50],
     },
   },
-  pays : {
+  country : {
     type: DataTypes.STRING,
     allowNull: true,
     validate: {
       len: [2, 50],
     },
   },
-  biographie: {
+  biography: {
     type: DataTypes.TEXT,
     allowNull: true,
     validate: {
       len: [0, 255],
     },
   },
-  metier: {
+  job: {
     type: DataTypes.STRING,
     allowNull: true,
     validate: {

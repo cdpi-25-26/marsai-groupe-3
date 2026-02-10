@@ -11,7 +11,7 @@ const Evaluation = sequelize.define("Evaluation", {
         type: DataTypes.ENUM("OUI", "à discuter", "NON"),
         allowNull: false,
     },
-    commentaire: {
+    commentary: {
         type: DataTypes.STRING,
         allowNull: true,
     },

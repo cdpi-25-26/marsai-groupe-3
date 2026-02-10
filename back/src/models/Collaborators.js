@@ -1,24 +1,24 @@
-import { DataTypes } from "sequelize";
+import { DataTypes, JSONB } from "sequelize";
 import sequelize from "../db/connection.js";
 
-const Collaborateur = sequelize.define("Collaborateur", {
-    id_collaborateur: {
+const Collaborator = sequelize.define("Collaborator", {
+    id_collaborator: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
     },
-    civilite: {
+    civility: {
         type: DataTypes.ENUM("M.", "Mme",),
         allowNull: false,
     },
-    nom: {
+    surname: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
             len: [2, 100],
         },
     },
-    prenom: {
+    name: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
@@ -33,7 +33,7 @@ const Collaborateur = sequelize.define("Collaborateur", {
             len: [5, 255],
         },
     },
-    profession: {
+    job: {
         type: DataTypes.STRING,
         allowNull: true,
         validate: {
@@ -42,4 +42,4 @@ const Collaborateur = sequelize.define("Collaborateur", {
     }
 });
 
-export default Collaborateur;
+export default Collaborator;

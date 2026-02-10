@@ -16,11 +16,11 @@ const Videos = sequelize.define("Videos", {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  duree: {
+  duration: {
     type: DataTypes.INTEGER,
     allowNull: true,
   },
-  languePrincipale: {
+  FirstLanguage: {
     type: DataTypes.STRING,
     allowNull: true,
   },
@@ -28,23 +28,23 @@ const Videos = sequelize.define("Videos", {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  synopsisAnglais: {
+  synopsisEnglish: {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  lienYoutube: {
+  YoutubeLink: {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  sousTitres: {
+  subTitles: {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  outilIA: {
+  toolsAI: {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  vignette: {
+  category: {
     type: DataTypes.STRING,
     allowNull: true,
   },
