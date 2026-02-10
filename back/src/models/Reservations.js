@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../db/connection.js";
 
-const Reservation = sequelize.define("Reservation", {
+const Reservations = sequelize.define("Reservations", {
     id_reservation: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -35,4 +35,4 @@ const Reservation = sequelize.define("Reservation", {
     }
 });
 
-export default Reservation;
+export default Reservations;

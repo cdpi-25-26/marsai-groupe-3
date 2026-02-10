@@ -1,6 +1,6 @@
 import express from "express";
 import userRouter from "./User.route.js";
-import videoRouter from "./Film.route.js";
+import videoRouter from "./Video.route.js";
 import authRouter from "./Auth.route.js";
 import healthRouter from "./Health.route.js";
 

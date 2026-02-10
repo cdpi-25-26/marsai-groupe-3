@@ -1,8 +1,8 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../db/connection.js";
 
-const Film = sequelize.define("Film", {
-  id_film: {
+const Videos = sequelize.define("Videos", {
+  id_video: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
@@ -71,4 +71,4 @@ const Film = sequelize.define("Film", {
   },
 });
 
-export default Film;
+export default Videos;

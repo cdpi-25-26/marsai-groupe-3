@@ -1,37 +1,29 @@
-import User from "./User.js";
-import Film from "./Film.js";
-import Evaluation from "./Evaluation.js";
-import Reservation from "./reservation.js";
-import Evenement from "./Evenement.js";
-import Collaborateur from "./Collaborateur.js";
+import Users from "./Users.js";
+import Videos from "./Videos.js";
+import Evaluations from "./Evaluations.js";
+import Reservations from "./Reservations.js";
+import Evenements from "./Evenements.js";
+import Collaborateurs from "./Collaborateurs.js";
 import Categories from "./Categories.js";
 
 
-//Exemples d'associations : 
-/**
- * Associations
- * */
-/*User.hasMany(Video, { foreignKey: "userId", as: "videos" });
-Video.belongsTo(User, { foreignKey: "userId", as: "user" });
-Vote.belongsTo(User, { foreignKey: "userId", as: "user" });
-Vote.belongsTo(Video, { foreignKey: "videoId", as: "video" });
-User.hasMany(Vote, { foreignKey: "userId", as: "votes" });
-Video.hasMany(Vote, { foreignKey: "videoId", as: "votes" });
 
-// Relations N–N
-Video.belongsToMany(Category, {
-  through: VideoCategory,
-  foreignKey: "videoId",
-  as: "categories",
-});
+//Associations
+Users.hasMany(Evaluations, { foreignKey: "id_user", onDelete: "CASCADE" });
+Evaluations.belongsTo(Users, { foreignKey: "id_user" });
 
-Category.belongsToMany(Video, {
-  through: VideoCategory,
-  foreignKey: "categoryId",
-  as: "videos",
-});
+Videos.hasMany(Evaluations, { foreignKey: "id_video", onDelete: "CASCADE" });
+Evaluations.belongsTo(Videos, { foreignKey: "id_video" });  
+Users.hasMany(Reservations, { foreignKey: "id_user", onDelete: "CASCADE" });
+Reservations.belongsTo(Users, { foreignKey: "id_user" });
 
-Video.hasMany(Award, { foreignKey: "videoId", as: "awards" });
-Award.belongsTo(Video, { foreignKey: "videoId", as: "video" });*/
+Evenements.hasMany(Reservations, { foreignKey: "id_evenement", onDelete: "CASCADE" });
+Reservations.belongsTo(Evenements, { foreignKey: "id_evenement" });
 
-export { User, Film, Evaluation, Reservation, Evenement, Collaborateur, Categories};
+Videos.belongsToMany(Categories, { through: "FilmCategories", foreignKey: "id_video" });
+Categories.belongsToMany(Videos, { through: "FilmCategories", foreignKey: "id_categorie" });
+
+Videos.belongsToMany(Collaborateurs, { through: "Collaborateur_video", foreignKey: "id_video" });
+Collaborateurs.belongsToMany(Videos, { through: "Collaborateur_video", foreignKey: "id_collaborateur" });
+
+export { Users, Videos, Evaluations, Reservations, Evenements, Collaborateurs, Categories};

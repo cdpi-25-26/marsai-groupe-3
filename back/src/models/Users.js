@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../db/connection.js";
 
-const User = sequelize.define("User", {
+const Users = sequelize.define("Users", {
   nom: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -136,4 +136,4 @@ const User = sequelize.define("User", {
   },
 });
 
-export default User;
+export default Users;
