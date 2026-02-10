@@ -23,10 +23,9 @@ Reservations.belongsTo(Users, { foreignKey: "id_user" });
 Event.hasMany(Reservations, { foreignKey: "id_event", onDelete: "CASCADE" });
 Reservations.belongsTo(Event, { foreignKey: "id_event" });
 
-Videos.belongsToMany(Categories, { through: "FilmCategories", foreignKey: "id_video" });
-Categories.belongsToMany(Videos, { through: "FilmCategories", foreignKey: "id_categorie" });
+Videos.belongsToMany(Categories, { through: Video_Category, foreignKey: "id_video" });
+Categories.belongsToMany(Videos, { through: Video_Category, foreignKey: "id_category" });
 
-Videos.belongsToMany(Collaborators, { through: "Collaborator_video", foreignKey: "id_video" });
-Collaborators.belongsToMany(Videos, { through: "Collaborator_video", foreignKey: "id_collaborator" });
-
+Videos.belongsToMany(Collaborators, { through: Collaborator_video, foreignKey: "id_video" });
+Collaborators.belongsToMany(Videos, { through: Collaborator_video, foreignKey: "id_collaborator" });
 export { Users, Videos, Evaluations, Reservations, Event, Collaborators, Categories, Awards, Collaborator_video, Video_Category };
