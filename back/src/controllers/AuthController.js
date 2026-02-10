@@ -1,4 +1,4 @@
-import User from "../models/User.js";
+import User from "../models/Users.js";
 import { comparePassword } from "../utils/password.js";
 import UserController from "./UserController.js";
 import jwt from "jsonwebtoken";

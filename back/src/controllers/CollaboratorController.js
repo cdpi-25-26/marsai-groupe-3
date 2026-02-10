@@ -1,0 +1,1 @@
+import { Collaborateur } from "../models/index.js";
