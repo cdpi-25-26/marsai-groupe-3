@@ -1,8 +1,8 @@
-import Video from "../models/Video.js";
+import { Videos } from "../models/index.js";
 
 // Liste
 function getVideos(req, res) {
-  Video.findAll().then((videos) => {
+  Videos.findAll().then((videos) => {
     res.json(videos);
   });
 }
@@ -19,11 +19,11 @@ function createVideo(req, res) {
     return res.status(400).json({ error: "Tous les champs sont requis" });
   }
 
-  Video.findOne({ where: { title } }).then((video) => {
+  Videos.findOne({ where: { title } }).then((video) => {
     if (video) {
       res.json(video);
     } else {
-      Video.create({ title: title, description: description }).then(
+      Videos.create({ title: title, description: description }).then(
         (newVideo) => {
           res.status(201).json(newVideo);
         },
