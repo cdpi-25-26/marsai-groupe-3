@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../db/connection.js";
 
-const video_category = sequelize.define("Video_Category", {
+const Video_Category = sequelize.define("Video_Category", {
     id_video: {
         primaryKey: true,
         type: DataTypes.INTEGER,
@@ -16,5 +16,5 @@ const video_category = sequelize.define("Video_Category", {
     },
 });
 
-export default video_category;
+export default Video_Category;
 
