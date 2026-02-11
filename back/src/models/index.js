@@ -26,6 +26,10 @@ Reservations.belongsTo(Event, { foreignKey: "id_event" });
 Videos.belongsToMany(Categories, { through: Video_Category, foreignKey: "id_video" });
 Categories.belongsToMany(Videos, { through: Video_Category, foreignKey: "id_category" });
 
+Awards.belongsTo(Videos, { foreignKey: "id_video", onDelete: "CASCADE" });
+Videos.hasMany(Awards, { foreignKey: "id_video" });
+
 Videos.belongsToMany(Collaborators, { through: Collaborator_video, foreignKey: "id_video" });
 Collaborators.belongsToMany(Videos, { through: Collaborator_video, foreignKey: "id_collaborator" });
+
 export { Users, Videos, Evaluations, Reservations, Event, Collaborators, Categories, Awards, Collaborator_video, Video_Category };
