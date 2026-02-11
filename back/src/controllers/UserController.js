@@ -1,9 +1,9 @@
-import User from "../models/User.js";
+import { Users } from "../models/index.js";
 import { hashPassword } from "../utils/password.js";
 
 // Liste
 function getUsers(req, res) {
-  User.findAll().then((users) => {
+  Users.findAll().then((users) => {
     res.json(users);
   });
 }
@@ -22,12 +22,12 @@ function createUser(req, res) {
     return res.status(400).json({ error: "Tous les champs sont requis" });
   }
 
-  User.findOne({ where: { username } }).then(async (user) => {
+  Users.findOne({ where: { username } }).then(async (user) => {
     if (user) {
       res.json({ message: "Utilisateur déjà existant", user });
     } else {
       const hash = await hashPassword(password);
-      User.create({ username: username, password: hash, role: role }).then(
+      Users.create({ username: username, password: hash, role: role }).then(
         (newUser) => {
           res.status(201).json({ message: "Utilisateur créé", newUser });
         },
@@ -39,7 +39,7 @@ function createUser(req, res) {
 // Suppression
 function deleteUser(req, res) {
   const { id } = req.params;
-  User.destroy({ where: { id } }).then(() => {
+  Users.destroy({ where: { id } }).then(() => {
     res.status(204).json({ message: "Utilisateur supprimé" });
   });
 }
@@ -49,7 +49,7 @@ function updateUser(req, res) {
   const { id } = req.params;
   const { username, password, role } = req.body;
 
-  User.findOne({ where: { id } }).then((user) => {
+  Users.findOne({ where: { id } }).then((user) => {
     if (user) {
       user.username = username || user.username;
       user.password = password || user.password;
@@ -77,7 +77,7 @@ function getUserById(req, res) {
 }
 
 function findUserByUsername(username) {
-  return User.findOne({ where: { username } });
+  return Users.findOne({ where: { username } });
 }
 
 export default {

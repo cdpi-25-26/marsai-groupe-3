@@ -8,7 +8,7 @@ videoRouter.post("/", VideoController.createVideo); // Admin
 
 videoRouter.post("/upload", (req, res) => {
   // Code à faire
-  res.send("Upload de vidéo");
+  res.send("Upload de video en cours...");
 }); // User
 
 videoRouter.post("/submit", VideoController.submitVideo); // User - Soumission complète
