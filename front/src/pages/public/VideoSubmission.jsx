@@ -2,32 +2,31 @@ import { useState } from "react";
 import { submitVideo } from "../../api/videos";
 import "./VideoSubmission.css";
 
-// Composants de formulaire réutilisables
 const FormInput = ({ label, required, wrapperClassName = "", ...props }) => (
   <div className={wrapperClassName}>
-    <label className="form-label">
+    <label className="label">
       {label} {required && "*"}
     </label>
-    <input className="form-input" required={required} {...props} />
+    <input className="input" required={required} {...props} />
   </div>
 );
 
 const FormTextarea = ({ label, required, value, maxLength, ...props }) => (
   <div>
-    <label className="form-label">
+    <label className="label">
       {label} {required && "*"}
     </label>
-    <textarea className="form-textarea" required={required} value={value} maxLength={maxLength} {...props} />
-    {maxLength && <div className="char-counter">{value.length} / {maxLength}</div>}
+    <textarea className="textarea" required={required} value={value} maxLength={maxLength} {...props} />
+    {maxLength && <div className="counter">{value.length} / {maxLength}</div>}
   </div>
 );
 
 const TeamMemberForm = ({ member, index, onChange }) => (
-  <div className="team-member-card">
+  <div className="member">
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
       <div>
-        <label className="form-label">CIVILITÉ *</label>
-        <select className="form-select" required value={member.civility} onChange={(e) => onChange(index, "civility", e.target.value)}>
+        <label className="label">CIVILITÉ *</label>
+        <select className="select" required value={member.civility} onChange={(e) => onChange(index, "civility", e.target.value)}>
           <option value="">--</option>
           <option value="Mr">M.</option>
           <option value="Mme">Mme</option>
@@ -99,14 +98,14 @@ export default function VideoSubmission() {
 
   if (success) {
     return (
-      <div className="success-screen">
-        <div className="success-card">
-          <div className="success-emoji">🎉</div>
-          <h2 className="success-title">Soumission réussie !</h2>
-          <p className="success-text">
+      <div className="success">
+        <div className="card">
+          <div className="emoji">🎉</div>
+          <h2 className="title">Soumission réussie !</h2>
+          <p className="text">
             Votre film a été soumis avec succès. Notre équipe va l'examiner prochainement.
           </p>
-          <button onClick={() => (window.location.href = "/")} className="success-button">
+          <button onClick={() => (window.location.href = "/")} className="btn">
             Retour à l'accueil
           </button>
         </div>
@@ -115,28 +114,26 @@ export default function VideoSubmission() {
   }
 
   return (
-    <div className="video-submission-container">
-      <div className="video-submission-wrapper">
-        <header className="submission-header">
-          <div className="submission-badge">✨ APPEL À PROJETS 2026 ✨</div>
-          <h1 className="submission-title">
-            DÉPOSER UN <span className="submission-title-highlight">FILM</span>
+    <div className="container">
+      <div className="wrapper">
+        <header className="header">
+          <div className="badge-p2">✨ APPEL À PROJETS 2026 ✨</div>
+          <h1 className="title">
+            DÉPOSER UN <span className="highlight">FILM</span>
           </h1>
         </header>
 
         <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Instructions */}
-          <div className="info-box">
-            <div className="info-icon">☑️</div>
-            <p className="info-text">
+          <div className="info">
+            <div className="icon-p2">☑️</div>
+            <p className="text">
               TRANSMETTEZ LES ÉLÉMENTS TECHNIQUES, L'USAGE DE L'IA ET LA COMPOSITION DE VOTRE ÉQUIPE. TOUS LES CHAMPS MARQUÉS D'UNE ÉTOILE (*) SONT OBLIGATOIRES.
             </p>
           </div>
 
-          {/* Section 1: Identité du film */}
-          <section className="form-section">
+          <section className="section">
             <div className="section-header">
-              <span className="section-icon">🎞️</span>
+              <span className="icon">🎞️</span>
               <h2 className="section-title">01. IDENTITÉ DU FILM</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -153,26 +150,25 @@ export default function VideoSubmission() {
             </div>
           </section>
 
-          {/* Section 2: IA */}
-          <section className="form-section">
+          <section className="section">
             <div className="section-header">
-              <span className="section-icon">🎞️</span>
+              <span className="icon">🎞️</span>
               <h2 className="section-title">02. DÉCLARATION USAGE DE L'IA</h2>
             </div>
             <div className="mb-6">
-              <p className="info-text mb-4 flex items-start gap-2">
-                <span className="info-icon">☑️</span>
-                <span className="info-text-mars">MARS.A.I EXIGE UNE TRANSPARENCE TOTALE SUR L'UTILISATION DE L'INTELLIGENCE ARTIFICIELLE. SÉLECTIONNEZ TOUS LES OUTILS GÉNÉRATIFS SOLLICITÉS DANS VOTRE PROCESSUS CRÉATIF.</span>
+              <p className="text mb-4 flex items-start gap-2">
+                <span className="icon-p2">ℹ️</span>
+                <span className="text-mars">MARS.A.I EXIGE UNE TRANSPARENCE TOTALE SUR L'UTILISATION DE L'INTELLIGENCE ARTIFICIELLE. SÉLECTIONNEZ TOUS LES OUTILS GÉNÉRATIFS SOLLICITÉS DANS VOTRE PROCESSUS CRÉATIF.</span>
               </p>
-              <label className="form-label">CLASSIFICATION DE L'ŒUVRE - CHOIX EXCLUSIF ENTRE : *</label>
+              <label className="label">CLASSIFICATION DE L'ŒUVRE - CHOIX EXCLUSIF ENTRE : *</label>
               <div className="space-y-3 mt-3">
-                <label className="radio-card">
+                <label className="radio">
                   <input type="radio" name="classification" value="generation_integrale" required checked={formData.classification === "generation_integrale"} onChange={(e) => updateField("classification", e.target.value)} />
-                  <span className="radio-card-label">GÉNÉRATION INTÉGRALE (100% IA)</span>
+                  <span className="radio-label">GÉNÉRATION INTÉGRALE (100% IA)</span>
                 </label>
-                <label className="radio-card">
+                <label className="radio">
                   <input type="radio" name="classification" value="production_hybride" required checked={formData.classification === "production_hybride"} onChange={(e) => updateField("classification", e.target.value)} />
-                  <span className="radio-card-label">PRODUCTION HYBRIDE (PRISES DE VUES RÉELLES + APPORTS IA)</span>
+                  <span className="radio-label">PRODUCTION HYBRIDE (PRISES DE VUES RÉELLES + APPORTS IA)</span>
                 </label>
               </div>
             </div>
@@ -182,59 +178,59 @@ export default function VideoSubmission() {
             </div>
           </section>
 
-          {/* Section 3: Livrables */}
-          <section className="form-section">
+          <section className="section">
             <div className="section-header">
-              <span className="section-icon">🎞️</span>
+              <span className="icon">🎞️</span>
               <h2 className="section-title">03. LIVRABLES & ACCESSIBILITÉ</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormInput wrapperClassName="youtube-link-field" label="LIEN YOUTUBE ( PUBLIC / NON RÉPERTORIÉ )" required type="url" value={formData.youtubeLink} onChange={(e) => updateField("youtubeLink", e.target.value)} placeholder="https://youtube.com/..." />
+              <FormInput className="input-ytb" label="LIEN YOUTUBE ( PUBLIC / NON RÉPERTORIÉ )" required type="url" value={formData.youtubeLink} onChange={(e) => updateField("youtubeLink", e.target.value)} placeholder="https://youtube.com/..." />
               <div>
-                <label className="form-label">SOUS-TITRES (.SRT)</label>
-                <label className="subtitle-checkbox-wrapper">
+                <label className="label">SOUS-TITRES (.SRT)</label>
+                <label htmlFor="hasSubtitles" className="checkbox-wrapper">
                   <input
+                    id="hasSubtitles"
                     type="checkbox"
                     checked={formData.hasSubtitles}
                     onChange={(e) => updateField("hasSubtitles", e.target.checked)}
-                    className="subtitle-checkbox"
+                    className="checkbox"
                   />
-                  <span className="subtitle-checkbox-label">VOIX OU TEXTES NÉCESSITANT DES SOUS-TITRES</span>
+                  <span className="checkbox-label">VOIX OU TEXTES NÉCESSITANT DES SOUS-TITRES</span>
                 </label>
-                <label className="file-input-label">
+                <label className="file-label">
                   <input
                     type="file"
                     accept=".srt"
                     onChange={(e) => updateField("subtitlesFile", e.target.files[0])}
-                    className="file-input-hidden"
+                    className="file-hidden"
                   />
-                  <span className="file-input-button">
-                    <span className="file-input-icon">📁</span>
+                  <span className="file-btn">
+                    <span className="icon">📁</span>
                     CHOISIR UN FICHIER.SRT
                   </span>
                   {formData.subtitlesFile && (
-                    <span className="file-input-name">{formData.subtitlesFile.name}</span>
+                    <span className="file-name">{formData.subtitlesFile.name}</span>
                   )}
                 </label>
               </div>
             </div>
             <div className="mt-6">
-              <label className="form-label">VIGNETTE OFFICIELLE (16:9) *</label>
-              <div className="upload-area">
-                <div className="upload-icon">🖼️</div>
+              <label className="label">VIGNETTE OFFICIELLE (16:9) *</label>
+              <div className="upload">
+                <div className="icon">🖼️</div>
                 <div className="upload-title">HAUTE RÉSOLUTION</div>
                 <div className="upload-subtitle">PNG ou JPG - Max 15Mo</div>
-                <input type="url" value={formData.thumbnail} onChange={(e) => updateField("thumbnail", e.target.value)} placeholder="URL de la vignette" className="form-input mt-4" />
+                <input type="url" value={formData.thumbnail} onChange={(e) => updateField("thumbnail", e.target.value)} placeholder="URL de la vignette" className="input mt-4" />
               </div>
             </div>
             <div className="mt-6">
-              <label className="form-label">GALERIE MÉDIAS (STILLS - MAX 3)</label>
-              <div className="media-gallery">
+              <label className="label">GALERIE MÉDIAS (STILLS - MAX 3)</label>
+              <div className="gallery">
                 {[0, 1, 2].map((index) => (
-                  <div key={index} className="media-item">
-                    <div className="media-item-content">
-                      <div className="media-icon">🖼️</div>
-                      <input type="url" value={formData.mediaGallery[index]} onChange={(e) => updateMedia(index, e.target.value)} placeholder={`Image ${index + 1}`} className="media-input" />
+                  <div key={index} className="item">
+                    <div className="content">
+                      <div className="icon">🖼️</div>
+                      <input type="url" value={formData.mediaGallery[index]} onChange={(e) => updateMedia(index, e.target.value)} placeholder={`Image ${index + 1}`} className="input" />
                     </div>
                   </div>
                 ))}
@@ -242,41 +238,39 @@ export default function VideoSubmission() {
             </div>
           </section>
 
-          {/* Section 4: Équipe */}
-          <section className="form-section">
+          <section className="section">
             <div className="section-header">
-              <span className="section-icon">🎞️</span>
+              <span className="icon">🎞️</span>
               <h2 className="section-title">04. COMPOSITION DE L'ÉQUIPE</h2>
             </div>
             {formData.team.map((member, index) => (
               <TeamMemberForm key={index} member={member} index={index} onChange={updateTeamMember} />
             ))}
-            <button type="button" onClick={addTeamMember} className="add-button">
+            <button type="button" onClick={addTeamMember} className="add-btn">
               + AJOUTER COLLABORATEUR
             </button>
           </section>
 
-          {/* Certificat */}
-          <div className="certificate-box">
-            <div className="certificate-header">
-              <span className="certificate-icon">📜</span>
+          <div className="cert">
+            <div className="cert-header">
+              <span className="icon">📜</span>
               <div>
-                <h2 className="certificate-title">CERTIFICAT DE PROPRIÉTÉ</h2>
-                <p className="certificate-text">
+                <h2 className="title">CERTIFICAT DE PROPRIÉTÉ</h2>
+                <p className="text">
                   EN SOUMETTANT CE DOSSIER, VOUS CERTIFIEZ SUR L'HONNEUR ÊTRE L'AUTEUR ORIGINAL DE L'ŒUVRE ET DÉTENIR L'INTÉGRALITÉ DES DROITS.
                 </p>
               </div>
             </div>
-            <label className="certificate-checkbox-wrapper">
-              <input type="checkbox" required checked={formData.certifiedOwnership} onChange={(e) => updateField("certifiedOwnership", e.target.checked)} className="certificate-checkbox" />
-              <span className="certificate-label">J'accepte et certifie ces conditions *</span>
+            <label htmlFor="certifiedOwnership" className="cert-wrapper">
+              <input id="certifiedOwnership" type="checkbox" required checked={formData.certifiedOwnership} onChange={(e) => updateField("certifiedOwnership", e.target.checked)} className="checkbox" />
+              <span className="label">J'accepte et certifie ces conditions *</span>
             </label>
           </div>
 
-          {error && <div className="error-message">{error}</div>}
+          {error && <div className="error">{error}</div>}
 
-          <div className="submit-button-wrapper">
-            <button type="submit" disabled={isSubmitting || !formData.certifiedOwnership} className="submit-button">
+          <div className="submit-wrapper">
+            <button type="submit" disabled={isSubmitting || !formData.certifiedOwnership} className="submit-btn">
               {isSubmitting ? "ENVOI EN COURS..." : "FINALISER MA SOUMISSION →"}
             </button>
           </div>

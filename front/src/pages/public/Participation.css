@@ -23,23 +23,24 @@ html, body {
 }
 
 .participation-content {
-  background: white;
+  background: rgb(0, 0, 0);
   border-radius: 10px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
   padding: 50px;
   max-width: 900px;
   width: 100%;
+  border: 1px solid #ffffff;
 }
 
 .participation-content h1 {
-  color: #333;
+  color: #ffffff;
   font-size: 2.5rem;
   margin-bottom: 10px;
   text-align: center;
 }
 
 .participation-subtitle {
-  color: #666;
+  color: #999999;
   font-size: 1.1rem;
   text-align: center;
   margin-bottom: 40px;
@@ -107,6 +108,7 @@ html, body {
 
 .participation-checkbox span {
   font-weight: 500;
+  color: #ffffff;
 }
 
 .participation-text {
@@ -134,13 +136,13 @@ html, body {
 }
 
 .participation-btn.disabled {
-  background: #ccc;
+  background: #8f8f8f;
   cursor: not-allowed;
   opacity: 0.6;
 }
 
 .login-card {
-  background: white;
+  background: rgb(0, 0, 0);
   border-radius: 10px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
   padding: 25px 30px;
@@ -148,16 +150,17 @@ html, body {
   width: 90%;
   text-align: center;
   margin: 30px auto 50px;
+  border: 1px solid #ffffff;
 }
 
 .login-card h2 {
-  color: #333;
+  color: #ffffff;
   font-size: 1.4rem;
   margin-bottom: 10px;
 }
 
 .login-card p {
-  color: #666;
+  color: #c9c9c9;
   font-size: 0.95rem;
   margin-bottom: 20px;
   line-height: 1.6;
