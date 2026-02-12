@@ -35,4 +35,21 @@ function deleteCategory(req, res) {
   });
 }
 
-export default { getCategories, createCategory, deleteCategory };
+function updateCategory(req, res) { 
+  const { id } = req.params;
+  const { name } = req.body;
+  if (!name) {
+    return res.status(400).json({ error: "Tous les champs sont requis" });
+  }
+  Categories.findByPk(id).then((category) => {
+    if (category) {
+      category.update({ name }).then((updatedCategory) => {
+        res.json(updatedCategory);
+      });
+    } else {
+      res.status(404).json({ error: "Catégorie non trouvée" });
+    }
+  });
+}
+
+export default { getCategories, createCategory, deleteCategory, updateCategory };

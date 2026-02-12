@@ -27,5 +27,29 @@ function createCollaborator(req, res) {
     }
   });
 }
+function deleteCollaborator(req, res) {
+   const { id } = req.params;
+   Collaborator.destroy({ where: { id } }).then(() => {
+     res.status(204).json({ message: "Collaborateur supprimé" });
+    });
+  }
 
-export default { getCollaborators, createCollaborator };
+function updateCollaborator(req, res) {
+    const { id } = req.params;
+    const { name } = req.body;
+    if (!name) {
+        return res.status(400).json({ error: "Tous les champs sont requis" });
+    }
+    Collaborator.findByPk(id).then((collaborator) => {
+        if (collaborator) {
+            collaborator.update({ name }).then((updatedCollaborator) => {
+                res.json(updatedCollaborator);
+            });
+        } else {
+            res.status(404).json({ error: "Collaborateur non trouvé" });
+        }
+    });
+}
+
+
+export default { getCollaborators, createCollaborator, deleteCollaborator}; 
