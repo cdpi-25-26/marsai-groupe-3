@@ -48,7 +48,14 @@
 }
 
 .home-hero-title-ai {
-  background: linear-gradient(90deg, #6f8dff 0%, #6b66ff 35%, #f42cd9 100%);
+  background: linear-gradient(180deg, #6f8dff 0%, #6b66ff 5%, #f42cd9 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.home-hero-title-futurs {
+  background: linear-gradient(90deg, #6f8dff 0%, #6b66ff 5%, #f42cd9 30%, #f07400f8 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;

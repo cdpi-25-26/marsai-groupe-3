@@ -6,6 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import "./Auth.css";
 
 const registerSchema = z.object({
   username: z.string(),
@@ -15,12 +16,15 @@ const registerSchema = z.object({
 export function Register() {
   if (localStorage.getItem("username")) {
     return (
-      <>
-        <h1 className="text-2xl">
-          You are already logged in as {localStorage.getItem("username")}
-        </h1>
-        <Link to="/">Go to Home</Link>
-      </>
+      <div className="auth-page">
+        <div className="auth-card auth-card-sm">
+          <h1 className="auth-title">DÉJÀ CONNECTÉ</h1>
+          <p className="auth-subtitle">Vous êtes connecté en tant que {localStorage.getItem("username")}</p>
+          <Link className="auth-primary-button auth-link-btn" to="/">
+            RETOUR ACCUEIL
+          </Link>
+        </div>
+      </div>
     );
   }
 
@@ -46,42 +50,60 @@ export function Register() {
     return registerMutation.mutate(data);
   }
   return (
-    <>
-      <h1 className="text-2xl">Register</h1>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <input type="hidden" id="id" {...register("id")} />
-        <label
-          htmlFor="username"
-          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-        >
-          Username
-        </label>
-        <input
-          id="username"
-          type="text"
-          placeholder="Votre nom d'utilisateur"
-          {...register("username")}
-          required
-        />
+    <div className="auth-page">
+      <div className="auth-panel-glow" aria-hidden="true"></div>
 
-        <label
-          htmlFor="password"
-          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-        >
-          Password
-        </label>
-        <input
-          id="password"
-          type="password"
-          placeholder="Votre mot de passe"
-          {...register("password")}
-          required
-        />
+      <section className="auth-card" aria-labelledby="register-title">
+        <div className="auth-icon-wrap" aria-hidden="true">
+          ⊹
+        </div>
 
-        <button type="submit">Register</button>
-      </form>
+        <h1 id="register-title" className="auth-title auth-title-neon">
+          INSCRIPTION
+        </h1>
+        <p className="auth-subtitle">NOUVEAU PROFIL MARS.A.I</p>
 
-      <Link to="/auth/login">Already have an account? Login</Link>
-    </>
+        <form className="auth-form" onSubmit={handleSubmit(onSubmit)}>
+          <input type="hidden" id="id" {...register("id")} />
+
+          <label htmlFor="username" className="auth-label">
+            ALIAS CITOYEN
+          </label>
+          <input
+            id="username"
+            className="auth-input"
+            type="text"
+            placeholder="John Doe"
+            {...register("username")}
+            required
+          />
+
+          <label htmlFor="password" className="auth-label">
+            CLÉ D’ACCÈS
+          </label>
+          <input
+            id="password"
+            className="auth-input"
+            type="password"
+            placeholder="••••••••"
+            {...register("password")}
+            required
+          />
+
+          <button className="auth-primary-button" disabled={registerMutation.isPending} type="submit">
+            {registerMutation.isPending ? "INSCRIPTION..." : "GÉNÉRER IDENTITÉ"}
+          </button>
+        </form>
+
+        <p className="auth-footer-text">
+          Déjà enregistré ?
+          <Link to="/auth/login"> Ouvrir session</Link>
+        </p>
+
+        <Link className="auth-secondary-link" to="/">
+          ← RETOUR ACCUEIL
+        </Link>
+      </section>
+    </div>
   );
 }

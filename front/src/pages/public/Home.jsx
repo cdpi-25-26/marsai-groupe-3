@@ -1,4 +1,5 @@
 import "./Home.css";
+import { Link } from "react-router";
 
 function Home() {
   return (
@@ -26,19 +27,19 @@ function Home() {
           </h1>
 
           <p className="text-2xl md:text-[42px] leading-[1.05] font-extrabold uppercase tracking-tight mb-2">
-            IMAGINEZ DES <span className="home-hero-title-ai">FUTURS</span> SOUHAITABLES
+            IMAGINEZ DES <span className="home-hero-title-futurs">FUTURS</span> SOUHAITABLES
           </p>
           <p className="text-lg md:text-[31px] text-white/65 mb-2">
             Le festival de courts-métrages de 60 secondes réalisés par IA.
           </p>
           <p className="text-lg md:text-[31px] italic text-white/80 mb-12">
-            2 jours d&apos;immersion au cœur de Marseille.
+            2 jours d'immersion au cœur de Marseille.
           </p>
 
           <div className="flex gap-4 justify-center flex-wrap">
-            <button className="home-hero-btn home-hero-btn-primary">
+            <Link className="home-hero-btn home-hero-btn-primary" to="/gallery">
               VOIR LES FILMS <span aria-hidden="true">→</span>
-            </button>
+            </Link>
             <button className="home-hero-btn home-hero-btn-secondary">
               MON ESPACE AI <span aria-hidden="true">›</span>
             </button>
@@ -92,7 +93,7 @@ function Home() {
 
             <div className="home-films-header-right">
               <p className="home-films-subtitle">
-                Découvrez une sélection d&apos;œuvres pionnières explorant les nouvelles frontières de l&apos;imaginaire assisté par l&apos;IA.
+                Découvrez une sélection d'œuvres pionnières explorant les nouvelles frontières de l'imaginaire assisté par l'IA.
               </p>
               <button className="home-films-cta">
                 VOIR LA SÉLECTION <span className="home-films-cta-icon">→</span>
@@ -307,7 +308,7 @@ function Home() {
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
             ></iframe>
-            <span className="home-platform-map-caption">LOCALISATION DE L&apos;ÉVÉNEMENT</span>
+            <span className="home-platform-map-caption">LOCALISATION DE L'ÉVÉNEMENT</span>
           </div>
         </div>
       </section>
