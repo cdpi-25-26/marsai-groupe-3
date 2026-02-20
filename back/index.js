@@ -24,7 +24,7 @@ app.listen(PORT, () => {
   console.log(`Le serveur est lancé sur http://localhost:${PORT}`);
 });
 
-sequelize.sync({ force: true }).then(() => {
+sequelize.sync().then(() => {
   console.log("La base de données est synchronisée.");
 });
 

@@ -8,6 +8,7 @@ import Categories from "./Categories.js";
 import Collaborator_video from "./Collaborator_Video.js";
 import Video_Category from "./Video_Category.js";
 import Awards from "./Awards.js";
+import Video_Jury from "./Video_Jury.js";
 
 
 
@@ -32,4 +33,15 @@ Videos.hasMany(Awards, { foreignKey: "id_video" });
 Videos.belongsToMany(Collaborators, { through: Collaborator_video, foreignKey: "id_video" });
 Collaborators.belongsToMany(Videos, { through: Collaborator_video, foreignKey: "id_collaborator" });
 
-export { Users, Videos, Evaluations, Reservations, Event, Collaborators, Categories, Awards, Collaborator_video, Video_Category };
+Users.belongsToMany(Videos, {
+  through: Video_Jury,
+  foreignKey: "id_user",
+});
+
+Videos.belongsToMany(Users, {
+  through: Video_Jury,
+  foreignKey: "id_video",
+});
+
+
+export { Users, Videos, Evaluations, Reservations, Event, Collaborators, Categories, Awards, Collaborator_video, Video_Category, Video_Jury };
