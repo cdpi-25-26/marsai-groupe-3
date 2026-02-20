@@ -1,195 +1,209 @@
-:root {
-    margin: 0;
-    padding: 0;
-}
-
-html, body {
-  margin: 0;
-  padding: 0;
-  min-height: 100vh;
-  background: 
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0) 30%, rgba(0, 0, 0, 0) 70%, rgba(0, 0, 0, 0.85) 100%),
-    url('/src/assets/background.png') center/cover no-repeat fixed;
-}
-
-.participation-container {
-  min-height: 100vh;
-  max-width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  position: relative;
-}
-
-.participation-content {
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-  padding: 50px;
-  max-width: 900px;
-  width: 100%;
-}
-
-.participation-content h1 {
-  color: #333;
-  font-size: 2.5rem;
-  margin-bottom: 10px;
-  text-align: center;
-}
-
-.participation-subtitle {
-  color: #666;
-  font-size: 1.1rem;
-  text-align: center;
-  margin-bottom: 40px;
-}
-
-.participation-cards {
+.participation-page {
+  min-height: calc(100vh - 140px);
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  margin-bottom: 40px;
+  gap: 1.25rem;
+  place-items: center;
+  position: relative;
+  background: radial-gradient(110% 80% at 50% 10%, rgba(77, 43, 255, 0.2) 0%, rgba(10, 10, 14, 0) 55%), #03030a;
+  padding: 2rem 1rem 3rem;
+  overflow: hidden;
+}
+
+.participation-panel-glow {
+  position: absolute;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  filter: blur(58px);
+  background: radial-gradient(circle, rgba(87, 58, 255, 0.35), rgba(87, 58, 255, 0));
+  pointer-events: none;
 }
 
 .participation-card {
-  background: #f8f9fa;
-  border: 2px solid #e9ecef;
-  border-radius: 8px;
-  padding: 25px;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(7, 8, 16, 0.92);
+  padding: 1.6rem 1.25rem 1.4rem;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.62), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(8px);
+  color: #f4f7ff;
+  position: relative;
+  z-index: 1;
+}
+
+.participation-card-main {
+  width: min(100%, 1020px);
+}
+
+.participation-icon-wrap {
+  width: 54px;
+  height: 54px;
+  border-radius: 15px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 1.1rem;
+  color: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 1.2rem;
+}
+
+.participation-title {
+  margin: 0;
   text-align: center;
-  transition: all 0.3s ease;
+  font-size: clamp(1.95rem, 5vw, 2.35rem);
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
 }
 
-.participation-card:hover {
-  transform: translateY(-5px);
-  border-color: #667eea;
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.1);
+.participation-title-neon {
+  color: #6f5cff;
+  text-shadow: 0 0 16px rgba(111, 92, 255, 0.48);
 }
 
-.participation-card h3 {
-  color: #667eea;
-  font-size: 1.5rem;
-  margin-bottom: 10px;
+.participation-subtitle {
+  margin: 0.45rem 0 1.25rem;
+  text-align: center;
+  color: rgba(221, 227, 245, 0.65);
+  font-size: 0.63rem;
+  letter-spacing: 0.33em;
+  text-transform: uppercase;
 }
 
-.participation-card p {
-  color: #666;
+.participation-primary-button {
+  margin-top: 0.75rem;
+  width: 100%;
+  height: 45px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: linear-gradient(120deg, #ffffff, #f0f0f0);
+  color: #07080f;
+  font-size: 0.67rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.participation-primary-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 28px rgba(255, 255, 255, 0.18);
+}
+
+.participation-card-block {
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 1rem;
+  text-align: center;
+}
+
+.participation-card-block h3 {
+  margin: 0;
+  color: #6f5cff;
+  text-shadow: 0 0 16px rgba(111, 92, 255, 0.48);
+  font-size: 1rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.participation-card-block p {
+  margin: 0.75rem 0 0;
+  color: rgba(223, 230, 250, 0.78);
   line-height: 1.6;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
 }
 
 .participation-cta {
-  text-align: center;
-  padding-top: 30px;
-  border-top: 2px solid #e9ecef;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: grid;
+  gap: 0.9rem;
+  justify-items: center;
 }
 
 .participation-checkbox {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 0.55rem;
   cursor: pointer;
-  font-size: 1rem;
-  color: #333;
 }
 
 .participation-checkbox input[type="checkbox"] {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
+  accent-color: #6f5cff;
   cursor: pointer;
-  accent-color: #667eea;
 }
 
 .participation-checkbox span {
-  font-weight: 500;
-}
-
-.participation-text {
-  color: #333;
-  font-size: 1.1rem;
-  margin-bottom: 20px;
+  color: rgba(223, 230, 250, 0.78);
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .participation-btn {
-  display: inline-block;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 12px 40px;
-  border-radius: 5px;
   text-decoration: none;
-  font-size: 1rem;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-.participation-btn:hover:not(.disabled) {
-  transform: scale(1.05);
-  box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+  display: inline-grid;
+  place-items: center;
+  max-width: 280px;
+  width: 100%;
 }
 
 .participation-btn.disabled {
-  background: #ccc;
-  cursor: not-allowed;
   opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  pointer-events: auto;
 }
 
-.login-card {
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-  padding: 25px 30px;
-  max-width: 600px;
-  width: 90%;
+.participation-login-card {
+  width: min(100%, 520px);
   text-align: center;
-  margin: 30px auto 50px;
 }
 
-.login-card h2 {
-  color: #333;
-  font-size: 1.4rem;
-  margin-bottom: 10px;
+.participation-login-title {
+  margin: 0;
+  color: #f4f7ff;
+  font-size: 1.15rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-.login-card p {
-  color: #666;
-  font-size: 0.95rem;
-  margin-bottom: 20px;
+.participation-login-text {
+  margin: 0.8rem 0 1rem;
+  color: rgba(223, 230, 250, 0.72);
+  font-size: 0.78rem;
   line-height: 1.6;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-.login-card-btn {
-  display: inline-block;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 12px 40px;
-  border-radius: 5px;
-  text-decoration: none;
-  font-size: 1rem;
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
-
-.login-card-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-}
-
-@media (max-width: 768px) {
-  .participation-content {
-    padding: 30px;
+@media (max-width: 640px) {
+  .participation-page {
+    min-height: calc(100vh - 110px);
+    padding: 1.2rem 0.85rem 2rem;
   }
 
-  .participation-content h1 {
-    font-size: 1.8rem;
+  .participation-card {
+    border-radius: 18px;
   }
 
-  .participation-cards {
-    grid-template-columns: 1fr;
+  .participation-card-main {
+    width: 100%;
+  }
+
+  .participation-checkbox {
+    align-items: flex-start;
+  }
+
+  .participation-checkbox span {
+    line-height: 1.4;
   }
 }

@@ -1,52 +1,48 @@
-/* Video Submission Page Styles */
-
 html, body {
   background-color: rgb(2 6 23) !important;
 }
 
-.video-submission-container {
+.container {
   min-height: 100vh;
   background-color: rgb(2 6 23);
   padding: 3rem 1rem;
 }
 
-.video-submission-wrapper {
+.wrapper {
   max-width: 64rem;
   margin: 0 auto;
 }
 
-/* Header */
-.submission-header {
+.header {
   text-align: center;
   margin-bottom: 3rem;
 }
 
-.submission-badge {
+.badge-p2 {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  color: rgb(192 132 252);
+  color: #F6339A;
   font-size: 0.875rem;
   font-weight: 600;
   margin-bottom: 1rem;
 }
 
-.submission-title {
+.title {
   font-size: 2.5rem;
   font-weight: bold;
   color: white;
   margin-bottom: 0.5rem;
 }
 
-.submission-title-highlight {
+.highlight {
   background: linear-gradient(180deg, #51A2FF 0%, #AD46FF 50%, #FF2B7F 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* Form Sections */
-.form-section {
+.section {
   background-color: rgb(15 23 42);
   border: 1px solid rgb(51 65 85);
   border-radius: 0.5rem;
@@ -61,11 +57,17 @@ html, body {
   margin-bottom: 1.5rem;
 }
 
-.section-icon {
+.icon {
   font-family: "Segoe UI Emoji", "Apple Color Emoji", sans-serif;
   font-size: 3rem;
   color: rgb(192 132 252);
   rotate: calc(90deg);
+}
+
+.icon-p2 {
+  font-family: "Segoe UI Emoji", "Apple Color Emoji", sans-serif;
+  font-size: 1.5rem;
+  color: rgb(192 132 252);
 }
 
 .section-title {
@@ -74,8 +76,7 @@ html, body {
   color: rgb(192 132 252);
 }
 
-/* Info Box */
-.info-box {
+.info {
   display: flex;
   align-items: flex-start;
   gap: 1rem;
@@ -86,37 +87,32 @@ html, body {
   margin-bottom: 2rem;
 }
 
-.info-icon {
+.info .icon {
   color: rgb(192 132 252);
   font-size: 1.25rem;
 }
 
-.info-text {
+.text {
   color: rgb(255, 255, 255);
   font-size: 0.875rem;
 }
 
-.info-text-mars {
+.text-mars {
   color: rgb(255, 255, 255);
   font-size: 0.875rem;
   text-align: left;
 }
 
-/* Form Fields */
-.form-label {
+.label {
   display: block;
   font-size: 0.875rem;
   color: rgb(203 213 225);
   margin-bottom: 0.5rem;
 }
 
-.youtube-link-field .form-label {
-  margin-bottom: 0.75rem;
-}
-
-.form-input,
-.form-select,
-.form-textarea {
+.input,
+.select,
+.textarea {
   width: 100%;
   background-color: rgb(30 41 59);
   border: 1px solid rgb(71 85 105);
@@ -125,26 +121,25 @@ html, body {
   border-radius: 0.5rem;
 }
 
-.form-input:focus,
-.form-select:focus,
-.form-textarea:focus {
+.input:focus,
+.select:focus,
+.textarea:focus {
   outline: none;
   border-color: rgb(168 85 247);
 }
 
-.form-textarea {
+.textarea {
   resize: none;
 }
 
-.char-counter {
+.counter {
   text-align: right;
   font-size: 0.75rem;
   color: rgb(148 163 184);
   margin-top: 0.25rem;
 }
 
-/* Radio Cards */
-.radio-card {
+.radio {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -156,17 +151,16 @@ html, body {
   transition: border-color 0.2s;
 }
 
-.radio-card:hover {
+.radio:hover {
   border-color: rgb(168 85 247);
 }
 
-.radio-card-label {
+.radio-label {
   color: white;
   font-weight: 600;
 }
 
-/* Team Member Card */
-.team-member-card {
+.member {
   background-color: rgb(30 41 59);
   border: 1px solid rgb(71 85 105);
   border-radius: 0.5rem;
@@ -174,8 +168,7 @@ html, body {
   margin-bottom: 1rem;
 }
 
-/* Add Button */
-.add-button {
+.add-btn {
   width: 100%;
   padding: 0.75rem;
   border: 2px dashed rgb(168 85 247);
@@ -186,12 +179,11 @@ html, body {
   transition: background-color 0.2s;
 }
 
-.add-button:hover {
+.add-btn:hover {
   background-color: rgba(168, 85, 247, 0.1);
 }
 
-/* Certificate Box */
-.certificate-box {
+.cert {
   background-color: rgb(15 23 42);
   border: 1px solid rgb(202 138 4);
   border-radius: 0.5rem;
@@ -199,31 +191,31 @@ html, body {
   margin-bottom: 2rem;
 }
 
-.certificate-header {
+.cert-header {
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
   margin-bottom: 1rem;
 }
 
-.certificate-icon {
+.cert-header .icon {
   color: rgb(250 204 21);
   font-size: 1.5rem;
 }
 
-.certificate-title {
+.cert .title {
   font-size: 1.25rem;
   font-weight: bold;
   color: white;
   margin-bottom: 0.5rem;
 }
 
-.certificate-text {
+.cert .text {
   color: rgb(203 213 225);
   font-size: 0.875rem;
 }
 
-.certificate-checkbox-wrapper {
+.cert-wrapper {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -234,18 +226,20 @@ html, body {
   cursor: pointer;
 }
 
-.certificate-checkbox {
+.checkbox {
   width: 1.25rem;
   height: 1.25rem;
+  cursor: pointer;
+  accent-color: rgb(168 85 247);
+  flex-shrink: 0;
 }
 
-.certificate-label {
+.cert-wrapper .label {
   color: white;
   font-size: 0.875rem;
 }
 
-/* Error Message */
-.error-message {
+.error {
   background-color: rgba(127, 29, 29, 0.2);
   border: 1px solid rgb(239 68 68);
   color: rgb(252 165 165);
@@ -254,12 +248,11 @@ html, body {
   margin-bottom: 2rem;
 }
 
-/* Submit Button */
-.submit-button-wrapper {
+.submit-wrapper {
   text-align: center;
 }
 
-.submit-button {
+.submit-btn {
   background-color: rgb(234 179 8);
   color: black;
   font-weight: bold;
@@ -271,18 +264,17 @@ html, body {
   transition: background-color 0.2s;
 }
 
-.submit-button:hover:not(:disabled) {
+.submit-btn:hover:not(:disabled) {
   background-color: rgb(202 138 4);
 }
 
-.submit-button:disabled {
+.submit-btn:disabled {
   background-color: rgb(51 65 85);
   color: rgb(100 116 139);
   cursor: not-allowed;
 }
 
-/* Success Screen */
-.success-screen {
+.success {
   min-height: 100vh;
   background-color: rgb(2 6 23);
   display: flex;
@@ -291,7 +283,7 @@ html, body {
   padding: 1rem;
 }
 
-.success-card {
+.success .card {
   max-width: 28rem;
   width: 100%;
   background-color: rgb(15 23 42);
@@ -301,24 +293,24 @@ html, body {
   text-align: center;
 }
 
-.success-emoji {
+.success .emoji {
   font-size: 4rem;
   margin-bottom: 1rem;
 }
 
-.success-title {
+.success .title {
   font-size: 1.5rem;
   font-weight: bold;
   color: white;
   margin-bottom: 1rem;
 }
 
-.success-text {
+.success .text {
   color: rgb(203 213 225);
   margin-bottom: 1.5rem;
 }
 
-.success-button {
+.success .btn {
   background-color: rgb(168 85 247);
   color: white;
   padding: 0.5rem 1.5rem;
@@ -328,12 +320,11 @@ html, body {
   transition: background-color 0.2s;
 }
 
-.success-button:hover {
+.success .btn:hover {
   background-color: rgb(147 51 234);
 }
 
-/* Upload Area */
-.upload-area {
+.upload {
   width: 100%;
   background-color: rgb(30 41 59);
   border: 2px dashed rgb(71 85 105);
@@ -342,7 +333,7 @@ html, body {
   text-align: center;
 }
 
-.upload-icon {
+.upload .icon {
   font-size: 2.5rem;
   margin-bottom: 0.75rem;
 }
@@ -358,14 +349,13 @@ html, body {
   font-size: 0.75rem;
 }
 
-/* Media Gallery */
-.media-gallery {
+.gallery {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
 }
 
-.media-item {
+.gallery .item {
   aspect-ratio: 16 / 9;
   background-color: rgb(30 41 59);
   border: 2px dashed rgb(71 85 105);
@@ -375,18 +365,18 @@ html, body {
   justify-content: center;
 }
 
-.media-item-content {
+.gallery .content {
   text-align: center;
   padding: 0.5rem;
   width: 100%;
 }
 
-.media-icon {
+.gallery .icon {
   font-size: 1.5rem;
   margin-bottom: 0.5rem;
 }
 
-.media-input {
+.gallery .input {
   width: 100%;
   background-color: rgb(51 65 85);
   border: 1px solid rgb(71 85 105);
@@ -396,23 +386,22 @@ html, body {
   border-radius: 0.25rem;
 }
 
-.media-input:focus {
+.gallery .input:focus {
   outline: none;
   border-color: rgb(168 85 247);
 }
 
-/* File Input */
-.file-input-hidden {
+.file-hidden {
   display: none;
 }
 
-.file-input-label {
+.file-label {
   display: block;
   cursor: pointer;
   margin-top: 0;
 }
 
-.file-input-button {
+.file-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -428,16 +417,16 @@ html, body {
   transition: border-color 0.2s, background-color 0.2s;
 }
 
-.file-input-button:hover {
+.file-btn:hover {
   border-color: rgb(168 85 247);
   background-color: rgba(168, 85, 247, 0.05);
 }
 
-.file-input-icon {
+.file-btn .icon {
   font-size: 1.25rem;
 }
 
-.file-input-name {
+.file-name {
   display: block;
   margin-top: 0.5rem;
   font-size: 0.75rem;
@@ -445,8 +434,7 @@ html, body {
   word-break: break-all;
 }
 
-/* Subtitle Checkbox */
-.subtitle-checkbox-wrapper {
+.checkbox-wrapper {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -454,23 +442,86 @@ html, body {
   cursor: pointer;
 }
 
-.subtitle-checkbox {
+.checkbox-wrapper .checkbox {
   width: 1rem;
   height: 1rem;
-  cursor: pointer;
-  accent-color: rgb(168 85 247);
+  flex-shrink: 0;
 }
 
-.subtitle-checkbox-label {
+.checkbox-label {
   color: rgb(203 213 225);
   font-size: 0.875rem;
   cursor: pointer;
   user-select: none;
 }
 
-/* Responsive */
 @media (min-width: 768px) {
-  .submission-title {
+  .title {
     font-size: 3rem;
   }
+}
+
+.grid {
+  display: grid;
+}
+
+.grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@media (min-width: 768px) {
+  .md\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.gap-6 {
+  gap: 1.5rem;
+}
+
+.mt-4 {
+  margin-top: 1rem;
+}
+
+.mt-6 {
+  margin-top: 1.5rem;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.mb-6 {
+  margin-bottom: 1.5rem;
+}
+
+.space-y-8 > * + * {
+  margin-top: 2rem;
+}
+
+.flex {
+  display: flex;
+}
+
+.items-start {
+  align-items: flex-start;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.input-ytb {
+  width: 100%;
+  background-color: rgb(30 41 59);
+  border: 1px solid rgb(71 85 105);
+  color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  margin-top: 2.15rem;
+  height: 56.5px;
 }

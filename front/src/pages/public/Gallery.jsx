@@ -110,7 +110,7 @@ function Gallery() {
         <div className="header mb-12">
           <h1 className="text-5xl md:text-6xl font-bold mb-2">
             <span className="text-white">LA GALERIE <br/> DES </span>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-pink-600">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
                FILMS
             </span>
           </h1>
