@@ -1,0 +1,628 @@
+.jury-page {
+  min-height: 100vh;
+  padding: 8rem 1rem 4rem;
+  color: #ffffff;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(183, 26, 255, 0.3), transparent 45%),
+    linear-gradient(to bottom, #070a12 0%, #07010c 45%, #03050d 100%);
+}
+
+.jury-president-section,
+.jury-carousel-section,
+.jury-charter-section {
+  width: min(100%, 1080px);
+  margin: 0 auto;
+}
+
+.jury-president-section {
+  width: min(100%, 1180px);
+  margin-bottom: 4rem;
+}
+
+.jury-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #2f8aff;
+  margin-bottom: 1.55rem;
+  font-weight: 700;
+}
+
+.jury-kicker-icon {
+  width: 0.82rem;
+  height: 0.82rem;
+  border: 1.6px solid currentColor;
+  border-radius: 999px;
+  position: relative;
+}
+
+.jury-kicker-icon::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -0.46rem;
+  width: 0.42rem;
+  height: 0.42rem;
+  border: 1.6px solid currentColor;
+  border-radius: 999px;
+  transform: translateX(-50%);
+}
+
+.jury-president-card {
+  display: grid;
+  gap: clamp(1.5rem, 3vw, 3rem);
+  grid-template-columns: minmax(360px, 1.03fr) minmax(360px, 0.97fr);
+  align-items: stretch;
+}
+
+.jury-president-visual {
+  position: relative;
+  display: block;
+  border-radius: 2rem;
+  overflow: hidden;
+  min-height: clamp(420px, 49vw, 610px);
+  border: 1px solid rgba(188, 193, 214, 0.3);
+}
+
+.jury-president-image {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* object-position: center 18%; */
+  background: rgba(255, 255, 255, 0.08);
+  filter: grayscale(100%);
+  left: 10px;
+}
+
+.jury-president-image-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to top, rgba(7, 10, 22, 0.78) 3%, rgba(7, 10, 22, 0.14) 40%, transparent 70%),
+    linear-gradient(to right, rgba(255, 255, 255, 0.12), transparent 36%);
+}
+
+.jury-president-image-caption {
+  position: absolute;
+  left: clamp(1.1rem, 2.5vw, 1.9rem);
+  right: clamp(1.1rem, 2.5vw, 1.9rem);
+  bottom: clamp(1.1rem, 2.5vw, 1.8rem);
+}
+
+.jury-president-content {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2vw, 1.6rem);
+  justify-content: center;
+}
+
+.jury-president-title {
+  text-transform: uppercase;
+  font-weight: 900;
+  font-size: clamp(2.55rem, 4.8vw, 4.85rem);
+  line-height: 0.93;
+  margin: 0;
+  letter-spacing: 0.01em;
+}
+
+.jury-president-title span {
+  color: #2f8aff;
+}
+
+.jury-president-quote {
+  --quote-content-offset: clamp(2.4rem, 4.4vw, 3.8rem);
+  border-radius: 2rem;
+  border: 1px solid rgba(156, 177, 255, 0.45);
+  background:
+    radial-gradient(circle at 0% 100%, rgba(172, 74, 255, 0.46), transparent 50%),
+    radial-gradient(circle at 100% 0%, rgba(56, 126, 255, 0.5), transparent 46%),
+    linear-gradient(145deg, rgba(39, 18, 86, 0.86), rgba(12, 37, 94, 0.84));
+  padding: clamp(1rem, 2.2vw, 1.6rem);
+  box-shadow: 0 26px 50px rgba(7, 10, 30, 0.44);
+}
+
+.jury-president-quote-head {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.8rem;
+  align-items: start;
+  margin-bottom: 1rem;
+}
+
+.jury-president-quote-mark {
+  margin: 0;
+  font-size: clamp(3.2rem, 5vw, 4.6rem);
+  line-height: 0.68;
+  font-weight: 900;
+  color: rgba(98, 146, 255, 0.88);
+}
+
+.jury-president-intro {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.68rem;
+  color: rgba(191, 206, 248, 0.88);
+  line-height: 1.46;
+  border: 1px dotted rgba(86, 165, 255, 0.82);
+  border-radius: 0.28rem;
+  padding: 0.45rem 0.55rem;
+}
+
+.jury-president-label {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 0.72rem;
+  color: #ff62c4;
+  margin-bottom: 0.5rem;
+}
+
+.jury-president-image-caption h2 {
+  margin: 0;
+  font-size: clamp(2rem, 3vw, 3.15rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  line-height: 0.95;
+}
+
+.jury-president-quote-text {
+  margin: 0;
+  margin-left: var(--quote-content-offset);
+  color: rgba(214, 202, 247, 0.97);
+  font-size: clamp(1.2rem, 1.9vw, 2rem);
+  line-height: 1.08;
+  text-transform: uppercase;
+  max-width: 30ch;
+  letter-spacing: 0.01em;
+}
+
+.jury-president-cta {
+  margin-top: 1.2rem;
+  margin-left: var(--quote-content-offset);
+  border: none;
+  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  text-transform: uppercase;
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  font-weight: 800;
+  color: #ffffff;
+  background: linear-gradient(90deg, #ff4ab0, #ff2d93);
+  cursor: pointer;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.jury-president-cta:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.06);
+}
+
+.jury-carousel-section {
+  margin-bottom: 4rem;
+}
+
+.jury-carousel-shell {
+  display: flex;
+  flex-direction: column;
+}
+
+.jury-section-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.4rem;
+}
+
+.jury-section-head h2,
+.jury-charter-section h2 {
+  text-transform: uppercase;
+  font-weight: 900;
+  line-height: 0.95;
+  font-size: clamp(1.8rem, 3.5vw, 3rem);
+}
+
+.jury-section-head h2 span,
+.jury-charter-section h2 span {
+  color: #3790ff;
+}
+
+.jury-section-head p {
+  max-width: 420px;
+  color: rgb(255, 255, 255);
+  font-size: 0.92rem;
+  align-self: end;
+}
+
+.jury-carousel-panel {
+  border-radius: 1.2rem;
+  border: 1px solid rgba(170, 141, 255, 0.35);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(48, 136, 255, 0.2), transparent 36%),
+    radial-gradient(circle at 0% 100%, rgba(255, 84, 194, 0.14), transparent 42%),
+    rgba(13, 9, 30, 0.8);
+  backdrop-filter: blur(10px);
+  padding: 1.1rem;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  box-shadow: 0 20px 45px rgba(5, 8, 25, 0.36);
+}
+
+.jury-carousel-arrow {
+  min-width: 3rem;
+  min-height: 3rem;
+  border-radius: 0.95rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(77, 127, 255, 0.1));
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  font-weight: 700;
+}
+
+.jury-carousel-arrow:hover {
+  transform: translateY(-2px);
+  border-color: rgba(132, 173, 255, 0.82);
+  background: linear-gradient(145deg, rgba(115, 167, 255, 0.2), rgba(255, 87, 197, 0.2));
+}
+
+.jury-carousel-arrow span {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.jury-carousel-arrow small {
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(238, 241, 255, 0.72);
+}
+
+.jury-carousel-card {
+  border-radius: 1rem;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  display: grid;
+  grid-template-columns: minmax(160px, 240px) 1fr;
+  min-height: 210px;
+  background: linear-gradient(145deg, rgba(18, 30, 53, 0.7), rgba(57, 17, 72, 0.86));
+  animation: juryCardIn 240ms ease;
+}
+
+.jury-member-visual {
+  position: relative;
+}
+
+.jury-member-glow {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to top, rgba(8, 10, 24, 0.68), transparent 40%),
+    radial-gradient(circle at 85% 18%, rgba(68, 146, 255, 0.42), transparent 42%);
+}
+
+.jury-member-index {
+  position: absolute;
+  left: 0.85rem;
+  bottom: 0.65rem;
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.jury-member-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.jury-member-info {
+  padding: 1.1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  justify-content: center;
+}
+
+.jury-member-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.jury-member-count {
+  margin: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(183, 203, 255, 0.86);
+}
+
+.jury-member-role {
+  margin: 0;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  color: rgba(255, 115, 206, 0.95);
+}
+
+.jury-member-info h3 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.jury-member-info p {
+  color: rgba(233, 235, 250, 0.82);
+  line-height: 1.45;
+}
+
+.jury-member-description {
+  margin: 0;
+  max-width: 48ch;
+}
+
+.jury-carousel-dots {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  gap: 0.45rem;
+}
+
+.jury-carousel-progress {
+  margin-top: 0.7rem;
+  width: 100%;
+  height: 0.34rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(169, 191, 255, 0.2);
+  overflow: hidden;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.jury-carousel-progress-bar {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #4b94ff 0%, #78b2ff 35%, #c668ff 100%);
+  box-shadow: 0 0 14px rgba(126, 183, 255, 0.62);
+  transition: width 50ms linear;
+}
+
+.jury-dot {
+  width: 0.6rem;
+  height: 0.62rem;
+  border-radius: 999px;
+  border: none;
+  background: rgba(255, 255, 255, 0.32);
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.jury-dot.is-active {
+  background: #4f9fff;
+  transform: scale(1.28);
+}
+
+.jury-member-strip {
+  margin-top: 0.95rem;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.jury-strip-item {
+  border: 1px solid rgba(158, 172, 255, 0.3);
+  border-radius: 0.8rem;
+  background: rgba(255, 255, 255, 0.03);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.5rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.jury-strip-item:hover {
+  transform: translateY(-2px);
+  border-color: rgba(126, 183, 255, 0.7);
+  background: rgba(126, 183, 255, 0.12);
+}
+
+.jury-strip-item img {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.55rem;
+  object-fit: cover;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.jury-strip-item span {
+  font-size: 0.75rem;
+  text-align: left;
+  line-height: 1.2;
+}
+
+.jury-strip-item.is-active {
+  border-color: rgba(101, 166, 255, 0.9);
+  background: linear-gradient(145deg, rgba(59, 120, 255, 0.25), rgba(201, 79, 255, 0.16));
+}
+
+@keyframes juryCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.99);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.jury-charter-list {
+  margin-top: 1.2rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(170, 141, 255, 0.33);
+  background: linear-gradient(160deg, rgba(45, 16, 88, 0.72), rgba(15, 14, 38, 0.88));
+  padding: 1rem;
+}
+
+.jury-charter-item {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  border: 1px solid rgba(170, 141, 255, 0.3);
+  border-radius: 0.85rem;
+  padding: 0.9rem;
+}
+
+.jury-charter-item + .jury-charter-item {
+  margin-top: 0.75rem;
+}
+
+.jury-charter-id {
+  min-width: 2rem;
+  height: 2rem;
+  border-radius: 0.55rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #ffffff;
+  background: linear-gradient(135deg, #3a87ff, #5f60ff);
+}
+
+.jury-charter-item h3 {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.78rem;
+  margin-bottom: 0.35rem;
+}
+
+.jury-charter-item p {
+  color: rgba(233, 235, 250, 0.82);
+  font-size: 0.86rem;
+  line-height: 1.4;
+}
+
+@media (max-width: 900px) {
+  .jury-president-card,
+  .jury-carousel-card {
+    grid-template-columns: 1fr;
+  }
+
+  .jury-president-visual,
+  .jury-president-image {
+    min-height: 420px;
+  }
+
+  .jury-president-image {
+    min-height: 0;
+  }
+
+  .jury-president-content {
+    max-width: 680px;
+  }
+
+  .jury-president-title {
+    max-width: 11ch;
+  }
+
+  .jury-president-quote-text {
+    max-width: 100%;
+    margin-left: 0;
+  }
+
+  .jury-member-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .jury-member-image {
+    max-height: 320px;
+  }
+}
+
+@media (max-width: 640px) {
+  .jury-page {
+    padding-top: 7rem;
+  }
+
+  .jury-carousel-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .jury-president-visual,
+  .jury-president-image {
+    min-height: 360px;
+  }
+
+  .jury-president-image {
+    min-height: 0;
+  }
+
+  .jury-president-image {
+    object-position: center 14%;
+  }
+
+  .jury-president-label {
+    font-size: 0.66rem;
+  }
+
+  .jury-president-image-caption h2 {
+    font-size: 1.9rem;
+  }
+
+  .jury-president-quote {
+    --quote-content-offset: 0;
+    padding: 1.1rem 1rem 1rem;
+  }
+
+  .jury-president-quote-mark {
+    font-size: 3.1rem;
+  }
+
+  .jury-president-quote-head {
+    gap: 0.55rem;
+  }
+
+  .jury-president-quote-text {
+    font-size: 1rem;
+    line-height: 1.2;
+  }
+
+  .jury-carousel-arrow {
+    width: 100%;
+    border-radius: 0.7rem;
+    flex-direction: row;
+  }
+
+  .jury-member-meta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .jury-member-strip {
+    grid-template-columns: 1fr;
+  }
+}
