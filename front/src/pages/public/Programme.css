@@ -25,11 +25,8 @@
 }
 
 .programme-icon {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: #ff5fa3;
-  display: inline-block;
+  width: 18px;
+  height: 18px;
 }
 
 .programme-label {
@@ -84,18 +81,15 @@
   width: 56px;
   height: 56px;
   border-radius: 16px;
-  background: linear-gradient(180deg, #51a2ff 0%, #4b7bff 100%);
+  background: rgba(255, 255, 255, 0.1);
   display: grid;
   place-items: center;
   flex-shrink: 0;
 }
 
 .card-icon {
-  width: 12px;
-  height: 12px;
-  background: #ffffff;
-  border-radius: 4px;
-  display: inline-block;
+  width: 32px;
+  height: 32px;
 }
 
 .card-title {
@@ -128,11 +122,8 @@
 }
 
 .conf-icon {
-  width: 16px;
-  height: 16px;
-  border-radius: 4px;
-  background: linear-gradient(180deg, #ff66b2 0%, #a855f7 100%);
-  display: inline-block;
+  width: 22px;
+  height: 22px;
 }
 
 .conf-title {
@@ -156,11 +147,8 @@
 }
 
 .access-icon {
-  width: 16px;
-  height: 16px;
-  border-radius: 4px;
-  background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
-  display: inline-block;
+  width: 22px;
+  height: 22px;
 }
 
 .access-underline {
@@ -192,6 +180,11 @@
 .access-square-purple {
   background: rgba(168, 85, 247, 0.16);
   border: 1px solid rgba(168, 85, 247, 0.6);
+}
+
+.access-square-icon {
+  width: 28px;
+  height: 28px;
 }
 
 .access-text {
@@ -287,11 +280,8 @@
 }
 
 .workshop-icon {
-  width: 16px;
-  height: 16px;
-  border-radius: 4px;
-  background: linear-gradient(180deg, #ff66b2 0%, #a855f7 100%);
-  display: inline-block;
+  width: 22px;
+  height: 22px;
 }
 
 .workshop-underline {
@@ -345,6 +335,8 @@
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 8px;
+  object-fit: contain;
 }
 
 .workshops-lead {

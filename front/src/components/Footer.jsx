@@ -1,5 +1,9 @@
 import { Link } from "react-router";
 import "./Footer.css";
+import facebookIcon from "../assets/icones/icones_footer/facebook.svg";
+import instaIcon from "../assets/icones/icones_footer/insta.svg";
+import xIcon from "../assets/icones/icones_footer/x.svg";
+import youtubeIcon from "../assets/icones/icones_footer/youtube.svg";
 
 export default function Footer() {
   return (
@@ -13,10 +17,18 @@ export default function Footer() {
           "La plateforme mondiale de la narration générative, ancrée dans la lumière de Marseille."
         </p>
         <div className="social-row">
-          <button aria-label="Lien 1" className="icon-btn">•</button>
-          <button aria-label="Lien 2" className="icon-btn">•</button>
-          <button aria-label="Lien 3" className="icon-btn">•</button>
-          <button aria-label="Lien 4" className="icon-btn">•</button>
+          <a aria-label="Facebook" className="icon-btn" href="#">
+            <img src={facebookIcon} alt="" />
+          </a>
+          <a aria-label="Instagram" className="icon-btn" href="#">
+            <img src={instaIcon} alt="" />
+          </a>
+          <a aria-label="X" className="icon-btn" href="#">
+            <img src={xIcon} alt="" />
+          </a>
+          <a aria-label="YouTube" className="icon-btn" href="#">
+            <img src={youtubeIcon} alt="" />
+          </a>
         </div>
       </div>
 

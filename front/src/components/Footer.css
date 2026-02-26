@@ -42,7 +42,11 @@
   background: #111;
   color: var(--grey);
   cursor: pointer;
+  display: grid;
+  place-items: center;
+  padding: 8px;
 }
+.icon-btn img { width: 100%; height: 100%; object-fit: contain; }
 
 .col-title { margin: 0; font-size: 14px; letter-spacing: 0.08em; }
 .col-title.violet { color: var(--violet); }

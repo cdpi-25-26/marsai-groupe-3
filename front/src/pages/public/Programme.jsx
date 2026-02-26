@@ -1,5 +1,14 @@
 import "./Programme.css";
 import { useState } from "react";
+import agendaIcon from "../../assets/icones/icones_programme/agenda.svg";
+import mapPlateformeIcon from "../../assets/icones/icones_programme/map_plateforme.svg";
+import horlogeIcon from "../../assets/icones/icones_programme/horloge.svg";
+import flecheAccesIcon from "../../assets/icones/icones_programme/fleche_acces.svg";
+import tramwayIcon from "../../assets/icones/icones_programme/tramway.svg";
+import voitureIcon from "../../assets/icones/icones_programme/voiture.svg";
+import mapAccesIcon from "../../assets/icones/icones_programme/map_acces.svg";
+import atelierPratiqueIcon from "../../assets/icones/icones_programme/atelier_pratique.svg";
+import worshopIcon from "../../assets/icones/icones_programme/worshop.svg";
 
 export default function Programme() {
   const [selectedWorkshop, setSelectedWorkshop] = useState(null);
@@ -103,7 +112,7 @@ export default function Programme() {
   return (
     <section className="programme-page">
       <div className="programme-head">
-        <span className="programme-icon" aria-hidden="true"></span>
+        <img src={agendaIcon} alt="" className="programme-icon" aria-hidden="true" />
         <span className="programme-label">infos pratiques</span>
       </div>
 
@@ -113,7 +122,7 @@ export default function Programme() {
       <div className="programme-card">
         <div className="card-header">
           <div className="card-icon-box">
-            <span className="card-icon" aria-hidden="true"></span>
+            <img src={mapPlateformeIcon} alt="" className="card-icon" aria-hidden="true" />
           </div>
           <div className="card-title">La Plateforme_</div>
         </div>
@@ -125,7 +134,7 @@ export default function Programme() {
 
       <div className="conf-block">
         <div className="conf-header">
-          <span className="conf-icon" aria-hidden="true"></span>
+          <img src={horlogeIcon} alt="" className="conf-icon" aria-hidden="true" />
           <h2 className="conf-title">PROGRAMME DES CONFÉRENCES</h2>
         </div>
         <div className="conf-underline"></div>
@@ -149,14 +158,16 @@ export default function Programme() {
 
       <div className="conf-block access-block">
         <div className="conf-header">
-          <span className="access-icon" aria-hidden="true"></span>
+          <img src={flecheAccesIcon} alt="" className="access-icon" aria-hidden="true" />
           <h2 className="conf-title">ACCES</h2>
         </div>
         <div className="conf-underline access-underline"></div>
       </div>
 
       <div className="access-inline">
-        <div className="access-square" aria-hidden="true"></div>
+        <div className="access-square" aria-hidden="true">
+          <img src={tramwayIcon} alt="" className="access-square-icon" />
+        </div>
         <div className="access-text">
           <div className="access-title">Transports en commun</div>
           <p className="access-desc">
@@ -167,7 +178,9 @@ export default function Programme() {
       </div>
 
       <div className="access-inline">
-        <div className="access-square access-square-green" aria-hidden="true"></div>
+        <div className="access-square access-square-green" aria-hidden="true">
+          <img src={voitureIcon} alt="" className="access-square-icon" />
+        </div>
         <div className="access-text">
           <div className="access-title">Voiture</div>
           <p className="access-desc">
@@ -178,7 +191,9 @@ export default function Programme() {
       </div>
 
       <div className="access-inline">
-        <div className="access-square access-square-purple" aria-hidden="true"></div>
+        <div className="access-square access-square-purple" aria-hidden="true">
+          <img src={mapAccesIcon} alt="" className="access-square-icon" />
+        </div>
         <div className="access-text">
           <div className="access-title">Adresse</div>
           <p className="access-desc">
@@ -199,7 +214,7 @@ export default function Programme() {
 
       <div className="conf-block workshops-block">
         <div className="conf-header">
-          <span className="workshop-icon" aria-hidden="true"></span>
+          <img src={atelierPratiqueIcon} alt="" className="workshop-icon" aria-hidden="true" />
           <h2 className="conf-title">ATELIERS PRATIQUES</h2>
         </div>
         <div className="conf-underline workshop-underline"></div>
@@ -211,7 +226,7 @@ export default function Programme() {
             <span className="ws-title-main">WORSHOPS</span>
             <span className="ws-title-sub">IA CREATIVE</span>
           </div>
-          <span className="workshops-icon" aria-hidden="true"></span>
+          <img src={worshopIcon} alt="" className="workshops-icon" aria-hidden="true" />
         </div>
         <p className="workshops-lead">
           Passez de la théorie à la pratique avec les meilleurs experts internationaux. Attention, places limitées (max 15 par session).
