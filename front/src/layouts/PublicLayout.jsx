@@ -5,6 +5,7 @@ import Footer from "../components/Footer";
 export default function PublicLayout() {
   return (
     <div>
+      <div className="navbar-backdrop" aria-hidden="true"></div>
       <Navbar />
       <main>
         <Outlet />

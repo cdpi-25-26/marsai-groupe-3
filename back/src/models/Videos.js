@@ -44,6 +44,14 @@ const Videos = sequelize.define("Videos", {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  methodology: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
+  teamData: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
   category: {
     type: DataTypes.STRING,
     allowNull: true,
@@ -68,6 +76,16 @@ const Videos = sequelize.define("Videos", {
   id_user: {
     type: DataTypes.INTEGER,
     allowNull: false,
+  },
+  id_assigned_jury: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
+  isPriority: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+    field: "is_priority",
   },
 });
 

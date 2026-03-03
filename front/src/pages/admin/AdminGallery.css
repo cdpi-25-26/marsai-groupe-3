@@ -1,0 +1,159 @@
+.admin-gallery-header-panel {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 1rem;
+  align-items: end;
+}
+
+.admin-gallery-kpis {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.admin-public-gallery-toggle {
+  margin-top: 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 0.7rem;
+  padding: 0.55rem 0.8rem;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-public-gallery-toggle.is-open {
+  background: linear-gradient(90deg, #15803d, #22c55e);
+}
+
+.admin-public-gallery-toggle.is-closed {
+  background: linear-gradient(90deg, #9a3412, #ea580c);
+}
+
+.admin-gallery-kpi-card {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 0.75rem;
+  padding: 0.6rem 0.8rem;
+  background: rgba(15, 23, 42, 0.55);
+}
+
+.admin-gallery-kpi-card p {
+  margin: 0;
+  color: #93c5fd;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.admin-gallery-kpi-card strong {
+  color: #fff;
+  font-size: 1.2rem;
+}
+
+.admin-gallery-phases {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
+}
+
+.admin-phase-tab {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(2, 6, 23, 0.45);
+  color: #cbd5e1;
+  border-radius: 0.7rem;
+  padding: 0.7rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.admin-phase-tab strong {
+  color: #fff;
+}
+
+.admin-phase-tab.is-active {
+  border-color: rgba(236, 72, 153, 0.7);
+  background: rgba(88, 28, 135, 0.35);
+}
+
+.admin-phase-description {
+  color: #cbd5e1;
+  margin-bottom: 1rem;
+}
+
+.admin-gallery-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.admin-assigned-jury {
+  margin: 0 0 0.5rem;
+  color: #93c5fd;
+  font-size: 0.8rem;
+}
+
+.admin-eligible-btn,
+.admin-reject-btn {
+  border: none;
+  border-radius: 0.6rem;
+  padding: 0.55rem 0.6rem;
+  color: white;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.admin-eligible-btn {
+  background: linear-gradient(90deg, #16a34a, #22c55e);
+}
+
+.admin-reject-btn {
+  background: linear-gradient(90deg, #b91c1c, #ef4444);
+}
+
+.admin-delete-btn {
+  width: 100%;
+  margin-top: 0.55rem;
+  border: 1px solid rgba(239, 68, 68, 0.5);
+  border-radius: 0.6rem;
+  padding: 0.52rem 0.6rem;
+  color: #fecaca;
+  background: rgba(69, 10, 10, 0.35);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.admin-priority-btn {
+  width: 100%;
+  margin-top: 0.55rem;
+  border: 1px solid rgba(59, 130, 246, 0.5);
+  border-radius: 0.6rem;
+  padding: 0.52rem 0.6rem;
+  color: #bfdbfe;
+  background: rgba(30, 58, 138, 0.35);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+}
+
+.admin-priority-btn.is-active {
+  border-color: rgba(34, 197, 94, 0.7);
+  color: #dcfce7;
+  background: rgba(20, 83, 45, 0.42);
+}
+
+@media (max-width: 980px) {
+  .admin-gallery-header-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .admin-gallery-phases {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { submitVideo } from "../../api/videos";
+import { Link } from "react-router";
+import { submitVideo, uploadVideoFile } from "../../api/videos";
 import "./VideoSubmission.css";
 
 const FormInput = ({ label, required, wrapperClassName = "", ...props }) => (
@@ -44,6 +45,7 @@ const TeamMemberForm = ({ member, index, onChange }) => (
 );
 
 export default function VideoSubmission() {
+  const isAuthenticated = Boolean(localStorage.getItem("token"));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
@@ -53,6 +55,7 @@ export default function VideoSubmission() {
     synopsisOriginal: "", synopsisEnglish: "",
     classification: "", techStack: "", methodology: "",
     youtubeLink: "", hasSubtitles: false, subtitlesFile: null, thumbnail: "",
+    videoFile: null,
     mediaGallery: ["", "", ""],
     team: [{ civility: "", firstName: "", lastName: "", profession: "", email: "" }],
     certifiedOwnership: false,
@@ -78,15 +81,37 @@ export default function VideoSubmission() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!isAuthenticated) {
+      setError("Vous devez être connecté pour soumettre une vidéo.");
+      return;
+    }
+
+    if (!formData.youtubeLink && !formData.videoFile) {
+      setError("Ajoutez soit un lien YouTube, soit un fichier vidéo.");
+      return;
+    }
+
     setIsSubmitting(true);
     setError(null);
 
     try {
+      let uploadedVideoUrl = "";
+
+      if (formData.videoFile) {
+        const uploadResponse = await uploadVideoFile(formData.videoFile);
+        uploadedVideoUrl = uploadResponse.data?.fileUrl || "";
+      }
+
       const submissionData = {
         ...formData,
         duration: parseInt(formData.duration),
         mediaGallery: formData.mediaGallery.filter((url) => url.trim() !== ""),
+        videoFileUrl: uploadedVideoUrl,
       };
+
+      delete submissionData.videoFile;
+
       await submitVideo(submissionData);
       setSuccess(true);
     } catch (err) {
@@ -116,6 +141,12 @@ export default function VideoSubmission() {
   return (
     <div className="container">
       <div className="wrapper">
+        {!isAuthenticated && (
+          <div className="error">
+            Vous devez être connecté pour envoyer une vidéo. <Link to="/auth/login">Se connecter</Link>
+          </div>
+        )}
+
         <header className="header">
           <div className="badge-p2">✨ APPEL À PROJETS 2026 ✨</div>
           <h1 className="title">
@@ -184,7 +215,25 @@ export default function VideoSubmission() {
               <h2 className="section-title">03. LIVRABLES & ACCESSIBILITÉ</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormInput className="input-ytb" label="LIEN YOUTUBE ( PUBLIC / NON RÉPERTORIÉ )" required type="url" value={formData.youtubeLink} onChange={(e) => updateField("youtubeLink", e.target.value)} placeholder="https://youtube.com/..." />
+              <FormInput className="input-ytb" label="LIEN YOUTUBE (OPTIONNEL SI FICHIER VIDÉO)" required={false} type="url" value={formData.youtubeLink} onChange={(e) => updateField("youtubeLink", e.target.value)} placeholder="https://youtube.com/..." />
+              <div>
+                <label className="label">FICHIER VIDÉO (OPTIONNEL SI YOUTUBE)</label>
+                <label className="file-label">
+                  <input
+                    type="file"
+                    accept="video/*"
+                    onChange={(e) => updateField("videoFile", e.target.files?.[0] || null)}
+                    className="file-hidden"
+                  />
+                  <span className="file-btn">
+                    <span className="icon">🎬</span>
+                    CHOISIR UN FICHIER VIDÉO
+                  </span>
+                  {formData.videoFile && (
+                    <span className="file-name">{formData.videoFile.name}</span>
+                  )}
+                </label>
+              </div>
               <div>
                 <label className="label">SOUS-TITRES (.SRT)</label>
                 <label htmlFor="hasSubtitles" className="checkbox-wrapper">
@@ -270,7 +319,11 @@ export default function VideoSubmission() {
           {error && <div className="error">{error}</div>}
 
           <div className="submit-wrapper">
-            <button type="submit" disabled={isSubmitting || !formData.certifiedOwnership} className="submit-btn">
+            <button
+              type="submit"
+              disabled={isSubmitting || !formData.certifiedOwnership || !isAuthenticated}
+              className="submit-btn"
+            >
               {isSubmitting ? "ENVOI EN COURS..." : "FINALISER MA SOUMISSION →"}
             </button>
           </div>

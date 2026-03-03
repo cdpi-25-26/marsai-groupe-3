@@ -1,0 +1,54 @@
+.jury-vote-counts {
+  color: #d1d5db;
+  font-size: 0.84rem;
+  margin-bottom: 0.5rem;
+}
+
+.jury-readonly-note {
+  margin-top: 0.7rem;
+  color: #bfdbfe;
+  font-size: 0.9rem;
+}
+
+.jury-readonly-note-card {
+  margin: 0;
+  color: #bfdbfe;
+  font-size: 0.82rem;
+}
+
+.jury-vote-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.jury-comment-input {
+  width: 100%;
+  min-height: 72px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 0.7rem;
+  background: rgba(2, 6, 23, 0.55);
+  color: #e5e7eb;
+  padding: 0.55rem 0.7rem;
+  margin-bottom: 0.55rem;
+  resize: vertical;
+}
+
+.jury-yes-btn,
+.jury-no-btn {
+  border: none;
+  border-radius: 0.6rem;
+  padding: 0.55rem 0.8rem;
+  color: white;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.jury-yes-btn {
+  background: linear-gradient(90deg, #16a34a, #22c55e);
+}
+
+.jury-no-btn {
+  background: linear-gradient(90deg, #b91c1c, #ef4444);
+}

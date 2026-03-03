@@ -8,7 +8,7 @@ const Evaluation = sequelize.define("Evaluation", {
         autoIncrement: true,
     },
     note: {
-        type: DataTypes.ENUM("OUI", "à discuter", "NON"),
+        type: DataTypes.ENUM("OUI", "NON"),
         allowNull: false,
     },
     commentary: {
@@ -19,10 +19,18 @@ const Evaluation = sequelize.define("Evaluation", {
         type: DataTypes.INTEGER,
         allowNull: false,
     },
-    id_film: {
+    id_video: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        field: "id_film",
     },
+}, {
+    indexes: [
+        {
+            unique: true,
+            fields: ["id_user", "id_film"],
+        },
+    ],
 });
 
 export default Evaluation;

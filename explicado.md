@@ -164,3 +164,86 @@ Cette page est un grand formulaire pour soumettre un film à l'événement.
 - **Envoi**: Quand on envoies, ça va chercher à la base de données et affiche un message de succès (pas encore implémenter)
 - **Compteur de caractères**: Pour le synopsis, montre combien on as écrit sur le max autorisé
 
+
+
+## MISES A JOUR RECENTES (DERNIERS AJOUTS)
+
+### 1) Dashboard Admin (UI + navigation)
+- Le dashboard admin a ete refait avec un style moderne en gardant l'esprit visuel du site (dark + accents violet/rose).
+- Ajout d'une **sidebar gauche** pour naviguer dans les sections admin (vue d'ensemble, utilisateurs, videos, sections a venir).
+- La **Navbar principale** a ete remise dans l'admin pour garder l'acces aux pages publiques.
+
+### 2) Gestion utilisateurs dans l'admin
+- La liste users affiche maintenant des infos utiles (ID, email, nom, prenom, role).
+- Ajout d'une vraie gestion des roles avec select + bouton de mise a jour.
+- Les roles proposes sont recuperes depuis Sequelize (ENUM du modele Users).
+- Ajout de filtres pratiques: recherche, filtre par role, tri.
+- Ajout d'etats UX (chargement/erreur) pour eviter un tableau vide sans explication.
+
+### 3) Auth / deconnexion
+- Correction de la deconnexion: suppression complete de la session locale (`username`, `role`, `token`, `tempAdminAccess`).
+- Redirection avec rechargement de page pour eviter l'ecran noir observe apres logout.
+
+### 4) Compte admin cree
+- Compte admin cree/assure en base (Sequelize):
+	- email: `admin@marsai.local`
+	- mot de passe temporaire: `Admin12345!`
+	- role: `ADMIN`
+
+### 5) Soumission video: securisation + envoi reel + affichage galerie
+
+#### 5.1 Acces soumission uniquement aux utilisateurs connectes
+- Le front bloque la soumission si aucun token n'est present (message clair + lien vers login).
+- Le back protege les routes sensibles:
+	- `POST /videos/upload`
+	- `POST /videos/submit`
+- Ces routes exigent une session valide via `AuthMiddleware`.
+
+#### 5.2 Upload video depuis VideoSubmission (systeme existant back + Sequelize)
+- L'upload fichier video est maintenant implemente (multipart) dans le back avec **multer**.
+- Les fichiers sont stockes localement dans `back/uploads/videos` et servis via `/uploads/...`.
+- Le front envoie le fichier avec `FormData` via `uploadVideoFile()` puis recupere `fileUrl`.
+
+#### 5.3 Enregistrement des soumissions avec Sequelize
+- Le payload de `VideoSubmission` est mappe vers le modele Sequelize existant `Videos`.
+- Champs importants stockes: titre, duree, langue, synopsis, classification, liens media, status, id_user.
+- Si un fichier video est upload, son URL est sauvegardee (sinon le lien YouTube est utilise).
+
+#### 5.4 Visibilite dans Gallery apres envoi
+- Le endpoint `GET /videos` renvoie maintenant un format normalise compatible avec la page Gallery.
+- Apres soumission reussie, les videos recuperees par la galerie deviennent affichables (titre, vignette, statut, classification...).
+
+### 6) Fichiers principaux modifies sur ces derniers ajouts
+- Back:
+	- `back/src/controllers/UserController.js`
+	- `back/src/routes/User.route.js`
+	- `back/src/controllers/VideoController.js`
+	- `back/src/routes/Video.route.js`
+	- `back/index.js`
+- Front:
+	- `front/src/layouts/AdminLayout.jsx`
+	- `front/src/layouts/AdminLayout.css`
+	- `front/src/pages/admin/Dashboard.css`
+	- `front/src/pages/admin/Users.jsx`
+	- `front/src/pages/auth/Login.jsx`
+	- `front/src/pages/auth/Register.jsx`
+	- `front/src/api/users.js`
+	- `front/src/api/videos.js`
+	- `front/src/pages/public/VideoSubmission.jsx`
+
+### 7) Etat actuel
+- Build front: OK
+- Verifications syntaxe back: OK
+- Flux cible maintenant en place: utilisateur connecte -> upload video (optionnel) -> soumission -> persistance Sequelize -> affichage en galerie.
+
+
+
+(users :
+
+test : authtest@gmail.com / Password123!
+
+admin : admin@gmail.com / Admin123!
+
+Jury : Jury@gmaiL.com / Jury123!
+
+Producer : Prod@gmail.com / Prod123! )

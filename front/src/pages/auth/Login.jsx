@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate, useSearchParams } from "react-router";
 
 import { login } from "../../api/auth.js";
 import { useMutation } from "@tanstack/react-query";
@@ -14,12 +14,29 @@ const loginSchema = z.object({
 });
 
 export function Login() {
-  if (localStorage.getItem("username")) {
+  const connectedUsername = localStorage.getItem("username");
+  const [searchParams] = useSearchParams();
+  const next = searchParams.get("next");
+
+  let navigate = useNavigate();
+
+  function handleLogout() {
+    localStorage.removeItem("username");
+    localStorage.removeItem("role");
+    localStorage.removeItem("token");
+    localStorage.removeItem("tempAdminAccess");
+    window.location.href = "/auth/login";
+  }
+
+  if (connectedUsername) {
     return (
       <div className="auth-page">
         <div className="auth-card auth-card-sm">
           <h1 className="auth-title">DÉJÀ CONNECTÉ</h1>
-          <p className="auth-subtitle">Vous êtes connecté en tant que {localStorage.getItem("username")}</p>
+          <p className="auth-subtitle">Vous êtes connecté en tant que {connectedUsername}</p>
+          <button className="auth-primary-button" type="button" onClick={handleLogout}>
+            SE DÉCONNECTER
+          </button>
           <Link className="auth-primary-button auth-link-btn" to="/">
             RETOUR ACCUEIL
           </Link>
@@ -27,8 +44,6 @@ export function Login() {
       </div>
     );
   }
-
-  let navigate = useNavigate();
 
   const { register, handleSubmit } = useForm({
     resolver: zodResolver(loginSchema),
@@ -44,6 +59,12 @@ export function Login() {
       localStorage.setItem("role", response.data?.role);
       localStorage.setItem("token", response.data?.token);
 
+      const safeNext = next && next.startsWith("/") ? next : null;
+      if (safeNext) {
+        navigate(safeNext);
+        return;
+      }
+
       switch (response.data?.role) {
         case "ADMIN":
           navigate("/admin");
@@ -57,7 +78,11 @@ export function Login() {
       }
     },
     onError: (error, variables, context) => {
-      alert(error.response?.data?.error);
+      const message =
+        error.response?.data?.error ||
+        error.message ||
+        "Connexion impossible, vérifie que le backend est démarré.";
+      alert(message);
     },
   });
 

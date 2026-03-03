@@ -1,3 +1,19 @@
+.navbar-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.62) 0%,
+    rgba(0, 0, 0, 0.42) 55%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  z-index: 900;
+  pointer-events: none;
+}
+
 .navbar {
   background-color: rgba(255, 255, 255, 0.1);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -86,7 +102,7 @@
 
 /* Bouton */
 .navbar-btn {
-  background: linear-gradient(0deg, #51A2FF 0%, #AD46FF 50%, #FF2B7F 100%);
+  background-color: #F6339A;
   color: white;
   padding: 12px 35px;
   border-radius: 25px;
@@ -110,6 +126,37 @@
 
 .navbar-btn:active {
   transform: translateY(0);
+}
+
+.navbar-logout-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.08);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.navbar-logout-btn:hover {
+  transform: translateY(-2px);
+  background: rgba(246, 51, 154, 0.2);
+  border-color: rgba(246, 51, 154, 0.75);
+}
+
+.navbar-logout-btn:active {
+  transform: translateY(0);
+}
+
+.navbar-logout-icon {
+  width: 20px;
+  height: 20px;
+  display: block;
+  filter: brightness(0) saturate(100%) invert(43%) sepia(77%) saturate(3134%) hue-rotate(304deg) brightness(98%) contrast(98%);
 }
 
 /* Tablettes et petits écrans (768px et moins) */
@@ -161,6 +208,12 @@
     text-align: center;
     padding: 12px 20px;
   }
+
+  .navbar-logout-btn {
+    width: 100%;
+    border-radius: 25px;
+    height: 42px;
+  }
 }
 
 /* Petits téléphones (480px et moins) */
@@ -196,6 +249,11 @@
 
   .navbar-menu.active {
     padding: 15px;
+  }
+
+  .navbar-logout-icon {
+    width: 18px;
+    height: 18px;
   }
 }
 

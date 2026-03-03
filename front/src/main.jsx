@@ -7,10 +7,14 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./index.css";
 import Home from "./pages/public/Home.jsx";
 import Gallery from "./pages/public/Gallery.jsx";
+import Jury from "./pages/public/Jury.jsx";
+import JuryGallery from "./pages/public/JuryGallery.jsx";
 import Participation from "./pages/public/Participation.jsx";
 import VideoSubmission from "./pages/public/VideoSubmission.jsx";
 import Programme from "./pages/public/Programme.jsx";
 import Dashboard from "./pages/admin/Dashboard.jsx";
+import AdminGallery from "./pages/admin/AdminGallery.jsx";
+import FilmDetail from "./pages/public/FilmDetail.jsx";
 import AdminLayout from "./layouts/AdminLayout.jsx";
 import PublicLayout from "./layouts/PublicLayout.jsx";
 import { Login } from "./pages/auth/Login.jsx";
@@ -34,13 +38,14 @@ createRoot(document.getElementById("root")).render(
           <Route path="/" element={<PublicLayout />}>
             <Route index element={<Home />} />
             <Route path="/gallery" element={<Gallery />} />
-            <Route path="/programme" element={<Programme />} />
-            <Route path="/participation" element={<Participation />} />
-            <Route path="/submit-video" element={<VideoSubmission />} />
-            <Route path="/auth/login" element={<Login />} />
-            <Route path="/auth/register" element={<Register />} />
-          </Route>
-
+<Route path="/programme" element={<Programme />} />
+<Route path="/jury" element={<Jury />} />
+<Route path="/films/:id" element={<FilmDetail />} />
+<Route path="/participation" element={<Participation />} />
+<Route path="/submit-video" element={<VideoSubmission />} />
+<Route path="/auth/login" element={<Login />} />
+<Route path="/auth/register" element={<Register />} />
+</Route>
           {/* Routes privées */}
           <Route
             path="admin"
@@ -51,6 +56,18 @@ createRoot(document.getElementById("root")).render(
             }
           >
             <Route index element={<Dashboard />} />
+            <Route path="gallery" element={<AdminGallery />} />
+          </Route>
+
+          <Route
+            path="juryGallery"
+            element={
+              <RoleGuard allowedRoles={["JURY", "ADMIN"]}>
+                <PublicLayout />
+              </RoleGuard>
+            }
+          >
+            <Route index element={<JuryGallery />} />
           </Route>
         </Routes>
       </QueryClientProvider>
