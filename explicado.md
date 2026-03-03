@@ -40,6 +40,49 @@
 	- `disabled={currentPage === 1}`: desactive le bouton precedent si on est a la page 1.
 	- `className={...}`: change la couleur du bouton actif (degrade rose/violet) et les autres en gris.
 
+## ADDON SUPPLEMENTAIRE (Google Maps sur HOME)
+
+### Ce que l'addon fait:
+- Ajoute une vraie carte interactive Google Maps dans la section **LA PLATEFORME** de la page Home.
+- Permet de voir directement la localisation du lieu (Marseille) sans quitter le site.
+- Améliore l'experience utilisateur parce qu'on a le contexte geographique en direct.
+
+### Comment c'est fait techniquement:
+- Utilisation d'une balise **iframe** dans `Home.jsx` avec un lien `google.com/maps` en mode `output=embed`.
+- Attribut `loading="lazy"`: la carte charge seulement quand on en a besoin (meilleure perf).
+- Attribut `referrerPolicy="no-referrer-when-downgrade"`: comportement plus propre au niveau securite/navigation.
+- Un conteneur avec `border-radius` + `overflow: hidden` est utilise pour garder un rendu propre.
+
+### Classes / styles utilises pour l'addon:
+- `.home-platform-map-wrap`: encadre la carte (fond sombre, coins arrondis, bordure legere).
+- `.home-platform-map`: donne la hauteur/largeur de la carte et retire la bordure native de l'iframe.
+- `.home-platform-map-caption`: ajoute le petit texte de contexte en surimpression.
+
+## PAGE HOME (Home.jsx et Home.css)
+
+### Ce que la page fait en general:
+La page Home est une landing page complete en sections successives (hero, infos, films, objectifs, protocole, conferences, soiree, lieu, chiffres, soutiens), avec un style suivant celui du figma (bleu/violet/rose).
+
+### CSS (Home.css):
+- **Section Hero video**: video en fond (`fond2.mp4`) + overlay sombre pour la lisibilite + gros titre `MARSAI` + boutons.
+- **Bloc piliers (1 minute / gratuite / pour tous / expertise)**: 4 cartes sombres arrondies avec bordures colorées et textes uppercase.
+- **Films en competition**: grand titre dégradé blanc/gris + cards de films avec visuels abstraits (gradients CSS) et meta (dir.).
+- **Objectifs du festival**: 3 grandes cartes avec icones colorées, titres en 2 lignes, paragraphes uppercase.
+- **Protocole temporel**: section centrée avec kicker, mega-titre, 4 stats cards (`2 MOIS`, `50 FILMS`, `WEB 3.0`, `J4`) + CTA dégradé.
+- **Conferences gratuites**: titre sur 2 lignes avec underline violet, liste numerotée, bouton agenda, 3 cartes (projection/workshop/awards).
+- **Mars.A.I Night**: grand panneau avec badge, titre principal, texte descriptif et carte de reservation (date/heure + bouton reserver).
+- **La plateforme**: grand titre avec effet contour bleu sur `PLATEFORME`, infos adresse/transports, 2 cartes de salles + carte Google Maps.
+- **Chiffres projetes**: bloc gauche titre + baseline, bloc droite avec 2 KPI cards (`+120`, `+600`).
+- **Ils soutiennent le futur**: titre centre + grille de 12 cases partenaires (placeholder `image manquante` pour chaque case).
+- **Responsive**: media queries présentes pour desktop/tablette/mobile, avec adaptation des grilles, tailles de typo et espacements.
+
+### JavaScript / JSX (Home.jsx):
+- La page est composee de plusieurs sections `<section>` avec classes dédiées (organisation claire).
+- Beaucoup de blocs sont générés via `map(...)` (cards, stats, supports) pour éviter la repetition de code.
+- Les CTA sont déja places au bon endroit visuel (hero, films, protocole, reservation).
+- L'addon Google Maps est integre directement dans le flux de la page via un `iframe`.
+- Les 12 logos de soutiens utilisent un placeholder uniforme tant que les vrais logos ne sont pas disponibles.
+
 ## NAVBAR (Navbar.jsx et Navbar.css)
 
 ### CSS (Navbar.css):
