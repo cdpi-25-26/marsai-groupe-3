@@ -1,7 +1,6 @@
 import "./Programme.css";
 import { useState } from "react";
 import { createReservation } from "../../api/reservations";
-import { createReservation } from "../../api/reservations";
 import agendaIcon from "../../assets/icones/icones_programme/agenda.svg";
 import mapPlateformeIcon from "../../assets/icones/icones_programme/map_plateforme.svg";
 import horlogeIcon from "../../assets/icones/icones_programme/horloge.svg";
