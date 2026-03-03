@@ -4,6 +4,32 @@
   min-width: 100%;
 }
 
+.gallery-state-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gallery-state-text {
+  color: #f8fafc;
+  font-size: 1.2rem;
+}
+
+.gallery-state-error {
+  color: #fca5a5;
+  text-align: center;
+  padding: 2rem 0;
+  font-size: 1.05rem;
+}
+
+.gallery-state-empty {
+  color: #f8fafc;
+  text-align: center;
+  padding: 3rem 0;
+  font-size: 1.1rem;
+}
+
 .content {
   animation: fadeIn 0.6s ease-in;
 }

@@ -1,9 +1,15 @@
 import { Link } from "react-router";
 import { useState } from "react";
+import decoIcon from "../assets/deco.svg";
 import "./Navbar.css";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const userRole = localStorage.getItem("role");
+  const isConnected = Boolean(localStorage.getItem("token") || localStorage.getItem("username"));
+  const isAdmin = userRole === "ADMIN";
+  const isJury = userRole === "JURY";
+  const participationDestination = isConnected ? "/submit-video" : "/participation";
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -11,6 +17,14 @@ export default function Navbar() {
 
   const closeMenu = () => {
     setIsMenuOpen(false);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("username");
+    localStorage.removeItem("role");
+    localStorage.removeItem("token");
+    localStorage.removeItem("tempAdminAccess");
+    window.location.href = "/auth/login";
   };
 
   return (
@@ -31,27 +45,45 @@ export default function Navbar() {
 
         {/* Navigation Links */}
         <div className={`navbar-menu ${isMenuOpen ? "active" : ""}`}>
+          {isAdmin && (
+            <Link
+              to="/admin"
+              className="navbar-btn"
+              onClick={closeMenu}
+            >
+              DASHBOARD ADMIN
+            </Link>
+          )}
+
+          {(isAdmin || isJury) && (
+            <Link
+              to="/juryGallery"
+              className="navbar-btn"
+              onClick={closeMenu}
+            >
+              GALERIE JURY
+            </Link>
+          )}
+
           <Link 
-            to="/gallery"
-            className="navbar-btn"
-            onClick={closeMenu}
-          >
-            GALERIE
-          </Link>
-          <Link 
-            to="/participation"
+            to={participationDestination}
             className="navbar-btn"
             onClick={closeMenu}
           >
             PARTICIPER
           </Link>
-          <Link 
-            to="/submit-video"
-            className="navbar-btn"
-            onClick={closeMenu}
-          >
-            DÉPOSER UN FILM
-          </Link>
+
+          {isConnected && (
+            <button
+              type="button"
+              className="navbar-logout-btn"
+              onClick={handleLogout}
+              aria-label="Se déconnecter"
+              title="Se déconnecter"
+            >
+              <img src={decoIcon} alt="" className="navbar-logout-icon" aria-hidden="true" />
+            </button>
+          )}
         </div>
       </div>
     </nav>

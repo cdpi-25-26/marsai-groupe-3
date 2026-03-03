@@ -4,6 +4,8 @@ import "../public/Participation.css";
 
 export default function Participation() {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const isConnected = Boolean(localStorage.getItem("token") || localStorage.getItem("username"));
+  const destination = isConnected ? "/submit-video" : "/auth/register?next=%2Fsubmit-video";
 
   return (
     <div className="participation-page">
@@ -36,23 +38,13 @@ export default function Participation() {
           </label>
 
           <Link
-            to={agreedToTerms ? "/auth/register" : "#"}
+            to={agreedToTerms ? destination : "#"}
             className={`participation-primary-button participation-btn ${agreedToTerms ? "" : "disabled"}`}
             onClick={(e) => !agreedToTerms && e.preventDefault()}
           >
-            S'inscrire maintenant
+            Déposer un film
           </Link>
         </div>
-      </section>
-
-      <section className="participation-card participation-login-card" aria-labelledby="already-registered-title">
-        <h2 id="already-registered-title" className="participation-login-title">
-          Déjà inscrit ?
-        </h2>
-        <p className="participation-login-text">Connectez-vous à votre compte pour accéder à votre espace personnel</p>
-        <Link to="/auth/login" className="participation-primary-button participation-btn">
-          Se connecter
-        </Link>
       </section>
     </div>
   );

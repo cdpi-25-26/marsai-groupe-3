@@ -1,7 +1,27 @@
 import "./Home.css";
 import { Link } from "react-router";
+import { useEffect, useState } from "react";
+import { getPublicGalleryStatus } from "../../api/videos";
 
 function Home() {
+  const [galleryStatus, setGalleryStatus] = useState({
+    isOpen: false,
+    totalPublicVideos: 0,
+  });
+
+  useEffect(() => {
+    const fetchGalleryStatus = async () => {
+      try {
+        const response = await getPublicGalleryStatus();
+        setGalleryStatus(response.data || {});
+      } catch {
+        setGalleryStatus({ isOpen: false, totalPublicVideos: 0 });
+      }
+    };
+
+    fetchGalleryStatus();
+  }, []);
+
   return (
     <div className="home-page min-h-screen bg-gray-950 text-white">
       <section className="home-hero relative h-screen flex items-center justify-center overflow-hidden">
@@ -37,12 +57,14 @@ function Home() {
           </p>
 
           <div className="flex gap-4 justify-center flex-wrap">
-            <Link className="home-hero-btn home-hero-btn-primary" to="/gallery">
-              VOIR LES FILMS <span aria-hidden="true">→</span>
+            {galleryStatus.isOpen ? (
+              <Link className="home-hero-btn home-hero-btn-primary" to="/gallery">
+                VOIR LES FILMS <span aria-hidden="true">→</span>
+              </Link>
+            ) : null}
+            <Link className="home-hero-btn home-hero-btn-secondary" to="/jury">
+              MEMBRES DU JURY <span aria-hidden="true">→</span>
             </Link>
-            <button className="home-hero-btn home-hero-btn-secondary">
-              MON ESPACE AI <span aria-hidden="true">›</span>
-            </button>
           </div>
         </div>
       </section>

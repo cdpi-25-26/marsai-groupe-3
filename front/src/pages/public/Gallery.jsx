@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { getVideos } from "../../api/videos";
+import { Link } from "react-router";
+import { getPublicGalleryStatus, getPublicVideos } from "../../api/videos";
 import "./Gallery.css";
 
 function Gallery() {
@@ -8,6 +9,10 @@ function Gallery() {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [galleryStatus, setGalleryStatus] = useState({
+    isOpen: false,
+    totalPublicVideos: 0,
+  });
 
   const [filters, setFilters] = useState({
     type: "",
@@ -21,8 +26,23 @@ function Gallery() {
     const fetchVideos = async () => {
       try {
         setLoading(true);
-        const response = await getVideos();
-        const videoList = response.data || [];
+        const statusResponse = await getPublicGalleryStatus();
+        const statusData = statusResponse.data || {};
+        setGalleryStatus(statusData);
+
+        if (!statusData.isOpen) {
+          setVideos([]);
+          setFilteredVideos([]);
+          return;
+        }
+
+        const response = await getPublicVideos();
+        const videoList = Array.isArray(response.data) ? response.data : [];
+
+        if (!Array.isArray(response.data)) {
+          console.warn("Payload vidéos inattendu:", response.data);
+        }
+
         setVideos(videoList);
         setFilteredVideos(videoList);
       } catch (err) {
@@ -74,14 +94,16 @@ function Gallery() {
     startIndex + itemsPerPage
   );
 
+  const safeVideos = Array.isArray(videos) ? videos : [];
+
   const typeOptions = [
-    ...new Set(videos.map((v) => v.classification).filter(Boolean)),
+    ...new Set(safeVideos.map((v) => v.classification).filter(Boolean)),
   ];
   const countryOptions = [
-    ...new Set(videos.map((v) => v.country).filter(Boolean)),
+    ...new Set(safeVideos.map((v) => v.country).filter(Boolean)),
   ];
   const statusOptions = [
-    ...new Set(videos.map((v) => v.status).filter(Boolean)),
+    ...new Set(safeVideos.map((v) => v.status).filter(Boolean)),
   ];
 
   const handleFilterChange = (filterName, value) => {
@@ -98,8 +120,18 @@ function Gallery() {
 
   if (loading) {
     return (
-      <div className="container flex items-center justify-center min-h-screen">
-        <p className="text-white text-xl">Chargement des vidéos...</p>
+      <div className="container gallery-state-wrapper">
+        <p className="gallery-state-text">Chargement des vidéos...</p>
+      </div>
+    );
+  }
+
+  if (!galleryStatus.isOpen) {
+    return (
+      <div className="container gallery-state-wrapper">
+        <p className="gallery-state-text">
+          Galerie non disponible pour le moment. Elle sera ouverte manuellement par l'administration.
+        </p>
       </div>
     );
   }
@@ -158,10 +190,10 @@ function Gallery() {
         </div>
 
         {error ? (
-          <div className="text-red-500 text-center py-8">{error}</div>
+          <div className="gallery-state-error">{error}</div>
         ) : filteredVideos.length === 0 ? (
-          <div className="text-white text-center py-12">
-            <p className="text-xl">Aucune vidéo trouvée avec ces filtres</p>
+          <div className="gallery-state-empty">
+            <p>Aucune vidéo trouvée avec ces filtres</p>
           </div>
         ) : (
           <>
@@ -184,9 +216,12 @@ function Gallery() {
                       </span>
                     </div>
                     <div className="overlay absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl flex items-end p-4">
-                      <button className="w-full py-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-lg font-semibold hover:from-pink-600 hover:to-purple-700 transition-colors">
+                      <Link
+                        to={`/films/${video.id}`}
+                        className="w-full py-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-lg font-semibold hover:from-pink-600 hover:to-purple-700 transition-colors text-center"
+                      >
                         VOIR PLUS
-                      </button>
+                      </Link>
                     </div>
                   </div>
 

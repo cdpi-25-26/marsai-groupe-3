@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate, useSearchParams } from "react-router";
 
 import { signIn } from "../../api/auth.js";
 import { useMutation } from "@tanstack/react-query";
@@ -14,12 +14,29 @@ const registerSchema = z.object({
 });
 
 export function Register() {
-  if (localStorage.getItem("username")) {
+  const connectedUsername = localStorage.getItem("username");
+  const [searchParams] = useSearchParams();
+  const next = searchParams.get("next");
+
+  let navigate = useNavigate();
+
+  function handleLogout() {
+    localStorage.removeItem("username");
+    localStorage.removeItem("role");
+    localStorage.removeItem("token");
+    localStorage.removeItem("tempAdminAccess");
+    window.location.href = "/auth/login";
+  }
+
+  if (connectedUsername) {
     return (
       <div className="auth-page">
         <div className="auth-card auth-card-sm">
           <h1 className="auth-title">DÉJÀ CONNECTÉ</h1>
-          <p className="auth-subtitle">Vous êtes connecté en tant que {localStorage.getItem("username")}</p>
+          <p className="auth-subtitle">Vous êtes connecté en tant que {connectedUsername}</p>
+          <button className="auth-primary-button" type="button" onClick={handleLogout}>
+            SE DÉCONNECTER
+          </button>
           <Link className="auth-primary-button auth-link-btn" to="/">
             RETOUR ACCUEIL
           </Link>
@@ -27,8 +44,6 @@ export function Register() {
       </div>
     );
   }
-
-  let navigate = useNavigate();
 
   const { register, handleSubmit } = useForm({
     resolver: zodResolver(registerSchema),
@@ -42,7 +57,15 @@ export function Register() {
       // If you are logged
       //
       alert(data.data?.message);
-      navigate("/auth/login");
+      const safeNext = next && next.startsWith("/") ? next : "";
+      navigate(safeNext ? `/auth/login?next=${encodeURIComponent(safeNext)}` : "/auth/login");
+    },
+    onError: (error) => {
+      const message =
+        error.response?.data?.error ||
+        error.message ||
+        "Inscription impossible, vérifie que le backend est démarré.";
+      alert(message);
     },
   });
 
@@ -67,19 +90,19 @@ export function Register() {
           <input type="hidden" id="id" {...register("id")} />
 
           <label htmlFor="username" className="auth-label">
-            ALIAS CITOYEN
+            Adresse E-mail
           </label>
           <input
             id="username"
             className="auth-input"
-            type="text"
-            placeholder="John Doe"
+            type="email"
+            placeholder="email@exemple.com"
             {...register("username")}
             required
           />
 
           <label htmlFor="password" className="auth-label">
-            CLÉ D’ACCÈS
+            Mot de passe
           </label>
           <input
             id="password"
@@ -97,7 +120,7 @@ export function Register() {
 
         <p className="auth-footer-text">
           Déjà enregistré ?
-          <Link to="/auth/login"> Ouvrir session</Link>
+          <Link to={next ? `/auth/login?next=${encodeURIComponent(next)}` : "/auth/login"}> Ouvrir session</Link>
         </p>
 
         <Link className="auth-secondary-link" to="/">

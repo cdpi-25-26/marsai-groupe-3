@@ -2,8 +2,19 @@ import axios from "axios";
 
 const instance = axios.create({
   baseURL: "http://localhost:3000",
-  timeout: 1000,
+  timeout: 10000,
 });
+
+function clearSessionAndRedirectToLogin() {
+  localStorage.removeItem("username");
+  localStorage.removeItem("role");
+  localStorage.removeItem("token");
+  localStorage.removeItem("tempAdminAccess");
+
+  if (!window.location.pathname.startsWith("/auth/")) {
+    window.location.href = "/auth/login";
+  }
+}
 
 instance.interceptors.request.use(
   async (config) => {
@@ -18,6 +29,23 @@ instance.interceptors.request.use(
   (error) => {
     console.log("une erreur est survenue:", error);
     return Promise.reject(new Error(error));
+  },
+);
+
+instance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error?.response?.status;
+    const apiMessage = `${error?.response?.data?.error || ""}`.toLowerCase();
+
+    if (status === 401 && apiMessage.includes("jwt expired")) {
+      clearSessionAndRedirectToLogin();
+      return Promise.reject(
+        new Error("Session expirée, merci de vous reconnecter."),
+      );
+    }
+
+    return Promise.reject(error);
   },
 );
 
