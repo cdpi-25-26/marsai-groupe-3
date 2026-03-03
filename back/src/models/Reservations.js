@@ -31,7 +31,7 @@ const Reservations = sequelize.define("Reservations", {
     },
     id_event: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: true,
     }
 });
 

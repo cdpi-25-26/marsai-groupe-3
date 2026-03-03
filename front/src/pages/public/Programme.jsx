@@ -1,5 +1,7 @@
 import "./Programme.css";
 import { useState } from "react";
+import { createReservation } from "../../api/reservations";
+import { createReservation } from "../../api/reservations";
 import agendaIcon from "../../assets/icones/icones_programme/agenda.svg";
 import mapPlateformeIcon from "../../assets/icones/icones_programme/map_plateforme.svg";
 import horlogeIcon from "../../assets/icones/icones_programme/horloge.svg";
@@ -15,6 +17,7 @@ export default function Programme() {
   const [formData, setFormData] = useState({
     participants: [{ firstName: "", lastName: "", email: "" }],
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const openModal = (workshop) => {
     setSelectedWorkshop(workshop);
@@ -39,6 +42,32 @@ export default function Programme() {
       ...prev,
       participants: [...prev.participants, { firstName: "", lastName: "", email: "" }],
     }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!selectedWorkshop) return;
+    setIsSubmitting(true);
+
+    try {
+      await Promise.all(
+        formData.participants.map((p) =>
+          createReservation({
+            surname: p.lastName,
+            name: p.firstName,
+            email: p.email,
+            id_event: null, // à raccorder quand les id_event seront connus
+          }),
+        ),
+      );
+      alert("Réservation envoyée !");
+      closeModal();
+    } catch (err) {
+      console.error(err);
+      alert("Erreur lors de l'envoi. Vérifiez le backend.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const sessions = [
@@ -271,7 +300,7 @@ export default function Programme() {
               </button>
             </div>
 
-            <form className="modal-form">
+            <form className="modal-form" onSubmit={handleSubmit}>
               {formData.participants.map((p, index) => (
                 <div className="modal-row" key={index}>
                   <label className="modal-label">
@@ -312,8 +341,8 @@ export default function Programme() {
               </button>
 
               <div className="modal-actions">
-                <button type="button" className="modal-submit">
-                  Envoyer
+                <button type="submit" className="modal-submit" disabled={isSubmitting}>
+                  {isSubmitting ? "Envoi..." : "Envoyer"}
                 </button>
               </div>
             </form>
