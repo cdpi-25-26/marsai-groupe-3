@@ -26,9 +26,18 @@ app.listen(PORT, () => {
   console.log(`Le serveur est lancé sur http://localhost:${PORT}`);
 });
 
-sequelize.sync({ alter: true }).then(() => {
-  console.log("La base de données est synchronisée.");
-});
+async function syncDatabase() {
+  const useAlter = process.env.SEQUELIZE_SYNC_ALTER === "true";
+
+  try {
+    await sequelize.sync(useAlter ? { alter: true } : undefined);
+    console.log(`La base de données est synchronisée${useAlter ? " (alter actif)" : ""}.`);
+  } catch (error) {
+    console.error("Erreur de synchronisation Sequelize:", error?.message || error);
+  }
+}
+
+syncDatabase();
 
 console.log(process.env.DB_USER);
 console.log(process.env.DB_PASSWORD);
