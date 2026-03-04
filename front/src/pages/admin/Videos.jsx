@@ -1,30 +1,32 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router";
 import { getAdminVideos } from "../../api/videos.js";
+import { useLanguage } from "../../i18n/LanguageContext.jsx";
 
 function Videos() {
+  const { tr } = useLanguage();
   const { isPending, isError, data, error } = useQuery({
     queryKey: ["adminVideos"],
     queryFn: getAdminVideos,
   });
 
   if (isPending) {
-    return <div>Chargement en cours...</div>;
+    return <div>{tr("Chargement en cours...", "Loading...")}</div>;
   }
 
   if (isError) {
-    return <div>Une erreur est survenue : {error.message}</div>;
+    return <div>{tr("Une erreur est survenue", "An error occurred")}: {error.message}</div>;
   }
 
   const videos = data?.data || [];
 
   if (videos.length === 0) {
-    return <div>Aucune vidéo trouvée.</div>;
+    return <div>{tr("Aucune vidéo trouvée.", "No videos found.")}</div>;
   }
 
   return (
     <div className="admin-videos-list">
-      <p className="admin-videos-count">{videos.length} film(s) dans la base</p>
+      <p className="admin-videos-count">{videos.length} {tr("film(s) dans la base", "film(s) in database")}</p>
 
       <div className="admin-videos-grid">
         {videos.map((video) => (
@@ -40,16 +42,16 @@ function Videos() {
 
             <div className="admin-video-body">
               <h4>{video.title}</h4>
-              <p>{video.synopsisOriginal || "Synopsis non renseigné."}</p>
+              <p>{video.synopsisOriginal || tr("Synopsis non renseigné.", "Synopsis not provided.")}</p>
 
               <div className="admin-video-meta">
-                <span>{video.classification || "Non classé"}</span>
-                <span>{video.language || "Langue N/A"}</span>
-                <span>{video.duration ? `${video.duration}s` : "Durée N/A"}</span>
+                <span>{video.classification || tr("Non classé", "Unclassified")}</span>
+                <span>{video.language || tr("Langue N/A", "Language N/A")}</span>
+                <span>{video.duration ? `${video.duration}s` : tr("Durée N/A", "Duration N/A")}</span>
               </div>
 
               <div className="admin-video-actions">
-                <Link to={`/films/${video.id}`}>Voir le détail</Link>
+                <Link to={`/films/${video.id}`}>{tr("Voir le détail", "View details")}</Link>
               </div>
             </div>
           </article>

@@ -6,6 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { useLanguage } from "../../i18n/LanguageContext.jsx";
 import "./Auth.css";
 
 const registerSchema = z.object({
@@ -14,6 +15,7 @@ const registerSchema = z.object({
 });
 
 export function Register() {
+  const { tr } = useLanguage();
   const connectedUsername = localStorage.getItem("username");
   const [searchParams] = useSearchParams();
   const next = searchParams.get("next");
@@ -32,13 +34,13 @@ export function Register() {
     return (
       <div className="auth-page">
         <div className="auth-card auth-card-sm">
-          <h1 className="auth-title">DÉJÀ CONNECTÉ</h1>
-          <p className="auth-subtitle">Vous êtes connecté en tant que {connectedUsername}</p>
+          <h1 className="auth-title">{tr("DÉJÀ CONNECTÉ", "ALREADY LOGGED IN")}</h1>
+          <p className="auth-subtitle">{tr("Vous êtes connecté en tant que", "You are logged in as")} {connectedUsername}</p>
           <button className="auth-primary-button" type="button" onClick={handleLogout}>
-            SE DÉCONNECTER
+            {tr("SE DÉCONNECTER", "LOG OUT")}
           </button>
           <Link className="auth-primary-button auth-link-btn" to="/">
-            RETOUR ACCUEIL
+            {tr("RETOUR ACCUEIL", "BACK HOME")}
           </Link>
         </div>
       </div>
@@ -64,7 +66,7 @@ export function Register() {
       const message =
         error.response?.data?.error ||
         error.message ||
-        "Inscription impossible, vérifie que le backend est démarré.";
+        tr("Inscription impossible, vérifie que le backend est démarré.", "Registration failed, check that backend is running.");
       alert(message);
     },
   });
@@ -82,15 +84,15 @@ export function Register() {
         </div>
 
         <h1 id="register-title" className="auth-title auth-title-neon">
-          INSCRIPTION
+          {tr("INSCRIPTION", "REGISTER")}
         </h1>
-        <p className="auth-subtitle">NOUVEAU PROFIL MARS.A.I</p>
+        <p className="auth-subtitle">{tr("NOUVEAU PROFIL MARS.A.I", "NEW MARS.A.I PROFILE")}</p>
 
         <form className="auth-form" onSubmit={handleSubmit(onSubmit)}>
           <input type="hidden" id="id" {...register("id")} />
 
           <label htmlFor="username" className="auth-label">
-            Adresse E-mail
+            {tr("Adresse E-mail", "Email Address")}
           </label>
           <input
             id="username"
@@ -102,7 +104,7 @@ export function Register() {
           />
 
           <label htmlFor="password" className="auth-label">
-            Mot de passe
+            {tr("Mot de passe", "Password")}
           </label>
           <input
             id="password"
@@ -114,17 +116,17 @@ export function Register() {
           />
 
           <button className="auth-primary-button" disabled={registerMutation.isPending} type="submit">
-            {registerMutation.isPending ? "INSCRIPTION..." : "GÉNÉRER IDENTITÉ"}
+            {registerMutation.isPending ? tr("INSCRIPTION...", "REGISTERING...") : tr("GÉNÉRER IDENTITÉ", "CREATE ACCOUNT")}
           </button>
         </form>
 
         <p className="auth-footer-text">
-          Déjà enregistré ?
-          <Link to={next ? `/auth/login?next=${encodeURIComponent(next)}` : "/auth/login"}> Ouvrir session</Link>
+          {tr("Déjà enregistré ?", "Already registered?")}
+          <Link to={next ? `/auth/login?next=${encodeURIComponent(next)}` : "/auth/login"}> {tr("Ouvrir session", "Open session")}</Link>
         </p>
 
         <Link className="auth-secondary-link" to="/">
-          ← RETOUR ACCUEIL
+          ← {tr("RETOUR ACCUEIL", "BACK HOME")}
         </Link>
       </section>
     </div>

@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { getPublicGalleryStatus, getPublicVideos } from "../../api/videos";
+import { useLanguage } from "../../i18n/LanguageContext.jsx";
 import "./Gallery.css";
 
 function Gallery() {
+  const { tr } = useLanguage();
   const [videos, setVideos] = useState([]);
   const [filteredVideos, setFilteredVideos] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -47,7 +49,7 @@ function Gallery() {
         setFilteredVideos(videoList);
       } catch (err) {
         console.error("Erreur lors de la récupération des vidéos:", err);
-        setError("Impossible de charger les vidéos");
+        setError(tr("Impossible de charger les vidéos", "Unable to load videos"));
       } finally {
         setLoading(false);
       }
@@ -121,7 +123,7 @@ function Gallery() {
   if (loading) {
     return (
       <div className="container gallery-state-wrapper">
-        <p className="gallery-state-text">Chargement des vidéos...</p>
+        <p className="gallery-state-text">{tr("Chargement des vidéos...", "Loading videos...")}</p>
       </div>
     );
   }
@@ -130,7 +132,7 @@ function Gallery() {
     return (
       <div className="container gallery-state-wrapper">
         <p className="gallery-state-text">
-          Galerie non disponible pour le moment. Elle sera ouverte manuellement par l'administration.
+          {tr("Galerie non disponible pour le moment. Elle sera ouverte manuellement par l'administration.", "Gallery is currently unavailable. It will be opened manually by the admin.")}
         </p>
       </div>
     );
@@ -141,9 +143,9 @@ function Gallery() {
       <div className="content max-w-7xl mx-auto px-4 py-12">
         <div className="header mb-12">
           <h1 className="text-5xl md:text-6xl font-bold mb-2">
-            <span className="text-white">LA GALERIE <br/> DES </span>
+            <span className="text-white">{tr("LA GALERIE", "THE GALLERY")} <br/> {tr("DES", "OF")} </span>
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
-               FILMS
+              {tr("FILMS", "FILMS")}
             </span>
           </h1>
         </div>
@@ -154,7 +156,7 @@ function Gallery() {
             onChange={(e) => handleFilterChange("type", e.target.value)}
             className="select-p2 rounded-full px-6 py-3 bg-gradient-to-r from-pink-500 to-pink-600 text-white border-0 cursor-pointer font-semibold"
           >
-            <option value="">Type d'IA</option>
+            <option value="">{tr("Type d'IA", "AI type")}</option>
             {typeOptions.map((type) => (
               <option key={type} value={type}>
                 {type}
@@ -167,7 +169,7 @@ function Gallery() {
             onChange={(e) => handleFilterChange("country", e.target.value)}
             className="select-p2 rounded-full px-6 py-3 bg-gradient-to-r from-pink-500 to-pink-600 text-white border-0 cursor-pointer font-semibold"
           >
-            <option value="">Pays d'origine</option>
+            <option value="">{tr("Pays d'origine", "Country")}</option>
             {countryOptions.map((country) => (
               <option key={country} value={country}>
                 {country}
@@ -180,7 +182,7 @@ function Gallery() {
             onChange={(e) => handleFilterChange("status", e.target.value)}
             className="select-p2 rounded-full px-6 py-3 bg-gradient-to-r from-pink-500 to-pink-600 text-white border-0 cursor-pointer font-semibold"
           >
-            <option value="">Statut</option>
+            <option value="">{tr("Statut", "Status")}</option>
             {statusOptions.map((status) => (
               <option key={status} value={status}>
                 {status}
@@ -193,7 +195,7 @@ function Gallery() {
           <div className="gallery-state-error">{error}</div>
         ) : filteredVideos.length === 0 ? (
           <div className="gallery-state-empty">
-            <p>Aucune vidéo trouvée avec ces filtres</p>
+            <p>{tr("Aucune vidéo trouvée avec ces filtres", "No videos found with these filters")}</p>
           </div>
         ) : (
           <>
@@ -207,7 +209,7 @@ function Gallery() {
                       className="w-full h-48 object-cover rounded-2xl group-hover:scale-110 transition-transform duration-300"
                     />
                     <div className="badge absolute top-3 right-3 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold">
-                      ART NUMÉRIQUE
+                      {tr("ART NUMÉRIQUE", "DIGITAL ART")}
                     </div>
                     <div className="rating absolute bottom-3 right-3 flex items-center gap-1 bg-gray-900 bg-opacity-70 px-2 py-1 rounded-lg">
                       <span className="text-yellow-400">⭐</span>
@@ -220,7 +222,7 @@ function Gallery() {
                         to={`/films/${video.id}`}
                         className="w-full py-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-lg font-semibold hover:from-pink-600 hover:to-purple-700 transition-colors text-center"
                       >
-                        VOIR PLUS
+                        {tr("VOIR PLUS", "SEE MORE")}
                       </Link>
                     </div>
                   </div>
@@ -231,20 +233,20 @@ function Gallery() {
                     </h3>
                     <div className="text-sm text-gray-400 mb-3">
                       <p className="mb-1">
-                        <span className="text-gray-500">Réalisateur: </span>
-                        {video.creator || "Non spécifié"}
+                        <span className="text-gray-500">{tr("Réalisateur:", "Director:")} </span>
+                        {video.creator || tr("Non spécifié", "Not specified")}
                       </p>
                       <p className="flex items-center gap-2">
                         <span className="text-blue-400">🌍</span>
-                        <span>{video.country || "Non spécifié"}</span>
+                        <span>{video.country || tr("Non spécifié", "Not specified")}</span>
                       </p>
                     </div>
                     <div className="flex gap-2 flex-wrap">
                       <span className="badge text-xs bg-purple-900 text-purple-300 px-2 py-1 rounded">
-                        {video.classification || "Non classé"}
+                        {video.classification || tr("Non classé", "Unclassified")}
                       </span>
                       <span className="badge text-xs bg-pink-900 text-pink-300 px-2 py-1 rounded">
-                        {video.status || "En attente"}
+                        {video.status || tr("En attente", "Pending")}
                       </span>
                     </div>
                   </div>
@@ -287,8 +289,8 @@ function Gallery() {
                 </button>
 
                 <span className="text-gray-400 ml-2">
-                  PAGE {currentPage} SUR {totalPages} - {filteredVideos.length}{" "}
-                  FILMS TROUVÉS
+                  {tr("PAGE", "PAGE")} {currentPage} {tr("SUR", "OF")} {totalPages} - {filteredVideos.length}{" "}
+                  {tr("FILMS TROUVÉS", "FILMS FOUND")}
                 </span>
               </div>
             )}

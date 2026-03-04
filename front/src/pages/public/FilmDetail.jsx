@@ -1,13 +1,25 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { getVideoDetail } from "../../api/videos";
+import { useLanguage } from "../../i18n/LanguageContext.jsx";
 import "./FilmDetail.css";
 
 function FilmDetail() {
+  const { tr } = useLanguage();
   const { id } = useParams();
+  const navigate = useNavigate();
   const [video, setVideo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const handleGoBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+      return;
+    }
+
+    navigate("/");
+  };
 
   useEffect(() => {
     const fetchDetail = async () => {
@@ -17,7 +29,7 @@ function FilmDetail() {
         const response = await getVideoDetail(id);
         setVideo(response.data);
       } catch (err) {
-        setError(err.response?.data?.error || "Impossible de charger les détails du film");
+        setError(err.response?.data?.error || tr("Impossible de charger les détails du film", "Unable to load film details"));
       } finally {
         setLoading(false);
       }
@@ -27,16 +39,16 @@ function FilmDetail() {
   }, [id]);
 
   if (loading) {
-    return <div className="film-detail-page">Chargement...</div>;
+    return <div className="film-detail-page">{tr("Chargement...", "Loading...")}</div>;
   }
 
   if (error || !video) {
     return (
       <div className="film-detail-page">
         <div className="film-detail-card">
-          <h1>Accès impossible</h1>
-          <p>{error || "Film introuvable"}</p>
-          <Link to="/gallery" className="film-detail-back">Retour galerie</Link>
+          <h1>{tr("Accès impossible", "Access denied")}</h1>
+          <p>{error || tr("Film introuvable", "Film not found")}</p>
+          <button type="button" onClick={handleGoBack} className="film-detail-back">{tr("Retour", "Back")}</button>
         </div>
       </div>
     );
@@ -45,10 +57,10 @@ function FilmDetail() {
   const mediaItems = [video.youtubeLink, ...(video.mediaGallery || [])].filter(Boolean);
   const classificationLabel =
     video.classification === "generation_integrale"
-      ? "Génération intégrale (100% IA)"
+      ? tr("Génération intégrale (100% IA)", "Full generation (100% AI)")
       : video.classification === "production_hybride"
-        ? "Production hybride"
-        : video.classification || "Non renseigné";
+        ? tr("Production hybride", "Hybrid production")
+        : video.classification || tr("Non renseigné", "Not provided");
 
   const teamMembers = Array.isArray(video.team) ? video.team : [];
 
@@ -60,7 +72,7 @@ function FilmDetail() {
           <span className="film-detail-status">{video.status}</span>
         </div>
 
-        <p className="film-detail-subtitle">{video.titleEnglish || "Sans titre anglais"}</p>
+        <p className="film-detail-subtitle">{video.titleEnglish || tr("Sans titre anglais", "No English title")}</p>
 
         <div className="film-detail-grid">
           <div className="film-detail-media">
@@ -77,7 +89,7 @@ function FilmDetail() {
                 <video className="film-player" controls src={video.youtubeLink} />
               )
             ) : (
-              <div className="film-no-media">Aucune vidéo disponible</div>
+              <div className="film-no-media">{tr("Aucune vidéo disponible", "No video available")}</div>
             )}
 
             {mediaItems.length > 1 && (
@@ -92,44 +104,44 @@ function FilmDetail() {
           <div className="film-detail-info">
             <div>
               <h3>Synopsis</h3>
-              <p>{video.synopsisOriginal || "Non renseigné"}</p>
+              <p>{video.synopsisOriginal || tr("Non renseigné", "Not provided")}</p>
             </div>
 
             <div>
-              <h3>Synopsis (anglais)</h3>
-              <p>{video.synopsisEnglish || "Non renseigné"}</p>
+              <h3>{tr("Synopsis (anglais)", "Synopsis (English)")}</h3>
+              <p>{video.synopsisEnglish || tr("Non renseigné", "Not provided")}</p>
             </div>
 
             <div>
-              <h3>Déclaration IA</h3>
+              <h3>{tr("Déclaration IA", "AI declaration")}</h3>
               <ul>
-                <li>Classification: {classificationLabel}</li>
-                <li>Stack technologique: {video.techStack || "Non renseigné"}</li>
-                <li>Méthodologie créative: {video.methodology || "Non renseigné"}</li>
+                <li>{tr("Classification", "Classification")}: {classificationLabel}</li>
+                <li>{tr("Stack technologique", "Tech stack")}: {video.techStack || tr("Non renseigné", "Not provided")}</li>
+                <li>{tr("Méthodologie créative", "Creative methodology")}: {video.methodology || tr("Non renseigné", "Not provided")}</li>
               </ul>
             </div>
 
             <div>
-              <h3>Détails du film</h3>
+              <h3>{tr("Détails du film", "Film details")}</h3>
               <ul>
-                <li>Langue: {video.language || "Non renseigné"}</li>
-                <li>Durée: {video.duration ? `${video.duration}s` : "Non renseigné"}</li>
-                <li>Sous-titres requis: {video.hasSubtitles ? "Oui" : "Non"}</li>
-                <li>Réalisateur: {video.creator || "Non renseigné"}</li>
-                <li>Origine: {video.country || "Non renseigné"}</li>
-                <li>Votes jury: OUI {video.yesVotes || 0} / NON {video.noVotes || 0}</li>
+                <li>{tr("Langue", "Language")}: {video.language || tr("Non renseigné", "Not provided")}</li>
+                <li>{tr("Durée", "Duration")}: {video.duration ? `${video.duration}s` : tr("Non renseigné", "Not provided")}</li>
+                <li>{tr("Sous-titres requis", "Subtitles required")}: {video.hasSubtitles ? tr("Oui", "Yes") : tr("Non", "No")}</li>
+                <li>{tr("Réalisateur", "Director")}: {video.creator || tr("Non renseigné", "Not provided")}</li>
+                <li>{tr("Origine", "Country")}: {video.country || tr("Non renseigné", "Not provided")}</li>
+                <li>{tr("Votes jury", "Jury votes")}: {tr("OUI", "YES")} {video.yesVotes || 0} / {tr("NON", "NO")} {video.noVotes || 0}</li>
               </ul>
             </div>
 
             <div>
-              <h3>Équipe soumise</h3>
+              <h3>{tr("Équipe soumise", "Submitted team")}</h3>
               {teamMembers.length === 0 ? (
-                <p>Non renseigné</p>
+                <p>{tr("Non renseigné", "Not provided")}</p>
               ) : (
                 <ul>
                   {teamMembers.map((member, index) => (
                     <li key={`${member.email || "member"}-${index}`}>
-                      {(member.civility || "").trim()} {(member.firstName || "").trim()} {(member.lastName || "").trim()} — {member.profession || "Profession non renseignée"}
+                      {(member.civility || "").trim()} {(member.firstName || "").trim()} {(member.lastName || "").trim()} — {member.profession || tr("Profession non renseignée", "Profession not provided")}
                     </li>
                   ))}
                 </ul>
@@ -138,7 +150,7 @@ function FilmDetail() {
 
             {Array.isArray(video.comments) && video.comments.length > 0 && (
               <div>
-                <h3>Commentaires du jury</h3>
+                <h3>{tr("Commentaires du jury", "Jury comments")}</h3>
                 <ul>
                   {video.comments.map((item, index) => (
                     <li key={`${item.userId}-${index}`}>
@@ -151,7 +163,7 @@ function FilmDetail() {
           </div>
         </div>
 
-        <Link to="/gallery" className="film-detail-back">Retour galerie</Link>
+        <button type="button" onClick={handleGoBack} className="film-detail-back">{tr("Retour", "Back")}</button>
       </div>
     </div>
   );

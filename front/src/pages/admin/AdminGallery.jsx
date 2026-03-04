@@ -8,6 +8,7 @@ import {
   setPublicGalleryStatus,
   setVideoEligibility,
 } from "../../api/videos";
+import { useLanguage } from "../../i18n/LanguageContext.jsx";
 import "../public/Gallery.css";
 import "./AdminGallery.css";
 
@@ -30,6 +31,7 @@ const PHASES = {
 };
 
 function AdminGallery() {
+  const { tr } = useLanguage();
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -44,7 +46,7 @@ function AdminGallery() {
       const response = await getAdminVideos();
       setVideos(response.data || []);
     } catch (err) {
-      setError(err.response?.data?.error || "Impossible de charger les vidéos admin");
+      setError(err.response?.data?.error || tr("Impossible de charger les vidéos admin", "Unable to load admin videos"));
     } finally {
       setLoading(false);
     }
@@ -70,13 +72,13 @@ function AdminGallery() {
       await setVideoEligibility(videoId, decision);
       await fetchVideos();
     } catch (err) {
-      alert(err.response?.data?.error || "Action impossible");
+      alert(err.response?.data?.error || tr("Action impossible", "Action failed"));
     }
   };
 
   const handleDelete = async (video) => {
     const hasConfirmed = window.confirm(
-      `Supprimer définitivement la vidéo "${video.title}" ? Cette action est irréversible.`,
+      tr(`Supprimer définitivement la vidéo "${video.title}" ? Cette action est irréversible.`, `Permanently delete video "${video.title}"? This action cannot be undone.`),
     );
 
     if (!hasConfirmed) {
@@ -87,7 +89,7 @@ function AdminGallery() {
       await deleteAdminVideo(video.id);
       await fetchVideos();
     } catch (err) {
-      alert(err.response?.data?.error || "Suppression impossible");
+      alert(err.response?.data?.error || tr("Suppression impossible", "Deletion failed"));
     }
   };
 
@@ -96,7 +98,7 @@ function AdminGallery() {
       await setPhase3Award(video.id, nextValue);
       await fetchVideos();
     } catch (err) {
-      alert(err.response?.data?.error || "Mise à jour phase 3 impossible");
+      alert(err.response?.data?.error || tr("Mise à jour phase 3 impossible", "Phase 3 update failed"));
     }
   };
 
@@ -107,14 +109,14 @@ function AdminGallery() {
       const response = await setPublicGalleryStatus(nextValue);
       setPublicGalleryOpen(Boolean(response.data?.isOpen));
     } catch (err) {
-      alert(err.response?.data?.error || "Mise à jour impossible");
+      alert(err.response?.data?.error || tr("Mise à jour impossible", "Update failed"));
     } finally {
       setGalleryToggleLoading(false);
     }
   };
 
   if (loading) {
-    return <div className="content py-12 text-white">Chargement des vidéos...</div>;
+    return <div className="content py-12 text-white">{tr("Chargement des vidéos...", "Loading videos...")}</div>;
   }
 
   if (error) {
@@ -143,7 +145,7 @@ function AdminGallery() {
           <div>
             <h1 className="text-4xl font-bold mb-2 text-white">GALLERY ADMIN</h1>
             <p className="text-gray-300">
-              Pilotage des phases: validation admin, suivi jury et résultats.
+              {tr("Pilotage des phases: validation admin, suivi jury et résultats.", "Phase workflow: admin validation, jury follow-up, and results.")}
             </p>
 
             <button
@@ -153,10 +155,10 @@ function AdminGallery() {
               disabled={galleryToggleLoading}
             >
               {galleryToggleLoading
-                ? "Mise à jour..."
+                ? tr("Mise à jour...", "Updating...")
                 : publicGalleryOpen
-                  ? "Galerie publique visible"
-                  : "Afficher le bouton Gallery publique"}
+                  ? tr("Galerie publique visible", "Public gallery visible")
+                  : tr("Afficher le bouton Gallery publique", "Show public gallery button")}
             </button>
           </div>
 
@@ -166,21 +168,21 @@ function AdminGallery() {
               <strong>{videos.length}</strong>
             </article>
             <article className="admin-gallery-kpi-card">
-              <p>EN JURY</p>
+              <p>{tr("EN JURY", "IN JURY")}</p>
               <strong>{phase2Videos.length}</strong>
             </article>
             <article className="admin-gallery-kpi-card">
-              <p>FINALISTES</p>
+              <p>{tr("FINALISTES", "FINALISTS")}</p>
               <strong>{finalistesCount}</strong>
             </article>
             <article className="admin-gallery-kpi-card">
-              <p>REFUSÉS</p>
+              <p>{tr("REFUSÉS", "REJECTED")}</p>
               <strong>{refusedCount}</strong>
             </article>
           </div>
         </div>
 
-        <div className="admin-gallery-phases" role="tablist" aria-label="Phases admin gallery">
+        <div className="admin-gallery-phases" role="tablist" aria-label={tr("Phases admin gallery", "Admin gallery phases")}>
           {Object.entries(PHASES).map(([phaseKey, phaseConfig]) => (
             <button
               key={phaseKey}
@@ -197,9 +199,9 @@ function AdminGallery() {
         <p className="admin-phase-description">{PHASES[activePhase].description}</p>
 
         {videos.length === 0 ? (
-          <div className="text-white">Aucune vidéo pour le moment.</div>
+          <div className="text-white">{tr("Aucune vidéo pour le moment.", "No videos for now.")}</div>
         ) : activeVideos.length === 0 ? (
-          <div className="text-white">Aucune vidéo dans cette phase actuellement.</div>
+          <div className="text-white">{tr("Aucune vidéo dans cette phase actuellement.", "No videos in this phase right now.")}</div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
             {activeVideos.map((video) => (
@@ -218,7 +220,7 @@ function AdminGallery() {
                       to={`/films/${video.id}`}
                       className="w-full py-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-lg font-semibold hover:from-pink-600 hover:to-purple-700 transition-colors text-center"
                     >
-                      VOIR PLUS
+                      {tr("VOIR PLUS", "SEE MORE")}
                     </Link>
                   </div>
                 </div>
@@ -238,37 +240,47 @@ function AdminGallery() {
                         className="admin-eligible-btn"
                         onClick={() => handleDecision(video.id, "eligible")}
                       >
-                        ÉLIGIBLE JURY
+                        {tr("ÉLIGIBLE JURY", "JURY ELIGIBLE")}
                       </button>
                       <button
                         type="button"
                         className="admin-reject-btn"
                         onClick={() => handleDecision(video.id, "rejected")}
                       >
-                        REFUSER
+                        {tr("REFUSER", "REJECT")}
                       </button>
                     </div>
                   ) : (
-                    <p className="text-xs text-gray-400">Statut verrouillé après décision initiale admin.</p>
+                    <p className="text-xs text-gray-400">{tr("Statut verrouillé après décision initiale admin.", "Status locked after initial admin decision.")}</p>
                   )}
 
                   {video.status === "finaliste" ? (
+                    <div className="admin-phase3-actions">
+                      <button
+                        type="button"
+                        className={`admin-priority-btn ${video.isAwarded ? "is-active" : ""}`}
+                        onClick={() => handlePhase3Award(video, !video.isAwarded)}
+                      >
+                        {video.isAwarded ? tr("RETIRER PRIMÉ", "UNMARK AWARDED") : tr("MARQUER PRIMÉ", "MARK AWARDED")}
+                      </button>
+
+                      <button
+                        type="button"
+                        className="admin-delete-btn"
+                        onClick={() => handleDelete(video)}
+                      >
+                        {tr("SUPPRIMER", "DELETE")}
+                      </button>
+                    </div>
+                  ) : (
                     <button
                       type="button"
-                      className={`admin-priority-btn ${video.isAwarded ? "is-active" : ""}`}
-                      onClick={() => handlePhase3Award(video, !video.isAwarded)}
+                      className="admin-delete-btn"
+                      onClick={() => handleDelete(video)}
                     >
-                      {video.isAwarded ? "RETIRER LE STATUT PRIMÉ" : "MARQUER COMME PRIMÉ"}
+                      {tr("SUPPRIMER", "DELETE")}
                     </button>
-                  ) : null}
-
-                  <button
-                    type="button"
-                    className="admin-delete-btn"
-                    onClick={() => handleDelete(video)}
-                  >
-                    SUPPRIMER
-                  </button>
+                  )}
                 </div>
               </div>
             ))}

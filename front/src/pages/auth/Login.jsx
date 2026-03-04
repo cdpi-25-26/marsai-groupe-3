@@ -6,6 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { useLanguage } from "../../i18n/LanguageContext.jsx";
 import "./Auth.css";
 
 const loginSchema = z.object({
@@ -14,6 +15,7 @@ const loginSchema = z.object({
 });
 
 export function Login() {
+  const { tr } = useLanguage();
   const connectedUsername = localStorage.getItem("username");
   const [searchParams] = useSearchParams();
   const next = searchParams.get("next");
@@ -32,13 +34,13 @@ export function Login() {
     return (
       <div className="auth-page">
         <div className="auth-card auth-card-sm">
-          <h1 className="auth-title">DÉJÀ CONNECTÉ</h1>
-          <p className="auth-subtitle">Vous êtes connecté en tant que {connectedUsername}</p>
+          <h1 className="auth-title">{tr("DÉJÀ CONNECTÉ", "ALREADY LOGGED IN")}</h1>
+          <p className="auth-subtitle">{tr("Vous êtes connecté en tant que", "You are logged in as")} {connectedUsername}</p>
           <button className="auth-primary-button" type="button" onClick={handleLogout}>
-            SE DÉCONNECTER
+            {tr("SE DÉCONNECTER", "LOG OUT")}
           </button>
           <Link className="auth-primary-button auth-link-btn" to="/">
-            RETOUR ACCUEIL
+            {tr("RETOUR ACCUEIL", "BACK HOME")}
           </Link>
         </div>
       </div>
@@ -81,7 +83,7 @@ export function Login() {
       const message =
         error.response?.data?.error ||
         error.message ||
-        "Connexion impossible, vérifie que le backend est démarré.";
+        tr("Connexion impossible, vérifie que le backend est démarré.", "Login failed, check that backend is running.");
       alert(message);
     },
   });
@@ -99,15 +101,15 @@ export function Login() {
         </div>
 
         <h1 id="login-title" className="auth-title auth-title-neon">
-          CONNEXION
+          {tr("CONNEXION", "LOGIN")}
         </h1>
-        <p className="auth-subtitle">ESPACE MEMBRE MARS.A.I</p>
+        <p className="auth-subtitle">{tr("ESPACE MEMBRE MARS.A.I", "MARS.A.I MEMBER AREA")}</p>
 
         <form className="auth-form" onSubmit={handleSubmit(onSubmit)}>
           <input type="hidden" id="id" {...register("id")} />
 
           <label htmlFor="username" className="auth-label">
-            ADRESSE E-MAIL
+            {tr("ADRESSE E-MAIL", "EMAIL ADDRESS")}
           </label>
           <input
             id="username"
@@ -119,7 +121,7 @@ export function Login() {
           />
 
           <label htmlFor="password" className="auth-label">
-            MOT DE PASSE
+            {tr("MOT DE PASSE", "PASSWORD")}
           </label>
           <input
             id="password"
@@ -131,17 +133,17 @@ export function Login() {
           />
 
           <button className="auth-primary-button" disabled={loginMutation.isPending} type="submit">
-            {loginMutation.isPending ? "CONNEXION..." : "ACCÉDER À L’ESPACE"}
+            {loginMutation.isPending ? tr("CONNEXION...", "LOGGING IN...") : tr("ACCÉDER À L’ESPACE", "ACCESS AREA")}
           </button>
         </form>
 
         <p className="auth-footer-text">
-          Nouveau sur MARS.A.I ?
-          <Link to="/auth/register"> Inscrivez-vous</Link>
+          {tr("Nouveau sur MARS.A.I ?", "New to MARS.A.I?")}
+          <Link to="/auth/register"> {tr("Inscrivez-vous", "Sign up")}</Link>
         </p>
 
         <Link className="auth-secondary-link" to="/">
-          ← RETOUR ACCUEIL
+          ← {tr("RETOUR ACCUEIL", "BACK HOME")}
         </Link>
       </section>
     </div>

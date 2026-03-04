@@ -1,8 +1,10 @@
 import { Link } from "react-router";
 import { useState } from "react";
+import { useLanguage } from "../../i18n/LanguageContext.jsx";
 import "../public/Participation.css";
 
 export default function Participation() {
+  const { tr } = useLanguage();
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const isConnected = Boolean(localStorage.getItem("token") || localStorage.getItem("username"));
   const destination = isConnected ? "/submit-video" : "/auth/register?next=%2Fsubmit-video";
@@ -17,13 +19,13 @@ export default function Participation() {
         </div>
 
         <h1 id="participation-title" className="participation-title participation-title-neon">
-          PARTICIPEZ DÈS MAINTENANT
+          {tr("PARTICIPEZ DÈS MAINTENANT", "JOIN NOW")}
         </h1>
-        <p className="participation-subtitle">ENGAGER VOUS DANS CET ÉVÉNEMENTS</p>
+        <p className="participation-subtitle">{tr("ENGAGER VOUS DANS CET ÉVÉNEMENTS", "TAKE PART IN THIS EVENT")}</p>
 
         <div className="participation-card-block">
-          <h3>RÉGLEMENT</h3>
-          <p>ICI C'EST LE RÉGLEMENT</p>
+          <h3>{tr("RÉGLEMENT", "RULEBOOK")}</h3>
+          <p>{tr("ICI C'EST LE RÉGLEMENT", "HERE IS THE RULEBOOK")}</p>
         </div>
 
         <div className="participation-cta">
@@ -34,7 +36,7 @@ export default function Participation() {
               checked={agreedToTerms}
               onChange={(e) => setAgreedToTerms(e.target.checked)}
             />
-            <span>J'accepte le règlement général</span>
+            <span>{tr("J'accepte le règlement général", "I accept the general rules")}</span>
           </label>
 
           <Link
@@ -42,7 +44,7 @@ export default function Participation() {
             className={`participation-primary-button participation-btn ${agreedToTerms ? "" : "disabled"}`}
             onClick={(e) => !agreedToTerms && e.preventDefault()}
           >
-            Déposer un film
+            {tr("Déposer un film", "Submit a film")}
           </Link>
         </div>
       </section>

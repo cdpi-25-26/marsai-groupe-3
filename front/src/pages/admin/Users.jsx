@@ -13,6 +13,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { useLanguage } from "../../i18n/LanguageContext.jsx";
 
 const registerSchema = z.object({
   id: z.number().optional(),
@@ -22,6 +23,7 @@ const registerSchema = z.object({
 });
 
 function Users() {
+  const { tr } = useLanguage();
   const [users, setUsers] = useState([]);
   const [availableRoles, setAvailableRoles] = useState([]);
   const [modeEdit, setModeEdit] = useState(false);
@@ -148,7 +150,7 @@ function Users() {
       return await createUser(newUser);
     },
     onSuccess: () => {
-      alert("Utilisateur créé avec succès");
+      alert(tr("Utilisateur créé avec succès", "User created successfully"));
       fetchUsersList();
       reset({
         id: undefined,
@@ -164,7 +166,7 @@ function Users() {
       const message =
         error?.response?.data?.error ||
         error?.message ||
-        "Création utilisateur impossible";
+        tr("Création utilisateur impossible", "User creation failed");
 
       alert(`${message}${detailText}`);
     },
@@ -197,14 +199,14 @@ function Users() {
 
   function onSubmit(data) {
     if (!data.password || data.password.length < 8) {
-      alert("Le mot de passe doit contenir au moins 8 caractères.");
+      alert(tr("Le mot de passe doit contenir au moins 8 caractères.", "Password must contain at least 8 characters."));
       return;
     }
     return registerMutation.mutate(data);
   }
 
   function handleDelete(id) {
-    if (confirm("Voulez-vous vraiment supprimer cet utilisateur ?")) {
+    if (confirm(tr("Voulez-vous vraiment supprimer cet utilisateur ?", "Do you really want to delete this user?"))) {
       deleteMutation.mutate(id);
     }
   }
@@ -254,24 +256,24 @@ function Users() {
   return (
     <section>
       <div className="users-list-block border-b pb-4 mb-4">
-        <h2 className="text-2xl font-bold mb-4">Liste des utilisateurs</h2>
+        <h2 className="text-2xl font-bold mb-4">{tr("Liste des utilisateurs", "Users list")}</h2>
 
         {usersError && (
           <div className="users-error-box" role="alert">
             <p>{usersError}</p>
             <Link to="/auth/login" className="users-error-link">
-              Aller à la connexion
+              {tr("Aller à la connexion", "Go to login")}
             </Link>
           </div>
         )}
 
-        {isUsersLoading && <p>Chargement des utilisateurs...</p>}
+        {isUsersLoading && <p>{tr("Chargement des utilisateurs...", "Loading users...")}</p>}
 
         {!usersError && !isUsersLoading && (
           <div className="users-toolbar">
           <input
             type="text"
-            placeholder="Rechercher par email, nom, prénom ou ID"
+            placeholder={tr("Rechercher par email, nom, prénom ou ID", "Search by email, last name, first name or ID")}
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
           />
@@ -280,7 +282,7 @@ function Users() {
             value={filterRole}
             onChange={(event) => setFilterRole(event.target.value)}
           >
-            <option value="ALL">Tous les rôles</option>
+            <option value="ALL">{tr("Tous les rôles", "All roles")}</option>
             {availableRoles.map((role) => (
               <option key={`filter-${role}`} value={role}>
                 {role}
@@ -289,16 +291,16 @@ function Users() {
           </select>
 
           <select value={sortBy} onChange={(event) => setSortBy(event.target.value)}>
-            <option value="recent">Plus récents</option>
-            <option value="email">Email A-Z</option>
-            <option value="role">Rôle</option>
+            <option value="recent">{tr("Plus récents", "Most recent")}</option>
+            <option value="email">{tr("Email A-Z", "Email A-Z")}</option>
+            <option value="role">{tr("Rôle", "Role")}</option>
           </select>
           </div>
         )}
 
         {!usersError && !isUsersLoading && (
           <p className="users-toolbar-count">
-            {filteredUsers.length} utilisateur(s) affiché(s) sur {users.length}
+            {filteredUsers.length} {tr("utilisateur(s) affiché(s) sur", "user(s) shown out of")} {users.length}
           </p>
         )}
 
@@ -309,10 +311,10 @@ function Users() {
                 <tr>
                   <th>ID</th>
                   <th>Email</th>
-                  <th>Nom</th>
-                  <th>Prénom</th>
-                  <th>Rôle</th>
-                  <th>Actions</th>
+                  <th>{tr("Nom", "Last name")}</th>
+                  <th>{tr("Prénom", "First name")}</th>
+                  <th>{tr("Rôle", "Role")}</th>
+                  <th>{tr("Actions", "Actions")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -339,16 +341,16 @@ function Users() {
                           onClick={() => applyRoleUpdate(user)}
                           disabled={(roleDraft[user.id] || user.role) === user.role}
                         >
-                          Mettre à jour
+                          {tr("Mettre à jour", "Update")}
                         </button>
                       </div>
                     </td>
                     <td>
                       <button type="button" onClick={() => handleEdit(user)}>
-                        Modifier
+                        {tr("Modifier", "Edit")}
                       </button>
                       <button type="button" onClick={() => handleDelete(user.id)}>
-                        Supprimer
+                        {tr("Supprimer", "Delete")}
                       </button>
                     </td>
                   </tr>
@@ -359,13 +361,13 @@ function Users() {
         )}
 
         {!usersError && !isUsersLoading && filteredUsers.length === 0 && (
-          <div>Aucun utilisateur trouvé pour ces filtres.</div>
+          <div>{tr("Aucun utilisateur trouvé pour ces filtres.", "No users found for these filters.")}</div>
         )}
       </div>
 
       <div className="border-b pb-4 mb-4">
         <h2 className="text-2xl font-bold mb-4">
-          {modeEdit ? "Modifier un utilisateur" : "Créer un utilisateur"}
+          {modeEdit ? tr("Modifier un utilisateur", "Edit user") : tr("Créer un utilisateur", "Create user")}
         </h2>
         <form
           className="users-form"
@@ -391,12 +393,12 @@ function Users() {
             htmlFor="password"
             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            Password
+            {tr("Mot de passe", "Password")}
           </label>
           <input
             id="password"
             type="password"
-            placeholder={modeEdit ? "Laisser vide pour ne pas changer" : "Mot de passe"}
+            placeholder={modeEdit ? tr("Laisser vide pour ne pas changer", "Leave empty to keep current") : tr("Mot de passe", "Password")}
             {...register("password")}
             required={!modeEdit}
           />
@@ -405,7 +407,7 @@ function Users() {
             htmlFor="role"
             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            Rôle
+            {tr("Rôle", "Role")}
           </label>
           <select id="role" {...register("role")} required>
             {availableRoles.map((role) => (
@@ -418,11 +420,11 @@ function Users() {
           <div className="users-form-actions">
             {modeEdit && (
               <button type="button" onClick={handleReset}>
-                Annuler la modification
+                {tr("Annuler la modification", "Cancel edit")}
               </button>
             )}
             <button type="submit">
-              {modeEdit ? "Mettre à jour" : "Créer un utilisateur"}
+              {modeEdit ? tr("Mettre à jour", "Update") : tr("Créer un utilisateur", "Create user")}
             </button>
           </div>
         </form>

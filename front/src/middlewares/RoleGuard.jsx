@@ -1,6 +1,8 @@
 import { Link } from "react-router";
+import { useLanguage } from "../i18n/LanguageContext.jsx";
 
 export function RoleGuard({ allowedRoles, children }) {
+  const { tr } = useLanguage();
   const userRole = localStorage.getItem("role");
   const tempAdminAccess = localStorage.getItem("tempAdminAccess") === "true";
 
@@ -30,16 +32,16 @@ export function RoleGuard({ allowedRoles, children }) {
             padding: "1rem",
           }}
         >
-          <h2 style={{ marginTop: 0, marginBottom: "0.5rem" }}>Accès refusé</h2>
+          <h2 style={{ marginTop: 0, marginBottom: "0.5rem" }}>{tr("Accès refusé", "Access denied")}</h2>
           <p style={{ marginTop: 0, color: "#cbd5e1" }}>
-            Cette page nécessite un rôle autorisé ({allowedRoles.join(" / ")}).
+            {tr("Cette page nécessite un rôle autorisé", "This page requires an authorized role")} ({allowedRoles.join(" / ")}).
           </p>
           <div style={{ display: "flex", gap: "0.8rem", flexWrap: "wrap" }}>
             <Link to="/auth/login" style={{ color: "#93c5fd" }}>
-              Se connecter
+              {tr("Se connecter", "Sign in")}
             </Link>
             <Link to="/" style={{ color: "#93c5fd" }}>
-              Retour accueil
+              {tr("Retour accueil", "Back home")}
             </Link>
           </div>
         </div>

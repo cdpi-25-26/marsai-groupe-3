@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { getJuryVideos, submitJuryVote } from "../../api/videos";
+import { useLanguage } from "../../i18n/LanguageContext.jsx";
 import "./Gallery.css";
 import "./JuryGallery.css";
 
 function JuryGallery() {
+  const { tr } = useLanguage();
   const currentRole = localStorage.getItem("role");
   const canVote = currentRole === "JURY";
 
@@ -20,7 +22,7 @@ function JuryGallery() {
       const response = await getJuryVideos();
       setVideos(response.data || []);
     } catch (err) {
-      setError(err.response?.data?.error || "Impossible de charger la gallery jury");
+      setError(err.response?.data?.error || tr("Impossible de charger la gallery jury", "Unable to load jury gallery"));
     } finally {
       setLoading(false);
     }
@@ -40,14 +42,24 @@ function JuryGallery() {
       setVoteComments((prev) => ({ ...prev, [videoId]: "" }));
       await fetchVideos();
     } catch (err) {
-      alert(err.response?.data?.error || "Vote impossible");
+      const responseData = err.response?.data;
+      const apiError = responseData?.error;
+      const apiDetails = responseData?.details;
+      const detailedMessage =
+        (apiError && apiDetails && `${apiError} (${apiDetails})`) ||
+        apiError ||
+        apiDetails ||
+        (typeof responseData === "string" ? responseData : null) ||
+        err.message ||
+        tr("Vote impossible", "Vote failed");
+      alert(detailedMessage);
     }
   };
 
   if (loading) {
     return (
       <div className="container flex items-center justify-center min-h-screen">
-        <p className="text-white text-xl">Chargement des vidéos jury...</p>
+        <p className="text-white text-xl">{tr("Chargement des vidéos jury...", "Loading jury videos...")}</p>
       </div>
     );
   }
@@ -57,18 +69,18 @@ function JuryGallery() {
       <div className="content max-w-7xl mx-auto px-4 py-12">
         <div className="header mb-10">
           <h1 className="text-5xl md:text-6xl font-bold mb-2">
-            <span className="text-white">GALLERY </span>
+            <span className="text-white">{tr("GALLERY", "GALLERY")} </span>
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
-              JURY
+              {tr("JURY", "JURY")}
             </span>
           </h1>
           <p className="text-gray-300 max-w-3xl">
-            Les vidéos éligibles validées par l&apos;admin passent ici. Votez OUI ou NON. Les films deviennent publics seulement en majorité OUI.
+            {tr("Les vidéos éligibles validées par l'admin passent ici. Votez OUI ou NON. Les films deviennent publics seulement en majorité OUI.", "Admin-validated eligible videos appear here. Vote YES or NO. Films become public only with YES majority.")}
           </p>
 
           {!canVote && (
             <p className="jury-readonly-note">
-              Mode lecture seule: seuls les comptes JURY peuvent voter.
+              {tr("Mode lecture seule: seuls les comptes JURY peuvent voter.", "Read-only mode: only JURY accounts can vote.")}
             </p>
           )}
         </div>
@@ -77,7 +89,7 @@ function JuryGallery() {
           <div className="text-red-500 text-center py-8">{error}</div>
         ) : videos.length === 0 ? (
           <div className="text-white text-center py-12">
-            <p className="text-xl">Aucune vidéo à voter actuellement</p>
+            <p className="text-xl">{tr("Aucune vidéo à voter actuellement", "No videos to vote right now")}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
@@ -97,17 +109,17 @@ function JuryGallery() {
                       to={`/films/${video.id}`}
                       className="w-full py-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-lg font-semibold hover:from-pink-600 hover:to-purple-700 transition-colors text-center"
                     >
-                      VOIR PLUS
+                      {tr("VOIR PLUS", "SEE MORE")}
                     </Link>
                   </div>
                 </div>
 
                 <div className="info">
                   <h3 className="text-white font-bold text-lg mb-2 line-clamp-2">{video.title}</h3>
-                  <p className="text-gray-300 text-sm mb-2">{video.synopsisOriginal || "Sans synopsis"}</p>
+                  <p className="text-gray-300 text-sm mb-2">{video.synopsisOriginal || tr("Sans synopsis", "No synopsis")}</p>
 
                   <p className="jury-vote-counts">
-                    OUI: {video.yesVotes || 0} · NON: {video.noVotes || 0}
+                    {tr("OUI", "YES")}: {video.yesVotes || 0} · {tr("NON", "NO")}: {video.noVotes || 0}
                   </p>
 
                   {canVote ? (
@@ -122,7 +134,7 @@ function JuryGallery() {
                           }))
                         }
                         placeholder="Ajouter un commentaire (optionnel)"
-                        maxLength={500}
+                        maxLength={255}
                       />
 
                       <div className="jury-vote-actions">
@@ -131,19 +143,19 @@ function JuryGallery() {
                           className="jury-yes-btn"
                           onClick={() => handleVote(video.id, "OUI")}
                         >
-                          Accepter 👍
+                          {tr("Accepter", "Accept")} 👍
                         </button>
                         <button
                           type="button"
                           className="jury-no-btn"
                           onClick={() => handleVote(video.id, "NON")}
                         >
-                          Refuser 👎
+                          {tr("Refuser", "Reject")} 👎
                         </button>
                       </div>
                     </>
                   ) : (
-                    <p className="jury-readonly-note-card">Seul le rôle JURY peut voter.</p>
+                    <p className="jury-readonly-note-card">{tr("Seul le rôle JURY peut voter.", "Only JURY role can vote.")}</p>
                   )}
                 </div>
               </div>

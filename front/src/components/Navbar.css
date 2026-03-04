@@ -142,6 +142,25 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
+.navbar-language-btn {
+  min-width: 56px;
+  height: 44px;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.navbar-language-btn:hover {
+  transform: translateY(-2px);
+  border-color: rgba(246, 51, 154, 0.75);
+  background: rgba(246, 51, 154, 0.2);
+}
+
 .navbar-logout-btn:hover {
   transform: translateY(-2px);
   background: rgba(246, 51, 154, 0.2);
@@ -210,6 +229,12 @@
   }
 
   .navbar-logout-btn {
+    width: 100%;
+    border-radius: 25px;
+    height: 42px;
+  }
+
+  .navbar-language-btn {
     width: 100%;
     border-radius: 25px;
     height: 42px;
