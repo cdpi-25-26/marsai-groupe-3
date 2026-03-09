@@ -23,7 +23,7 @@ export default async function AuthMiddleware(req, res, next, roles = []) {
     }
 
     const user = await User.findOne({
-      where: { username: decoded.username },
+      where: { email: decoded.username },
     });
 
     if (!user || (roles.length && !roles.includes(user.role))) {

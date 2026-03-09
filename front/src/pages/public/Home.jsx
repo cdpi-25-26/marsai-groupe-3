@@ -235,8 +235,8 @@ function Home() {
           </h2>
 
           <ol className="home-conferences-list">
-            <li>{tr("1. Débats engagés sur l&apos;éthique et le futur", "1. Engaged debates on ethics and the future")}</li>
-            <li>{tr("2. Confrontations d&apos;idées entre artistes et tech", "2. Exchanges of ideas between artists and tech")}</li>
+            <li>{tr("1. Débats engagés sur l'éthique et le futur", "1. Engaged debates on ethics and the future")}</li>
+            <li>{tr("2. Confrontations d'idées entre artistes et tech", "2. Exchanges of ideas between artists and tech")}</li>
             <li>{tr("3. Interrogations stimulantes sur la création", "3. Stimulating questions about creation")}</li>
           </ol>
 

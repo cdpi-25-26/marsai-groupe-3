@@ -1,9 +1,8 @@
 import { Outlet } from "react-router";
 import Navbar from "../components/Navbar";
-import { useLanguage } from "../i18n/LanguageContext.jsx";
+import Footer from "../components/Footer";
 
 export default function PublicLayout() {
-  const { tr } = useLanguage();
   return (
     <div>
       <div className="navbar-backdrop" aria-hidden="true"></div>
@@ -11,7 +10,7 @@ export default function PublicLayout() {
       <main>
         <Outlet />
       </main>
-      <footer>{tr("Pied de page", "Footer")}</footer>
+      <Footer />
     </div>
   );
 }

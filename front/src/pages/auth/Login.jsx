@@ -80,7 +80,14 @@ export function Login() {
       }
     },
     onError: (error, variables, context) => {
+      const isNetworkError = !error.response;
       const message =
+        (isNetworkError
+          ? tr(
+            "Connexion impossible: backend inaccessible. Démarre le serveur API puis réessaie.",
+            "Connection failed: backend unreachable. Start the API server and try again.",
+          )
+          : null) ||
         error.response?.data?.error ||
         error.message ||
         tr("Connexion impossible, vérifie que le backend est démarré.", "Login failed, check that backend is running.");

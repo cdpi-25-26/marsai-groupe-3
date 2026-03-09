@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import { Op } from "sequelize";
 import { Evaluations, SystemSettings, Users, Videos } from "../models/index.js";
 
 function truncateValue(value, maxLength = 255) {
@@ -44,56 +45,6 @@ function parseTeamData(teamData) {
   } catch {
     return [];
   }
-}
-
-async function chooseJuryAssigneeId() {
-  const juries = await Users.findAll({
-    where: { role: "JURY" },
-    attributes: ["id"],
-    order: [["id", "ASC"]],
-  });
-
-  if (!juries.length) {
-    return null;
-  }
-
-  const ranking = await Promise.all(
-    juries.map(async (jury) => {
-      const activeAssignments = await Videos.count({
-        where: {
-          id_assigned_jury: jury.id,
-          statusSelection: ["retenue", "à discuter"],
-        },
-      });
-
-      const historicalAssignments = await Videos.count({
-        where: {
-          id_assigned_jury: jury.id,
-          statusSelection: ["retenue", "à discuter", "finaliste", "refusé"],
-        },
-      });
-
-      return {
-        juryId: jury.id,
-        activeAssignments,
-        historicalAssignments,
-      };
-    }),
-  );
-
-  ranking.sort((left, right) => {
-    if (left.activeAssignments !== right.activeAssignments) {
-      return left.activeAssignments - right.activeAssignments;
-    }
-
-    if (left.historicalAssignments !== right.historicalAssignments) {
-      return left.historicalAssignments - right.historicalAssignments;
-    }
-
-    return left.juryId - right.juryId;
-  });
-
-  return ranking[0].juryId;
 }
 
 async function getPublicGalleryStatusPayload() {
@@ -177,14 +128,12 @@ async function getAdminVideos(req, res) {
 }
 
 async function getJuryVideos(req, res) {
-  const whereClause = { statusSelection: ["retenue", "à discuter"] };
-
-  if (req.user.role === "JURY") {
-    whereClause.id_assigned_jury = req.user.id;
-  }
-
   const videos = await Videos.findAll({
-    where: whereClause,
+    where: {
+      statusSelection: {
+        [Op.in]: ["retenue", "à discuter"],
+      },
+    },
     order: [["createdAt", "DESC"]],
   });
 
@@ -318,16 +267,8 @@ async function setAdminEligibility(req, res) {
   }
 
   if (decision === "eligible") {
-    const assignedJuryId = await chooseJuryAssigneeId();
-
-    if (!assignedJuryId) {
-      return res.status(409).json({
-        error: "Aucun jury disponible pour assigner cette vidéo",
-      });
-    }
-
     video.statusSelection = "retenue";
-    video.id_assigned_jury = assignedJuryId;
+    video.id_assigned_jury = null;
   } else {
     video.statusSelection = "refusé";
     video.id_assigned_jury = null;
@@ -357,71 +298,107 @@ async function deleteAdminVideo(req, res) {
 }
 
 async function juryVote(req, res) {
-  const { id } = req.params;
-  const { vote, commentary } = req.body;
+  try {
+    const { id } = req.params;
+    const { vote, commentary } = req.body;
+    const normalizedVote = String(vote || "").trim().toUpperCase();
 
-  if (!["OUI", "NON"].includes(vote)) {
-    return res.status(400).json({ error: "Vote invalide" });
-  }
+    if (!["OUI", "NON"].includes(normalizedVote)) {
+      return res.status(400).json({ error: "Vote invalide" });
+    }
 
-  const video = await Videos.findOne({ where: { id_video: id } });
+    const video = await Videos.findOne({ where: { id_video: id } });
 
-  if (!video) {
-    return res.status(404).json({ error: "Vidéo non trouvée" });
-  }
+    if (!video) {
+      return res.status(404).json({ error: "Vidéo non trouvée" });
+    }
 
-  if (video.id_assigned_jury !== req.user.id) {
-    return res.status(403).json({
-      error: "Cette vidéo est assignée à un autre membre du jury",
+    const requesterId = Number(req.user.id);
+
+    if (!["retenue", "à discuter"].includes(video.statusSelection)) {
+      return res.status(400).json({
+        error: "Cette vidéo n'est pas disponible pour le vote jury",
+      });
+    }
+
+    const sanitizedCommentary = truncateValue(
+      typeof commentary === "string" ? commentary.trim() : "",
+      255,
+    );
+
+    try {
+      const [evaluation, created] = await Evaluations.findOrCreate({
+        where: {
+          id_video: video.id_video,
+          id_user: requesterId,
+        },
+        defaults: {
+          note: normalizedVote,
+          commentary: sanitizedCommentary || null,
+        },
+      });
+
+      if (!created) {
+        evaluation.note = normalizedVote;
+        evaluation.commentary = sanitizedCommentary || null;
+        await evaluation.save();
+      }
+    } catch (writeError) {
+      if (writeError?.name === "SequelizeUniqueConstraintError") {
+        const existingVote = await Evaluations.findOne({
+          where: {
+            id_video: video.id_video,
+            id_user: requesterId,
+          },
+        });
+
+        if (existingVote) {
+          existingVote.note = normalizedVote;
+          existingVote.commentary = sanitizedCommentary || null;
+          await existingVote.save();
+        } else {
+          throw writeError;
+        }
+      } else {
+        throw writeError;
+      }
+    }
+
+    const voteSummary = await getVoteSummary(video.id_video);
+
+    if (voteSummary.yesVotes > voteSummary.noVotes) {
+      video.statusSelection = "finaliste";
+    } else if (voteSummary.noVotes > voteSummary.yesVotes) {
+      video.statusSelection = "refusé";
+      video.id_assigned_jury = null;
+      video.isPriority = false;
+    } else {
+      video.statusSelection = "à discuter";
+      video.isPriority = false;
+    }
+
+    await video.save();
+    return res.json(await normalizeVideo(video));
+  } catch (error) {
+    if (error?.name === "SequelizeValidationError") {
+      return res.status(400).json({
+        error: "Erreur de validation lors du vote jury",
+        details: error.errors?.map((item) => item.message).join(" | ") || error.message,
+      });
+    }
+
+    if (error?.name === "SequelizeUniqueConstraintError") {
+      return res.status(409).json({
+        error: "Conflit de vote jury",
+        details: error.errors?.map((item) => item.message).join(" | ") || error.message,
+      });
+    }
+
+    return res.status(500).json({
+      error: "Erreur interne lors du vote jury",
+      details: error?.message,
     });
   }
-
-  if (!["retenue", "à discuter"].includes(video.statusSelection)) {
-    return res.status(400).json({
-      error: "Cette vidéo n'est pas disponible pour le vote jury",
-    });
-  }
-
-  const sanitizedCommentary = truncateValue(
-    typeof commentary === "string" ? commentary.trim() : "",
-    500,
-  );
-
-  const existingVote = await Evaluations.findOne({
-    where: {
-      id_video: video.id_video,
-      id_user: req.user.id,
-    },
-  });
-
-  if (existingVote) {
-    existingVote.note = vote;
-    existingVote.commentary = sanitizedCommentary || null;
-    await existingVote.save();
-  } else {
-    await Evaluations.create({
-      id_video: video.id_video,
-      id_user: req.user.id,
-      note: vote,
-      commentary: sanitizedCommentary || null,
-    });
-  }
-
-  const voteSummary = await getVoteSummary(video.id_video);
-
-  if (voteSummary.yesVotes > voteSummary.noVotes) {
-    video.statusSelection = "finaliste";
-  } else if (voteSummary.noVotes > voteSummary.yesVotes) {
-    video.statusSelection = "refusé";
-    video.id_assigned_jury = null;
-    video.isPriority = false;
-  } else {
-    video.statusSelection = "à discuter";
-    video.isPriority = false;
-  }
-
-  await video.save();
-  return res.json(await normalizeVideo(video));
 }
 
 async function getVideoById(req, res) {
@@ -432,7 +409,7 @@ async function getVideoById(req, res) {
     return res.status(404).json({ error: "Vidéo non trouvée" });
   }
 
-  const { role, user } = await getRequester(req);
+  const { role } = await getRequester(req);
 
   const isAdmin = role === "ADMIN";
   const isJury = role === "JURY";
@@ -445,14 +422,6 @@ async function getVideoById(req, res) {
   if (
     isJury &&
     !["retenue", "à discuter", "finaliste"].includes(video.statusSelection)
-  ) {
-    return res.status(403).json({ error: "Accès interdit" });
-  }
-
-  if (
-    isJury &&
-    ["retenue", "à discuter"].includes(video.statusSelection) &&
-    video.id_assigned_jury !== user?.id
   ) {
     return res.status(403).json({ error: "Accès interdit" });
   }

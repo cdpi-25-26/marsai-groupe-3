@@ -3,35 +3,39 @@ import { comparePassword } from "../utils/password.js";
 import UserController from "./UserController.js";
 import jwt from "jsonwebtoken";
 
-function login(req, res) {
-  const { username, password } = req.body;
+async function login(req, res) {
+  try {
+    const { username, password } = req.body;
 
-  // Sequelize
-  User.findOne({ where: { username } }).then((user) => {
+    if (!username || !password) {
+      return res.status(400).json({ error: "Tous les champs sont requis" });
+    }
+
+    const user = await User.findOne({ where: { email: username } });
+
     if (!user) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    // Functions utilisateurs
-    comparePassword(password, user.password).then((isMatch) => {
-      if (!isMatch) {
-        return res.status(401).json({ error: "Invalid credentials" });
-      }
+    const isMatch = await comparePassword(password, user.password);
 
-      // jwt librairie
-      const token = jwt.sign({ username }, process.env.JWT_SECRET, {
-        expiresIn: process.env.JWT_EXPIRES_IN || "1h",
-      });
+    if (!isMatch) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
 
-      // Express response
-      return res.status(200).json({
-        message: "Login successful",
-        username: user.username,
-        role: user.role,
-        token,
-      });
+    const token = jwt.sign({ username: user.email }, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRES_IN || "1h",
     });
-  });
+
+    return res.status(200).json({
+      message: "Login successful",
+      username: user.email,
+      role: user.role,
+      token,
+    });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
 }
 
 function register(req, res) {

@@ -1,5 +1,7 @@
-import api from "./config";
+import instance from "./config.js";
 
-export const createReservation = async ({ surname, name, email, id_event = null }) => {
-  return api.post("/reservations", { surname, name, email, id_event });
-};
+async function createReservation(payload) {
+  return await instance.post("reservations", payload);
+}
+
+export { createReservation };

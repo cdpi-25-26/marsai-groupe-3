@@ -26,7 +26,7 @@ const PHASES = {
   phase3: {
     title: "Phase 3 · Résultats",
     description: "Vidéos finalisées par le processus.",
-    statuses: ["finaliste", "refusé"],
+    statuses: ["finaliste"],
   },
 };
 
@@ -129,6 +129,7 @@ function AdminGallery() {
 
   const finalistesCount = videos.filter((video) => video.status === "finaliste").length;
   const refusedCount = videos.filter((video) => video.status === "refusé").length;
+  const refusedVideos = videos.filter((video) => video.status === "refusé");
 
   const counters = {
     phase1: phase1Videos.length,
@@ -137,6 +138,22 @@ function AdminGallery() {
   };
 
   const activeVideos = videos.filter((video) => PHASES[activePhase].statuses.includes(video.status));
+
+  const getRefusalPhase = (video) => {
+    const hasJuryVotes = (video.yesVotes || 0) + (video.noVotes || 0) > 0;
+
+    if (hasJuryVotes) {
+      return {
+        code: "phase2",
+        label: tr("Refusé en phase 2 · Vote jury", "Rejected in phase 2 · Jury vote"),
+      };
+    }
+
+    return {
+      code: "phase1",
+      label: tr("Refusé en phase 1 · Validation admin", "Rejected in phase 1 · Admin validation"),
+    };
+  };
 
   return (
     <div className="container bg-gradient-to-b from-gray-900 via-gray-800 to-black min-h-screen pb-20">
@@ -205,7 +222,7 @@ function AdminGallery() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
             {activeVideos.map((video) => (
-              <div key={video.id} className="card group">
+              <div key={video.id} className={`card group ${video.isAwarded ? "card-awarded" : ""}`}>
                 <div className="image relative overflow-hidden rounded-2xl mb-4">
                   <img
                     src={video.thumbnail || "https://via.placeholder.com/300x200"}
@@ -286,6 +303,41 @@ function AdminGallery() {
             ))}
           </div>
         )}
+
+        <section className="admin-refused-section">
+          <div className="admin-refused-header">
+            <h2>{tr("Vidéos refusées", "Rejected videos")}</h2>
+            <span>{refusedVideos.length}</span>
+          </div>
+
+          {refusedVideos.length === 0 ? (
+            <p className="admin-refused-empty">
+              {tr("Aucune vidéo refusée pour le moment.", "No rejected videos for now.")}
+            </p>
+          ) : (
+            <div className="admin-refused-list">
+              {refusedVideos.map((video) => {
+                const refusalPhase = getRefusalPhase(video);
+
+                return (
+                  <article key={`refused-${video.id}`} className="admin-refused-item">
+                    <div>
+                      <h3>{video.title}</h3>
+                      <p>{video.synopsisOriginal || tr("Sans synopsis", "No synopsis")}</p>
+                      <Link to={`/films/${video.id}`} className="admin-refused-link">
+                        {tr("VOIR PLUS", "SEE MORE")}
+                      </Link>
+                    </div>
+
+                    <span className={`admin-refused-phase ${refusalPhase.code}`}>
+                      {refusalPhase.label}
+                    </span>
+                  </article>
+                );
+              })}
+            </div>
+          )}
+        </section>
       </div>
     </div>
   );

@@ -9,6 +9,7 @@ const userRouter = express.Router();
 userRouter.use((req, res, next) => AuthMiddleware(req, res, next, ["ADMIN"]));
 
 userRouter.get("/", UserController.getUsers); // Liste de tous les utilisateurs
+userRouter.get("/roles", UserController.getAvailableRoles); // Liste des rôles disponibles
 userRouter.get("/:id", UserController.getUserById); // Récupérer un utilisateur par ID
 userRouter.post("/", UserController.createUser); // Créer un nouvel utilisateur
 userRouter.delete("/:id", UserController.deleteUser); // Supprimer un utilisateur par ID

@@ -12,7 +12,7 @@ const Evaluation = sequelize.define("Evaluation", {
         allowNull: false,
     },
     commentary: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: true,
     },
     id_user: {
