@@ -66,10 +66,15 @@ function FilmDetail() {
 
   return (
     <div className="film-detail-page">
-      <div className="film-detail-card">
+      <div className={`film-detail-card ${video.isAwarded ? "film-detail-card-awarded" : ""}`}>
         <div className="film-detail-header">
           <h1>{video.title}</h1>
-          <span className="film-detail-status">{video.status}</span>
+          <div className="film-detail-status-wrap">
+            <span className="film-detail-status">{video.status}</span>
+            {video.isAwarded && (
+              <span className="film-detail-awarded-badge">{tr("Primé", "Awarded")}</span>
+            )}
+          </div>
         </div>
 
         <p className="film-detail-subtitle">{video.titleEnglish || tr("Sans titre anglais", "No English title")}</p>

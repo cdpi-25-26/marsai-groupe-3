@@ -6,6 +6,7 @@ import "./Gallery.css";
 
 function Gallery() {
   const { tr } = useLanguage();
+  const [cardSize, setCardSize] = useState("medium");
   const [videos, setVideos] = useState([]);
   const [filteredVideos, setFilteredVideos] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -150,6 +151,20 @@ function Gallery() {
           </h1>
         </div>
 
+        <div className="gallery-view-controls">
+          <label htmlFor="gallery-size-public">{tr("Affichage", "View")}</label>
+          <select
+            id="gallery-size-public"
+            className="gallery-size-select"
+            value={cardSize}
+            onChange={(event) => setCardSize(event.target.value)}
+          >
+            <option value="small">{tr("Petite", "Small")}</option>
+            <option value="medium">{tr("Moyenne", "Medium")}</option>
+            <option value="large">{tr("Grande", "Large")}</option>
+          </select>
+        </div>
+
         <div className="filters mb-12 flex flex-col md:flex-row gap-4">
           <select
             value={filters.type}
@@ -199,9 +214,9 @@ function Gallery() {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            <div className={`grid gallery-cards-grid gallery-size-${cardSize} mb-12`}>
               {paginatedVideos.map((video) => (
-                <div key={video.id} className="card group">
+                <div key={video.id} className={`card group ${video.isAwarded ? "card-awarded" : ""}`}>
                   <div className="image relative overflow-hidden rounded-2xl mb-4">
                     <img
                       src={video.thumbnail || "https://via.placeholder.com/300x200"}

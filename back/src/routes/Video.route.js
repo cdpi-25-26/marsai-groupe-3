@@ -64,6 +64,12 @@ videoRouter.patch(
 );
 
 videoRouter.patch(
+  "/:id/phase2-selection",
+  (req, res, next) => AuthMiddleware(req, res, next, ["ADMIN"]),
+  VideoController.setPhase2Selection,
+);
+
+videoRouter.patch(
   "/:id/phase3-priority",
   (req, res, next) => AuthMiddleware(req, res, next, ["ADMIN"]),
   VideoController.setPhase3Award,

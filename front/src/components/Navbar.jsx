@@ -2,16 +2,27 @@ import { Link } from "react-router";
 import { useState } from "react";
 import decoIcon from "../assets/deco.svg";
 import { useLanguage } from "../i18n/LanguageContext.jsx";
+import { clearAuthSession, useAuthSession } from "../utils/authSession.js";
+import { usePhase3Closure } from "../utils/usePhase3Closure.js";
 import "./Navbar.css";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { language, toggleLanguage, t } = useLanguage();
-  const userRole = localStorage.getItem("role");
-  const isConnected = Boolean(localStorage.getItem("token") || localStorage.getItem("username"));
+  const { role: userRole, token, username } = useAuthSession();
+  const { isPhase3Closed } = usePhase3Closure();
+  const isConnected = Boolean(token || username);
   const isAdmin = userRole === "ADMIN";
   const isJury = userRole === "JURY";
-  const participationDestination = isConnected ? "/submit-video" : "/participation";
+  const shouldShowLoginCta = isPhase3Closed && !isConnected;
+  const participationDestination = shouldShowLoginCta
+    ? "/auth/login"
+    : isConnected
+      ? "/submit-video"
+      : "/participation";
+  const participationLabel = shouldShowLoginCta
+    ? t("navbar.login", "CONNEXION")
+    : t("navbar.participate", "PARTICIPER");
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -22,10 +33,7 @@ export default function Navbar() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("username");
-    localStorage.removeItem("role");
-    localStorage.removeItem("token");
-    localStorage.removeItem("tempAdminAccess");
+    clearAuthSession();
     window.location.href = "/auth/login";
   };
 
@@ -80,7 +88,7 @@ export default function Navbar() {
             className="navbar-btn"
             onClick={closeMenu}
           >
-            {t("navbar.participate", "PARTICIPER")}
+            {participationLabel}
           </Link>
 
           <button

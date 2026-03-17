@@ -2,13 +2,15 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { getJuryVideos, submitJuryVote } from "../../api/videos";
 import { useLanguage } from "../../i18n/LanguageContext.jsx";
+import { useAuthSession } from "../../utils/authSession.js";
 import "./Gallery.css";
 import "./JuryGallery.css";
 
 function JuryGallery() {
   const { tr } = useLanguage();
-  const currentRole = localStorage.getItem("role");
+  const { role: currentRole } = useAuthSession();
   const canVote = currentRole === "JURY";
+  const [cardSize, setCardSize] = useState("medium");
 
   const [videos, setVideos] = useState([]);
   const [voteComments, setVoteComments] = useState({});
@@ -75,7 +77,7 @@ function JuryGallery() {
             </span>
           </h1>
           <p className="text-gray-300 max-w-3xl">
-            {tr("Les vidéos éligibles validées par l'admin passent ici. Votez OUI ou NON. Les films deviennent publics seulement en majorité OUI.", "Admin-validated eligible videos appear here. Vote YES or NO. Films become public only with YES majority.")}
+            {tr("Les vidéos validées par l'admin arrivent ici en phase 1. Dès votre vote, la vidéo passe en phase 2 pour la sélection Top 50 par l'admin.", "Admin-approved videos arrive here in phase 1. As soon as you vote, the video moves to phase 2 for the admin Top 50 selection.")}
           </p>
 
           {!canVote && (
@@ -85,6 +87,20 @@ function JuryGallery() {
           )}
         </div>
 
+        <div className="gallery-view-controls">
+          <label htmlFor="gallery-size-jury">{tr("Affichage", "View")}</label>
+          <select
+            id="gallery-size-jury"
+            className="gallery-size-select"
+            value={cardSize}
+            onChange={(event) => setCardSize(event.target.value)}
+          >
+            <option value="small">{tr("Petite", "Small")}</option>
+            <option value="medium">{tr("Moyenne", "Medium")}</option>
+            <option value="large">{tr("Grande", "Large")}</option>
+          </select>
+        </div>
+
         {error ? (
           <div className="text-red-500 text-center py-8">{error}</div>
         ) : videos.length === 0 ? (
@@ -92,7 +108,7 @@ function JuryGallery() {
             <p className="text-xl">{tr("Aucune vidéo à voter actuellement", "No videos to vote right now")}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          <div className={`grid gallery-cards-grid gallery-size-${cardSize} mb-12`}>
             {videos.map((video) => (
               <div key={video.id} className="card group">
                 <div className="image relative overflow-hidden rounded-2xl mb-4">

@@ -7,6 +7,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useLanguage } from "../../i18n/LanguageContext.jsx";
+import { clearAuthSession, useAuthSession } from "../../utils/authSession.js";
+import { usePhase3Closure } from "../../utils/usePhase3Closure.js";
+import PhaseClosedNotice from "../../components/PhaseClosedNotice.jsx";
 import "./Auth.css";
 
 const registerSchema = z.object({
@@ -16,18 +19,24 @@ const registerSchema = z.object({
 
 export function Register() {
   const { tr } = useLanguage();
-  const connectedUsername = localStorage.getItem("username");
+  const { username: connectedUsername } = useAuthSession();
+  const { isCheckingPhaseStatus, isPhase3Closed } = usePhase3Closure();
   const [searchParams] = useSearchParams();
   const next = searchParams.get("next");
 
   let navigate = useNavigate();
 
   function handleLogout() {
-    localStorage.removeItem("username");
-    localStorage.removeItem("role");
-    localStorage.removeItem("token");
-    localStorage.removeItem("tempAdminAccess");
+    clearAuthSession();
     window.location.href = "/auth/login";
+  }
+
+  if (isCheckingPhaseStatus) {
+    return null;
+  }
+
+  if (isPhase3Closed) {
+    return <PhaseClosedNotice />;
   }
 
   if (connectedUsername) {

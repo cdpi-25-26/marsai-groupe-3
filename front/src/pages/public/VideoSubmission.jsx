@@ -2,6 +2,9 @@ import { useState } from "react";
 import { Link } from "react-router";
 import { submitVideo, uploadVideoFile } from "../../api/videos";
 import { useLanguage } from "../../i18n/LanguageContext.jsx";
+import { useAuthSession } from "../../utils/authSession.js";
+import { usePhase3Closure } from "../../utils/usePhase3Closure.js";
+import PhaseClosedNotice from "../../components/PhaseClosedNotice.jsx";
 import "./VideoSubmission.css";
 
 const FormInput = ({ label, required, wrapperClassName = "", tr, ...props }) => (
@@ -47,7 +50,9 @@ const TeamMemberForm = ({ member, index, onChange, tr }) => (
 
 export default function VideoSubmission() {
   const { tr } = useLanguage();
-  const isAuthenticated = Boolean(localStorage.getItem("token"));
+  const { token } = useAuthSession();
+  const { isCheckingPhaseStatus, isPhase3Closed } = usePhase3Closure();
+  const isAuthenticated = Boolean(token);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
@@ -80,6 +85,14 @@ export default function VideoSubmission() {
     newMedia[index] = value;
     updateField("mediaGallery", newMedia);
   };
+
+  if (isCheckingPhaseStatus) {
+    return null;
+  }
+
+  if (isPhase3Closed) {
+    return <PhaseClosedNotice />;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();

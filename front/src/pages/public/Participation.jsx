@@ -1,13 +1,26 @@
 import { Link } from "react-router";
 import { useState } from "react";
 import { useLanguage } from "../../i18n/LanguageContext.jsx";
+import { useAuthSession } from "../../utils/authSession.js";
+import { usePhase3Closure } from "../../utils/usePhase3Closure.js";
+import PhaseClosedNotice from "../../components/PhaseClosedNotice.jsx";
 import "../public/Participation.css";
 
 export default function Participation() {
   const { tr } = useLanguage();
   const [agreedToTerms, setAgreedToTerms] = useState(false);
-  const isConnected = Boolean(localStorage.getItem("token") || localStorage.getItem("username"));
+  const { token, username } = useAuthSession();
+  const { isCheckingPhaseStatus, isPhase3Closed } = usePhase3Closure();
+  const isConnected = Boolean(token || username);
   const destination = isConnected ? "/submit-video" : "/auth/register?next=%2Fsubmit-video";
+
+  if (isCheckingPhaseStatus) {
+    return null;
+  }
+
+  if (isPhase3Closed) {
+    return <PhaseClosedNotice />;
+  }
 
   return (
     <div className="participation-page">

@@ -53,7 +53,11 @@ createRoot(document.getElementById("root")).render(
             <Route
               path="admin"
               element={
-                <RoleGuard allowedRoles={["ADMIN"]}>
+                <RoleGuard
+                  allowedRoles={["ADMIN"]}
+                  deniedTitle="Accès refusé"
+                  deniedMessage="Cette page est réservée aux administrateurs."
+                >
                   <AdminLayout />
                 </RoleGuard>
               }

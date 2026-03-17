@@ -51,6 +51,10 @@ async function setPhase3Award(id, isAwarded) {
   return await instance.patch(`videos/${id}/phase3-award`, { isAwarded });
 }
 
+async function setPhase2Selection(id, isSelected) {
+  return await instance.patch(`videos/${id}/phase2-selection`, { isSelected });
+}
+
 async function deleteAdminVideo(id) {
   return await instance.delete(`videos/${id}`);
 }
@@ -70,6 +74,7 @@ export {
   submitVideo,
   uploadVideoFile,
   setVideoEligibility,
+  setPhase2Selection,
   setPhase3Award,
   deleteAdminVideo,
   submitJuryVote,

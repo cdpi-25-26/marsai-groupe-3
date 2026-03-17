@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { useEffect, useState } from "react";
 import { getPublicGalleryStatus } from "../../api/videos";
 import { useLanguage } from "../../i18n/LanguageContext.jsx";
+import { SUPPORTS_STORAGE_KEY, getSupports } from "../../utils/supportsStorage.js";
 
 function Home() {
   const { tr } = useLanguage();
@@ -10,6 +11,7 @@ function Home() {
     isOpen: false,
     totalPublicVideos: 0,
   });
+  const [supports, setSupports] = useState(() => getSupports());
 
   useEffect(() => {
     const fetchGalleryStatus = async () => {
@@ -22,6 +24,24 @@ function Home() {
     };
 
     fetchGalleryStatus();
+  }, []);
+
+  useEffect(() => {
+    const syncSupportsFromStorage = () => {
+      setSupports(getSupports());
+    };
+
+    const onStorage = (event) => {
+      if (event.key === SUPPORTS_STORAGE_KEY) {
+        syncSupportsFromStorage();
+      }
+    };
+
+    window.addEventListener("storage", onStorage);
+
+    return () => {
+      window.removeEventListener("storage", onStorage);
+    };
   }, []);
 
   return (
@@ -222,7 +242,7 @@ function Home() {
             ))}
           </div>
 
-          <button className="home-protocol-btn">{tr("REJOINDRE L&apos;AVENTURE", "JOIN THE ADVENTURE")}</button>
+          <button className="home-protocol-btn">{tr("REJOINDRE L'AVENTURE", "JOIN THE ADVENTURE")}</button>
         </div>
       </section>
 
@@ -258,7 +278,7 @@ function Home() {
             <article className="home-conference-card home-conference-card-dark home-conference-card-violet">
               <div className="home-conference-icon home-conference-icon-green">⟡</div>
               <h3 className="home-conference-title">{tr("AWARDS", "AWARDS")}</h3>
-              <p className="home-conference-desc">{tr("Cérémonie de clôture récompensant l&apos;audace.", "Closing ceremony rewarding boldness.")}</p>
+              <p className="home-conference-desc">{tr("Cérémonie de clôture récompensant l'audace.", "Closing ceremony rewarding boldness.")}</p>
             </article>
           </div>
         </div>
@@ -302,7 +322,7 @@ function Home() {
           <div className="home-platform-meta">
             <p className="home-platform-meta-tag">{tr("MARSEILLE HUB CRÉATIF", "MARSEILLE CREATIVE HUB")}</p>
             <p className="home-platform-meta-address">
-              12 Rue d&apos;Uzès, 13002
+              12 Rue d'Uzès, 13002
               <br />
               Marseille
             </p>
@@ -319,7 +339,7 @@ function Home() {
             <article className="home-platform-card home-platform-card-dark">
               <h3>SALLE PLAZA</h3>
               <p>
-                {tr("L&apos;épicentre du festival : accueil, animations, workshops et restauration. Le point de rencontre de tous les participants.", "The epicenter of the festival: welcome area, activities, workshops and catering. The meeting point for all participants.")}
+                {tr("L'épicentre du festival : accueil, animations, workshops et restauration. Le point de rencontre de tous les participants.", "The epicenter of the festival: welcome area, activities, workshops and catering. The meeting point for all participants.")}
               </p>
             </article>
           </div>
@@ -369,14 +389,46 @@ function Home() {
           </h2>
 
           <div className="home-supports-grid">
-            {Array.from({ length: 12 }).map((_, idx) => (
-              <article key={idx} className="home-support-card">
-                <div className="home-support-placeholder" aria-label="Image manquante">
-                  <span className="home-support-placeholder-icon">🖼️</span>
-                  <span className="home-support-placeholder-text">{tr("IMAGE MANQUANTE", "MISSING IMAGE")}</span>
-                </div>
-              </article>
-            ))}
+            {supports.map((support, idx) => {
+              const hasImage = Boolean(support.imageUrl?.trim());
+              const hasLink = Boolean(support.websiteUrl?.trim());
+
+              const content = (
+                <>
+                  {hasImage ? (
+                    <img
+                      src={support.imageUrl}
+                      alt={support.name || `Support ${idx + 1}`}
+                      className="home-support-image"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="home-support-placeholder" aria-label="Image manquante">
+                      <span className="home-support-placeholder-icon">🖼️</span>
+                      <span className="home-support-placeholder-text">{tr("IMAGE MANQUANTE", "MISSING IMAGE")}</span>
+                    </div>
+                  )}
+                  <p className="home-support-name">{support.name?.trim() || `${tr("Soutien", "Supporter")} ${idx + 1}`}</p>
+                </>
+              );
+
+              return (
+                <article key={support.id || idx} className="home-support-card">
+                  {hasLink ? (
+                    <a
+                      className="home-support-link"
+                      href={support.websiteUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {content}
+                    </a>
+                  ) : (
+                    <div className="home-support-link">{content}</div>
+                  )}
+                </article>
+              );
+            })}
           </div>
         </div>
       </section>

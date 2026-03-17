@@ -7,6 +7,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useLanguage } from "../../i18n/LanguageContext.jsx";
+import { clearAuthSession, setAuthSession, useAuthSession } from "../../utils/authSession.js";
+import { usePhase3Closure } from "../../utils/usePhase3Closure.js";
 import "./Auth.css";
 
 const loginSchema = z.object({
@@ -16,17 +18,15 @@ const loginSchema = z.object({
 
 export function Login() {
   const { tr } = useLanguage();
-  const connectedUsername = localStorage.getItem("username");
+  const { username: connectedUsername } = useAuthSession();
+  const { isCheckingPhaseStatus, isPhase3Closed } = usePhase3Closure();
   const [searchParams] = useSearchParams();
   const next = searchParams.get("next");
 
   let navigate = useNavigate();
 
   function handleLogout() {
-    localStorage.removeItem("username");
-    localStorage.removeItem("role");
-    localStorage.removeItem("token");
-    localStorage.removeItem("tempAdminAccess");
+    clearAuthSession();
     window.location.href = "/auth/login";
   }
 
@@ -57,9 +57,11 @@ export function Login() {
     },
     onSuccess: (response, variables, context) => {
       // If you are logged
-      localStorage.setItem("username", response.data?.username);
-      localStorage.setItem("role", response.data?.role);
-      localStorage.setItem("token", response.data?.token);
+      setAuthSession({
+        username: response.data?.username,
+        role: response.data?.role,
+        token: response.data?.token,
+      });
 
       const safeNext = next && next.startsWith("/") ? next : null;
       if (safeNext) {
@@ -144,10 +146,12 @@ export function Login() {
           </button>
         </form>
 
-        <p className="auth-footer-text">
-          {tr("Nouveau sur MARS.A.I ?", "New to MARS.A.I?")}
-          <Link to="/auth/register"> {tr("Inscrivez-vous", "Sign up")}</Link>
-        </p>
+        {!isCheckingPhaseStatus && !isPhase3Closed && (
+          <p className="auth-footer-text">
+            {tr("Nouveau sur MARS.A.I ?", "New to MARS.A.I?")}
+            <Link to="/auth/register"> {tr("Inscrivez-vous", "Sign up")}</Link>
+          </p>
+        )}
 
         <Link className="auth-secondary-link" to="/">
           ← {tr("RETOUR ACCUEIL", "BACK HOME")}

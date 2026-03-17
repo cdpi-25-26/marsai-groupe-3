@@ -1,5 +1,4 @@
 import jwt from "jsonwebtoken";
-import { Op } from "sequelize";
 import { Evaluations, SystemSettings, Users, Videos } from "../models/index.js";
 
 function truncateValue(value, maxLength = 255) {
@@ -130,9 +129,7 @@ async function getAdminVideos(req, res) {
 async function getJuryVideos(req, res) {
   const videos = await Videos.findAll({
     where: {
-      statusSelection: {
-        [Op.in]: ["retenue", "à discuter"],
-      },
+      statusSelection: "retenue",
     },
     order: [["createdAt", "DESC"]],
   });
@@ -179,6 +176,52 @@ async function setPhase3Award(req, res) {
   }
 
   video.isPriority = isAwarded;
+  await video.save();
+
+  return res.json(await normalizeVideo(video));
+}
+
+async function setPhase2Selection(req, res) {
+  const { id } = req.params;
+  const { isSelected } = req.body;
+
+  if (typeof isSelected !== "boolean") {
+    return res.status(400).json({ error: "Le champ isSelected doit etre un booleen" });
+  }
+
+  const video = await Videos.findOne({ where: { id_video: id } });
+
+  if (!video) {
+    return res.status(404).json({ error: "Vidéo non trouvée" });
+  }
+
+  if (isSelected) {
+    if (video.statusSelection !== "à discuter") {
+      return res.status(409).json({
+        error: "Seules les videos de phase 2 peuvent passer en phase 3",
+      });
+    }
+
+    const currentTop50Count = await Videos.count({ where: { statusSelection: "finaliste" } });
+    if (currentTop50Count >= 50) {
+      return res.status(409).json({
+        error: "Le Top 50 est deja complet",
+      });
+    }
+
+    video.statusSelection = "finaliste";
+    await video.save();
+    return res.json(await normalizeVideo(video));
+  }
+
+  if (video.statusSelection !== "finaliste") {
+    return res.status(409).json({
+      error: "Seules les videos de phase 3 peuvent revenir en phase 2",
+    });
+  }
+
+  video.statusSelection = "à discuter";
+  video.isPriority = false;
   await video.save();
 
   return res.json(await normalizeVideo(video));
@@ -315,7 +358,7 @@ async function juryVote(req, res) {
 
     const requesterId = Number(req.user.id);
 
-    if (!["retenue", "à discuter"].includes(video.statusSelection)) {
+    if (video.statusSelection !== "retenue") {
       return res.status(400).json({
         error: "Cette vidéo n'est pas disponible pour le vote jury",
       });
@@ -364,18 +407,9 @@ async function juryVote(req, res) {
       }
     }
 
-    const voteSummary = await getVoteSummary(video.id_video);
-
-    if (voteSummary.yesVotes > voteSummary.noVotes) {
-      video.statusSelection = "finaliste";
-    } else if (voteSummary.noVotes > voteSummary.yesVotes) {
-      video.statusSelection = "refusé";
-      video.id_assigned_jury = null;
-      video.isPriority = false;
-    } else {
-      video.statusSelection = "à discuter";
-      video.isPriority = false;
-    }
+    // New workflow: first jury vote moves the video from phase 1 to phase 2.
+    video.statusSelection = "à discuter";
+    video.isPriority = false;
 
     await video.save();
     return res.json(await normalizeVideo(video));
@@ -530,6 +564,7 @@ export default {
   getPublicVideos,
   getPublicGalleryStatus,
   setPublicGalleryStatus,
+  setPhase2Selection,
   setPhase3Award,
   getVideoById,
   createVideo,
