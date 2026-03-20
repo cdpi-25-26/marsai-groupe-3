@@ -7,6 +7,7 @@ import "./Gallery.css";
 function Gallery() {
   const { tr } = useLanguage();
   const [cardSize, setCardSize] = useState("medium");
+  const [selectedVideo, setSelectedVideo] = useState(null);
   const [videos, setVideos] = useState([]);
   const [filteredVideos, setFilteredVideos] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -216,12 +217,16 @@ function Gallery() {
           <>
             <div className={`grid gallery-cards-grid gallery-size-${cardSize} mb-12`}>
               {paginatedVideos.map((video) => (
-                <div key={video.id} className={`card group ${video.isAwarded ? "card-awarded" : ""}`}>
-                  <div className="image relative overflow-hidden rounded-2xl mb-4">
+                <div
+                  key={video.id}
+                  className={`card group card-clickable ${video.isAwarded ? "card-awarded" : ""}`}
+                  onClick={() => setSelectedVideo(video)}
+                >
+                  <div className="image relative overflow-hidden rounded-2xl mb-3">
                     <img
                       src={video.thumbnail || "https://via.placeholder.com/300x200"}
                       alt={video.title}
-                      className="w-full h-48 object-cover rounded-2xl group-hover:scale-110 transition-transform duration-300"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                     />
                     <div className="badge absolute top-3 right-3 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold">
                       {tr("ART NUMÉRIQUE", "DIGITAL ART")}
@@ -232,42 +237,56 @@ function Gallery() {
                         #{startIndex + paginatedVideos.indexOf(video) + 1}
                       </span>
                     </div>
-                    <div className="overlay absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl flex items-end p-4">
-                      <Link
-                        to={`/films/${video.id}`}
-                        className="w-full py-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-lg font-semibold hover:from-pink-600 hover:to-purple-700 transition-colors text-center"
-                      >
-                        {tr("VOIR PLUS", "SEE MORE")}
-                      </Link>
-                    </div>
                   </div>
-
                   <div className="info">
-                    <h3 className="text-white font-bold text-lg mb-2 line-clamp-2">
-                      {video.title}
-                    </h3>
-                    <div className="text-sm text-gray-400 mb-3">
-                      <p className="mb-1">
-                        <span className="text-gray-500">{tr("Réalisateur:", "Director:")} </span>
-                        {video.creator || tr("Non spécifié", "Not specified")}
-                      </p>
-                      <p className="flex items-center gap-2">
-                        <span className="text-blue-400">🌍</span>
-                        <span>{video.country || tr("Non spécifié", "Not specified")}</span>
-                      </p>
-                    </div>
-                    <div className="flex gap-2 flex-wrap">
-                      <span className="badge text-xs bg-purple-900 text-purple-300 px-2 py-1 rounded">
-                        {video.classification || tr("Non classé", "Unclassified")}
-                      </span>
-                      <span className="badge text-xs bg-pink-900 text-pink-300 px-2 py-1 rounded">
-                        {video.status || tr("En attente", "Pending")}
-                      </span>
-                    </div>
+                    <h3 className="text-white font-bold text-sm line-clamp-2">{video.title}</h3>
                   </div>
                 </div>
               ))}
             </div>
+
+            {selectedVideo && (
+              <div className="video-modal-backdrop" onClick={() => setSelectedVideo(null)}>
+                <div className="video-modal" onClick={(e) => e.stopPropagation()}>
+                  <button
+                    type="button"
+                    className="video-modal-close"
+                    onClick={() => setSelectedVideo(null)}
+                  >
+                    ✕
+                  </button>
+                  <img
+                    src={selectedVideo.thumbnail || "https://via.placeholder.com/480x270"}
+                    alt={selectedVideo.title}
+                    className="video-modal-img"
+                  />
+                  <div className="video-modal-body">
+                    <span className="video-modal-status">
+                      {tr("ART NUMÉRIQUE", "DIGITAL ART")}
+                    </span>
+                    <h3 className="video-modal-title">{selectedVideo.title}</h3>
+                    <p className="video-modal-meta">
+                      <span style={{ color: "#6b7280" }}>{tr("Réalisateur:", "Director:")} </span>
+                      {selectedVideo.creator || tr("Non spécifié", "Not specified")}
+                    </p>
+                    <p className="video-modal-meta">
+                      🌍 {selectedVideo.country || tr("Non spécifié", "Not specified")}
+                    </p>
+                    <div className="video-modal-badges">
+                      <span className="badge text-xs bg-purple-900 text-purple-300 px-2 py-1 rounded">
+                        {selectedVideo.classification || tr("Non classé", "Unclassified")}
+                      </span>
+                      <span className="badge text-xs bg-pink-900 text-pink-300 px-2 py-1 rounded">
+                        {selectedVideo.status || tr("En attente", "Pending")}
+                      </span>
+                    </div>
+                    <Link to={`/films/${selectedVideo.id}`} className="video-modal-see-more">
+                      {tr("VOIR PLUS", "SEE MORE")}
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {totalPages > 1 && (
               <div className="pagination flex items-center justify-center gap-2">

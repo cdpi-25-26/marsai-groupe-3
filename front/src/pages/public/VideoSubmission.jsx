@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { submitVideo, uploadVideoFile } from "../../api/videos";
+import { resolveYoutubeLink, submitVideo, uploadVideoFile } from "../../api/videos";
 import { useLanguage } from "../../i18n/LanguageContext.jsx";
 import { useAuthSession } from "../../utils/authSession.js";
 import { usePhase3Closure } from "../../utils/usePhase3Closure.js";
@@ -54,8 +54,10 @@ export default function VideoSubmission() {
   const { isCheckingPhaseStatus, isPhase3Closed } = usePhase3Closure();
   const isAuthenticated = Boolean(token);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isResolvingYoutube, setIsResolvingYoutube] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+  const [youtubeMeta, setYoutubeMeta] = useState(null);
 
   const [formData, setFormData] = useState({
     title: "", titleEnglish: "", duration: "", language: "",
@@ -86,6 +88,37 @@ export default function VideoSubmission() {
     updateField("mediaGallery", newMedia);
   };
 
+  const handleResolveYoutube = async () => {
+    if (!formData.youtubeLink) {
+      setYoutubeMeta(null);
+      return;
+    }
+
+    setIsResolvingYoutube(true);
+    setError(null);
+
+    try {
+      const response = await resolveYoutubeLink(formData.youtubeLink);
+      const metadata = response.data;
+
+      setYoutubeMeta(metadata);
+      updateField("youtubeLink", metadata.canonicalUrl || formData.youtubeLink);
+
+      if (!formData.thumbnail && metadata.thumbnail) {
+        updateField("thumbnail", metadata.thumbnail);
+      }
+
+      if (!formData.duration && metadata.durationSeconds) {
+        updateField("duration", String(metadata.durationSeconds));
+      }
+    } catch (err) {
+      setYoutubeMeta(null);
+      setError(err.response?.data?.error || tr("Lien YouTube invalide", "Invalid YouTube link"));
+    } finally {
+      setIsResolvingYoutube(false);
+    }
+  };
+
   if (isCheckingPhaseStatus) {
     return null;
   }
@@ -112,6 +145,18 @@ export default function VideoSubmission() {
 
     try {
       let uploadedVideoUrl = "";
+      let resolvedYoutubeUrl = formData.youtubeLink;
+
+      if (formData.youtubeLink) {
+        const ytResponse = await resolveYoutubeLink(formData.youtubeLink);
+        const metadata = ytResponse.data;
+        setYoutubeMeta(metadata);
+        resolvedYoutubeUrl = metadata.canonicalUrl || formData.youtubeLink;
+
+        if (!formData.thumbnail && metadata.thumbnail) {
+          updateField("thumbnail", metadata.thumbnail);
+        }
+      }
 
       if (formData.videoFile) {
         const uploadResponse = await uploadVideoFile(formData.videoFile);
@@ -120,6 +165,7 @@ export default function VideoSubmission() {
 
       const submissionData = {
         ...formData,
+        youtubeLink: resolvedYoutubeUrl,
         duration: parseInt(formData.duration),
         mediaGallery: formData.mediaGallery.filter((url) => url.trim() !== ""),
         videoFileUrl: uploadedVideoUrl,
@@ -230,7 +276,26 @@ export default function VideoSubmission() {
               <h2 className="section-title">{tr("03. LIVRABLES & ACCESSIBILITÉ", "03. DELIVERABLES & ACCESSIBILITY")}</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormInput tr={tr} className="input-ytb" label={tr("LIEN YOUTUBE (OPTIONNEL SI FICHIER VIDÉO)", "YOUTUBE LINK (OPTIONAL IF VIDEO FILE)")} required={false} type="url" value={formData.youtubeLink} onChange={(e) => updateField("youtubeLink", e.target.value)} placeholder="https://youtube.com/..." />
+              <div>
+                <FormInput tr={tr} className="input-ytb" label={tr("LIEN YOUTUBE (OPTIONNEL SI FICHIER VIDÉO)", "YOUTUBE LINK (OPTIONAL IF VIDEO FILE)")} required={false} type="url" value={formData.youtubeLink} onChange={(e) => updateField("youtubeLink", e.target.value)} placeholder="https://youtube.com/..." />
+                <div className="mt-2">
+                  <button
+                    type="button"
+                    onClick={handleResolveYoutube}
+                    disabled={!formData.youtubeLink || isResolvingYoutube}
+                    className="add-btn"
+                  >
+                    {isResolvingYoutube
+                      ? tr("VÉRIFICATION DU LIEN...", "CHECKING LINK...")
+                      : tr("VÉRIFIER LE LIEN YOUTUBE", "CHECK YOUTUBE LINK")}
+                  </button>
+                  {youtubeMeta && (
+                    <p className="text mt-2">
+                      {tr("Vidéo détectée", "Detected video")} : {youtubeMeta.title || tr("Titre indisponible", "Title unavailable")}
+                    </p>
+                  )}
+                </div>
+              </div>
               <div>
                 <label className="label">{tr("FICHIER VIDÉO (OPTIONNEL SI YOUTUBE)", "VIDEO FILE (OPTIONAL IF YOUTUBE)")}</label>
                 <label className="file-label">

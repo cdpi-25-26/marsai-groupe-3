@@ -15,7 +15,16 @@ export default function Participation() {
   const destination = isConnected ? "/submit-video" : "/auth/register?next=%2Fsubmit-video";
 
   if (isCheckingPhaseStatus) {
-    return null;
+    return (
+      <div className="participation-page">
+        <section className="participation-card participation-card-main" aria-live="polite">
+          <h1 className="participation-title participation-title-neon">{tr("Chargement", "Loading")}</h1>
+          <p className="participation-subtitle">
+            {tr("Verification de l'etat de la phase...", "Checking phase status...")}
+          </p>
+        </section>
+      </div>
+    );
   }
 
   if (isPhase3Closed) {

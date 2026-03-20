@@ -46,3 +46,13 @@ console.log(process.env.DB_NAME);
 app.get("/", (req, res) => {
   res.send("API Marsai OK ✅");
 });
+
+
+app.get("/", (req, res) => {
+res.json({ message: "✅ API Email opérationnelle" });
+});
+if (process.env.BREVO_API_KEY) {
+  console.log("Clé API Brevo chargée avec succès.");
+} else {
+  console.warn("⚠️ Clé API Brevo manquante. Les fonctionnalités d'email ne fonctionneront pas.");
+}

@@ -31,31 +31,6 @@ export function Register() {
     window.location.href = "/auth/login";
   }
 
-  if (isCheckingPhaseStatus) {
-    return null;
-  }
-
-  if (isPhase3Closed) {
-    return <PhaseClosedNotice />;
-  }
-
-  if (connectedUsername) {
-    return (
-      <div className="auth-page">
-        <div className="auth-card auth-card-sm">
-          <h1 className="auth-title">{tr("DÉJÀ CONNECTÉ", "ALREADY LOGGED IN")}</h1>
-          <p className="auth-subtitle">{tr("Vous êtes connecté en tant que", "You are logged in as")} {connectedUsername}</p>
-          <button className="auth-primary-button" type="button" onClick={handleLogout}>
-            {tr("SE DÉCONNECTER", "LOG OUT")}
-          </button>
-          <Link className="auth-primary-button auth-link-btn" to="/">
-            {tr("RETOUR ACCUEIL", "BACK HOME")}
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   const { register, handleSubmit } = useForm({
     resolver: zodResolver(registerSchema),
   });
@@ -79,6 +54,38 @@ export function Register() {
       alert(message);
     },
   });
+
+  if (isCheckingPhaseStatus) {
+    return (
+      <div className="auth-page">
+        <div className="auth-card auth-card-sm">
+          <h1 className="auth-title">{tr("Chargement", "Loading")}</h1>
+          <p className="auth-subtitle">{tr("Vérification de l'état de la phase...", "Checking phase status...")}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (isPhase3Closed) {
+    return <PhaseClosedNotice />;
+  }
+
+  if (connectedUsername) {
+    return (
+      <div className="auth-page">
+        <div className="auth-card auth-card-sm">
+          <h1 className="auth-title">{tr("DÉJÀ CONNECTÉ", "ALREADY LOGGED IN")}</h1>
+          <p className="auth-subtitle">{tr("Vous êtes connecté en tant que", "You are logged in as")} {connectedUsername}</p>
+          <button className="auth-primary-button" type="button" onClick={handleLogout}>
+            {tr("SE DÉCONNECTER", "LOG OUT")}
+          </button>
+          <Link className="auth-primary-button auth-link-btn" to="/">
+            {tr("RETOUR ACCUEIL", "BACK HOME")}
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   function onSubmit(data) {
     return registerMutation.mutate(data);

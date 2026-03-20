@@ -30,23 +30,6 @@ export function Login() {
     window.location.href = "/auth/login";
   }
 
-  if (connectedUsername) {
-    return (
-      <div className="auth-page">
-        <div className="auth-card auth-card-sm">
-          <h1 className="auth-title">{tr("DÉJÀ CONNECTÉ", "ALREADY LOGGED IN")}</h1>
-          <p className="auth-subtitle">{tr("Vous êtes connecté en tant que", "You are logged in as")} {connectedUsername}</p>
-          <button className="auth-primary-button" type="button" onClick={handleLogout}>
-            {tr("SE DÉCONNECTER", "LOG OUT")}
-          </button>
-          <Link className="auth-primary-button auth-link-btn" to="/">
-            {tr("RETOUR ACCUEIL", "BACK HOME")}
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   const { register, handleSubmit } = useForm({
     resolver: zodResolver(loginSchema),
   });
@@ -96,6 +79,34 @@ export function Login() {
       alert(message);
     },
   });
+
+  if (isCheckingPhaseStatus) {
+    return (
+      <div className="auth-page">
+        <div className="auth-card auth-card-sm">
+          <h1 className="auth-title">{tr("Chargement", "Loading")}</h1>
+          <p className="auth-subtitle">{tr("Verification de l'etat de la phase...", "Checking phase status...")}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (connectedUsername) {
+    return (
+      <div className="auth-page">
+        <div className="auth-card auth-card-sm">
+          <h1 className="auth-title">{tr("DÉJÀ CONNECTÉ", "ALREADY LOGGED IN")}</h1>
+          <p className="auth-subtitle">{tr("Vous êtes connecté en tant que", "You are logged in as")} {connectedUsername}</p>
+          <button className="auth-primary-button" type="button" onClick={handleLogout}>
+            {tr("SE DÉCONNECTER", "LOG OUT")}
+          </button>
+          <Link className="auth-primary-button auth-link-btn" to="/">
+            {tr("RETOUR ACCUEIL", "BACK HOME")}
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   function onSubmit(data) {
     return loginMutation.mutate(data);

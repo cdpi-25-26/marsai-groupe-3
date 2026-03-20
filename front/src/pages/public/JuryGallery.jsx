@@ -11,6 +11,7 @@ function JuryGallery() {
   const { role: currentRole } = useAuthSession();
   const canVote = currentRole === "JURY";
   const [cardSize, setCardSize] = useState("medium");
+  const [selectedVideo, setSelectedVideo] = useState(null);
 
   const [videos, setVideos] = useState([]);
   const [voteComments, setVoteComments] = useState({});
@@ -108,63 +109,83 @@ function JuryGallery() {
             <p className="text-xl">{tr("Aucune vidéo à voter actuellement", "No videos to vote right now")}</p>
           </div>
         ) : (
+          <>
           <div className={`grid gallery-cards-grid gallery-size-${cardSize} mb-12`}>
             {videos.map((video) => (
-              <div key={video.id} className="card group">
-                <div className="image relative overflow-hidden rounded-2xl mb-4">
+              <div
+                key={video.id}
+                className="card group card-clickable"
+                onClick={() => setSelectedVideo(video)}
+              >
+                <div className="image relative overflow-hidden rounded-2xl mb-3">
                   <img
                     src={video.thumbnail || "https://via.placeholder.com/300x200"}
                     alt={video.title}
-                    className="w-full h-48 object-cover rounded-2xl group-hover:scale-110 transition-transform duration-300"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   />
                   <div className="badge absolute top-3 right-3 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold">
                     {video.status || "retenue"}
                   </div>
-                  <div className="overlay absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl flex items-end p-4">
-                    <Link
-                      to={`/films/${video.id}`}
-                      className="w-full py-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-lg font-semibold hover:from-pink-600 hover:to-purple-700 transition-colors text-center"
-                    >
-                      {tr("VOIR PLUS", "SEE MORE")}
-                    </Link>
-                  </div>
                 </div>
-
                 <div className="info">
-                  <h3 className="text-white font-bold text-lg mb-2 line-clamp-2">{video.title}</h3>
-                  <p className="text-gray-300 text-sm mb-2">{video.synopsisOriginal || tr("Sans synopsis", "No synopsis")}</p>
+                  <h3 className="text-white font-bold text-sm line-clamp-2">{video.title}</h3>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {selectedVideo && (
+            <div className="video-modal-backdrop" onClick={() => setSelectedVideo(null)}>
+              <div className="video-modal" onClick={(e) => e.stopPropagation()}>
+                <button
+                  type="button"
+                  className="video-modal-close"
+                  onClick={() => setSelectedVideo(null)}
+                >
+                  ✕
+                </button>
+                <img
+                  src={selectedVideo.thumbnail || "https://via.placeholder.com/480x270"}
+                  alt={selectedVideo.title}
+                  className="video-modal-img"
+                />
+                <div className="video-modal-body">
+                  <span className="video-modal-status">{selectedVideo.status || "retenue"}</span>
+                  <h3 className="video-modal-title">{selectedVideo.title}</h3>
+                  <p className="video-modal-synopsis">
+                    {selectedVideo.synopsisOriginal || tr("Sans synopsis", "No synopsis")}
+                  </p>
 
                   <p className="jury-vote-counts">
-                    {tr("OUI", "YES")}: {video.yesVotes || 0} · {tr("NON", "NO")}: {video.noVotes || 0}
+                    {tr("OUI", "YES")}: {selectedVideo.yesVotes || 0} · {tr("NON", "NO")}: {selectedVideo.noVotes || 0}
                   </p>
 
                   {canVote ? (
                     <>
                       <textarea
                         className="jury-comment-input"
-                        value={voteComments[video.id] || ""}
+                        value={voteComments[selectedVideo.id] || ""}
                         onChange={(event) =>
                           setVoteComments((prev) => ({
                             ...prev,
-                            [video.id]: event.target.value,
+                            [selectedVideo.id]: event.target.value,
                           }))
                         }
-                        placeholder="Ajouter un commentaire (optionnel)"
+                        placeholder={tr("Ajouter un commentaire (optionnel)", "Add a comment (optional)")}
                         maxLength={255}
                       />
-
                       <div className="jury-vote-actions">
                         <button
                           type="button"
                           className="jury-yes-btn"
-                          onClick={() => handleVote(video.id, "OUI")}
+                          onClick={() => { handleVote(selectedVideo.id, "OUI"); setSelectedVideo(null); }}
                         >
                           {tr("Accepter", "Accept")} 👍
                         </button>
                         <button
                           type="button"
                           className="jury-no-btn"
-                          onClick={() => handleVote(video.id, "NON")}
+                          onClick={() => { handleVote(selectedVideo.id, "NON"); setSelectedVideo(null); }}
                         >
                           {tr("Refuser", "Reject")} 👎
                         </button>
@@ -173,10 +194,15 @@ function JuryGallery() {
                   ) : (
                     <p className="jury-readonly-note-card">{tr("Seul le rôle JURY peut voter.", "Only JURY role can vote.")}</p>
                   )}
+
+                  <Link to={`/films/${selectedVideo.id}`} className="video-modal-see-more">
+                    {tr("VOIR PLUS", "SEE MORE")}
+                  </Link>
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
+          )}
+          </>
         )}
       </div>
     </div>

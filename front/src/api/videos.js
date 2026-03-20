@@ -43,6 +43,10 @@ async function uploadVideoFile(file) {
   });
 }
 
+async function resolveYoutubeLink(url) {
+  return await instance.post("videos/youtube/resolve", { url });
+}
+
 async function setVideoEligibility(id, decision) {
   return await instance.patch(`videos/${id}/admin-eligibility`, { decision });
 }
@@ -73,6 +77,7 @@ export {
   getVideoDetail,
   submitVideo,
   uploadVideoFile,
+  resolveYoutubeLink,
   setVideoEligibility,
   setPhase2Selection,
   setPhase3Award,
