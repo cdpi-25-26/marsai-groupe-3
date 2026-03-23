@@ -48,6 +48,10 @@ const TeamMemberForm = ({ member, index, onChange, tr }) => (
   </div>
 );
 
+const FIXED_YOUTUBE_LINK = "https://www.youtube.com/watch?v=zBjJUV-lzHo";
+
+const pickRandom = (items) => items[Math.floor(Math.random() * items.length)];
+
 export default function VideoSubmission() {
   const { tr } = useLanguage();
   const { token } = useAuthSession();
@@ -86,6 +90,58 @@ export default function VideoSubmission() {
     const newMedia = [...formData.mediaGallery];
     newMedia[index] = value;
     updateField("mediaGallery", newMedia);
+  };
+
+  const handleAutofillForm = () => {
+    const themesFr = ["Horizons Numériques", "Les Sables du Futur", "Mémoire Synthétique", "La Dernière Interface", "Échos Quantiques"];
+    const themesEn = ["Digital Horizons", "Sands of Tomorrow", "Synthetic Memory", "The Last Interface", "Quantum Echoes"];
+    const languages = ["Français", "English", "Español", "Deutsch", "العربية"];
+    const jobsFr = ["Réalisateur", "Scénariste", "Compositeur", "Monteur", "Directeur photo"];
+    const jobsEn = ["Director", "Screenwriter", "Composer", "Editor", "Director of Photography"];
+    const firstNames = ["Alex", "Maya", "Nora", "Idriss", "Lina", "Sam"];
+    const lastNames = ["Martin", "Diallo", "Garcia", "Nguyen", "Khan", "Rossi"];
+
+    const projectTitleFr = pickRandom(themesFr);
+    const projectTitleEn = pickRandom(themesEn);
+    const language = pickRandom(languages);
+    const firstName = pickRandom(firstNames);
+    const lastName = pickRandom(lastNames);
+
+    setYoutubeMeta(null);
+    setError(null);
+
+    setFormData((prev) => ({
+      ...prev,
+      title: `${projectTitleFr} ${Math.floor(Math.random() * 90) + 10}`,
+      titleEnglish: `${projectTitleEn} ${Math.floor(Math.random() * 90) + 10}`,
+      duration: "60",
+      language,
+      synopsisOriginal: "Un créateur tente de préserver une émotion humaine dans un monde dominé par les intelligences artificielles.",
+      synopsisEnglish: "A creator tries to preserve human emotion in a world driven by artificial intelligence.",
+      classification: Math.random() > 0.5 ? "generation_integrale" : "production_hybride",
+      techStack: "Midjourney, Runway, ElevenLabs, DaVinci Resolve",
+      methodology: "Écriture humaine, génération visuelle assistée par IA, puis montage et sound design supervisés par une équipe artistique.",
+      youtubeLink: FIXED_YOUTUBE_LINK,
+      hasSubtitles: Math.random() > 0.5,
+      subtitlesFile: null,
+      thumbnail: "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1600&q=80",
+      videoFile: null,
+      mediaGallery: [
+        "https://images.unsplash.com/photo-1440404653325-ab127d49abc1?auto=format&fit=crop&w=1600&q=80",
+        "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=1600&q=80",
+        "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1600&q=80",
+      ],
+      team: [
+        {
+          civility: Math.random() > 0.5 ? "Mr" : "Mme",
+          firstName,
+          lastName,
+          profession: pickRandom(tr("Réalisateur", "Director") === "Réalisateur" ? jobsFr : jobsEn),
+          email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@example.com`,
+        },
+      ],
+      certifiedOwnership: true,
+    }));
   };
 
   const handleResolveYoutube = async () => {
@@ -216,6 +272,12 @@ export default function VideoSubmission() {
         </header>
 
         <form onSubmit={handleSubmit} className="space-y-8">
+          <div className="flex justify-end">
+            <button type="button" onClick={handleAutofillForm} className="add-btn">
+              {tr("REMPLIR AUTOMATIQUEMENT LE FORMULAIRE", "AUTO-FILL FORM")}
+            </button>
+          </div>
+
           <div className="info">
             <div className="icon-p2">☑️</div>
             <p className="text">
