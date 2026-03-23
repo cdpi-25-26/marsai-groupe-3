@@ -2,6 +2,15 @@ import "./Programme.css";
 import { useState } from "react";
 import { createReservation } from "../../api/reservations";
 import { useLanguage } from "../../i18n/LanguageContext.jsx";
+import agendaIcon from "../../assets/icones/icones_programme/agenda.svg";
+import mapPlateformeIcon from "../../assets/icones/icones_programme/map_plateforme.svg";
+import horlogeIcon from "../../assets/icones/icones_programme/horloge.svg";
+import flecheAccesIcon from "../../assets/icones/icones_programme/fleche_acces.svg";
+import tramwayIcon from "../../assets/icones/icones_programme/tramway.svg";
+import voitureIcon from "../../assets/icones/icones_programme/voiture.svg";
+import mapAccesIcon from "../../assets/icones/icones_programme/map_acces.svg";
+import workshopIcon from "../../assets/icones/icones_programme/worshop.svg";
+import atelierPratiqueIcon from "../../assets/icones/icones_programme/atelier_pratique.svg";
 
 export default function Programme() {
   const { tr } = useLanguage();
@@ -10,6 +19,7 @@ export default function Programme() {
     participants: [{ firstName: "", lastName: "", email: "" }],
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [feedback, setFeedback] = useState(null); // { type: "success" | "error", message: string }
 
   const openModal = (workshop) => {
     setSelectedWorkshop(workshop);
@@ -52,11 +62,21 @@ export default function Programme() {
           }),
         ),
       );
-      alert(tr("Réservation envoyée !", "Reservation sent!"));
+      setFeedback({
+        type: "success",
+        message: tr("Réservation envoyée !", "Reservation sent!"),
+      });
       closeModal();
     } catch (err) {
       console.error(err);
-      alert(tr("Erreur lors de l'envoi. Vérifiez le backend.", "Error while sending. Please check the backend."));
+      const msg =
+        err?.response?.data?.detail ||
+        err?.response?.data?.error ||
+        tr("Erreur lors de l'envoi. Vérifiez le backend.", "Error while sending. Please check the backend.");
+      setFeedback({
+        type: "error",
+        message: msg,
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -133,7 +153,7 @@ export default function Programme() {
   return (
     <section className="programme-page">
       <div className="programme-head">
-        <span className="programme-icon" aria-hidden="true">📅</span>
+        <img src={agendaIcon} alt="" className="programme-icon" aria-hidden="true" />
         <span className="programme-label">{tr("infos pratiques", "practical info")}</span>
       </div>
 
@@ -143,7 +163,7 @@ export default function Programme() {
       <div className="programme-card">
         <div className="card-header">
           <div className="card-icon-box">
-            <span className="card-icon" aria-hidden="true">📍</span>
+            <img src={mapPlateformeIcon} alt="" className="card-icon" aria-hidden="true" />
           </div>
           <div className="card-title">La Plateforme_</div>
         </div>
@@ -157,7 +177,7 @@ export default function Programme() {
 
       <div className="conf-block">
         <div className="conf-header">
-          <span className="conf-icon" aria-hidden="true">🕒</span>
+          <img src={horlogeIcon} alt="" className="conf-icon" aria-hidden="true" />
           <h2 className="conf-title">{tr("PROGRAMME DES CONFÉRENCES", "CONFERENCE PROGRAM")}</h2>
         </div>
         <div className="conf-underline"></div>
@@ -181,7 +201,7 @@ export default function Programme() {
 
       <div className="conf-block access-block">
         <div className="conf-header">
-          <span className="access-icon" aria-hidden="true">➡️</span>
+          <img src={flecheAccesIcon} alt="" className="access-icon" aria-hidden="true" />
           <h2 className="conf-title">{tr("ACCES", "ACCESS")}</h2>
         </div>
         <div className="conf-underline access-underline"></div>
@@ -189,7 +209,7 @@ export default function Programme() {
 
       <div className="access-inline">
         <div className="access-square" aria-hidden="true">
-          <span className="access-square-icon">🚋</span>
+          <img src={tramwayIcon} alt="" className="access-square-icon" />
         </div>
         <div className="access-text">
           <div className="access-title">{tr("Transports en commun", "Public transport")}</div>
@@ -202,7 +222,7 @@ export default function Programme() {
 
       <div className="access-inline">
         <div className="access-square access-square-green" aria-hidden="true">
-          <span className="access-square-icon">🚗</span>
+          <img src={voitureIcon} alt="" className="access-square-icon" />
         </div>
         <div className="access-text">
           <div className="access-title">{tr("Voiture", "Car")}</div>
@@ -215,7 +235,7 @@ export default function Programme() {
 
       <div className="access-inline">
         <div className="access-square access-square-purple" aria-hidden="true">
-          <span className="access-square-icon">🗺️</span>
+          <img src={mapAccesIcon} alt="" className="access-square-icon" />
         </div>
         <div className="access-text">
           <div className="access-title">{tr("Adresse", "Address")}</div>
@@ -237,7 +257,7 @@ export default function Programme() {
 
       <div className="conf-block workshops-block">
         <div className="conf-header">
-          <span className="workshop-icon" aria-hidden="true">🛠️</span>
+          <img src={atelierPratiqueIcon} alt="" className="workshop-icon" aria-hidden="true" />
           <h2 className="conf-title">{tr("ATELIERS PRATIQUES", "HANDS-ON WORKSHOPS")}</h2>
         </div>
         <div className="conf-underline workshop-underline"></div>
@@ -249,7 +269,7 @@ export default function Programme() {
             <span className="ws-title-main">{tr("WORSHOPS", "WORKSHOPS")}</span>
             <span className="ws-title-sub">{tr("IA CREATIVE", "CREATIVE AI")}</span>
           </div>
-          <span className="workshops-icon" aria-hidden="true">🎓</span>
+          <img src={workshopIcon} alt="" className="workshops-icon" aria-hidden="true" />
         </div>
         <p className="workshops-lead">
           {tr("Passez de la théorie à la pratique avec les meilleurs experts internationaux. Attention, places limitées (max 15 par session).", "Move from theory to practice with leading international experts. Warning: limited seats (max 15 per session).")}
@@ -341,6 +361,20 @@ export default function Programme() {
               </div>
             </form>
           </div>
+        </div>
+      )}
+
+      {feedback && (
+        <div className={`toast ${feedback.type}`}>
+          <span className="toast-dot" aria-hidden="true"></span>
+          <span className="toast-text">{feedback.message}</span>
+          <button
+            type="button"
+            className="toast-close"
+            onClick={() => setFeedback(null)}
+          >
+            OK
+          </button>
         </div>
       )}
     </section>

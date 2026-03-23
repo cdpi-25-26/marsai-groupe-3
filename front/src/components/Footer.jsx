@@ -40,9 +40,8 @@ export default function Footer() {
 
       <div className="footer-col nav">
         <h4 className="col-title violet">{tr("NAVIGATION", "NAVIGATION")}</h4>
-        <Link to="/gallery" className="footer-link">{tr("Galerie", "Gallery")}</Link>
         <Link to="/programme" className="footer-link">{tr("Programme", "Program")}</Link>
-        <a href="#" className="footer-link">{tr("Top 50", "Top 50")}</a>
+        <a href="#" className="footer-link">{tr("Participation", "Participation")}</a>
         <a href="#" className="footer-link">{tr("Billetterie", "Tickets")}</a>
       </div>
 
