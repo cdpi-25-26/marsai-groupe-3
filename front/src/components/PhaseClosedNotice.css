@@ -1,0 +1,45 @@
+.phase-closed-notice-wrap {
+  min-height: calc(100vh - 140px);
+  display: grid;
+  place-items: center;
+  padding: 2rem 1rem 3rem;
+  background: radial-gradient(110% 80% at 50% 10%, rgba(77, 43, 255, 0.2) 0%, rgba(10, 10, 14, 0) 55%), #03030a;
+}
+
+.phase-closed-notice-bubble {
+  width: min(100%, 620px);
+  border-radius: 22px;
+  border: 1px solid rgba(246, 51, 154, 0.38);
+  background: rgba(7, 8, 16, 0.92);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.62), inset 0 1px 0 rgba(246, 51, 154, 0.22);
+  padding: 1.5rem 1.25rem;
+  text-align: center;
+  color: #f4f7ff;
+}
+
+.phase-closed-notice-bubble h2 {
+  margin: 0;
+  color: #f6339a;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: clamp(1.2rem, 3vw, 1.6rem);
+}
+
+.phase-closed-notice-bubble p {
+  margin: 0.9rem 0 0;
+  color: rgba(223, 230, 250, 0.85);
+  line-height: 1.6;
+}
+
+.phase-closed-notice-link {
+  margin-top: 1rem;
+  display: inline-block;
+  text-decoration: none;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #7ba6ff;
+}
+
+.phase-closed-notice-link:hover {
+  color: #a4c0ff;
+}

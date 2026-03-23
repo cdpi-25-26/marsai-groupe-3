@@ -1,28 +1,21 @@
 import express from "express";
 import multer from "multer";
-import fs from "fs";
-import path from "path";
 import VideoController from "../controllers/VideoController.js";
 import AuthMiddleware from "../middlewares/AuthMiddleware.js";
 
 const videoRouter = express.Router();
 
-const uploadDirectory = path.resolve(process.cwd(), "uploads", "videos");
-
-const storage = multer.diskStorage({
-  destination: (req, file, callback) => {
-    fs.mkdirSync(uploadDirectory, { recursive: true });
-    callback(null, uploadDirectory);
-  },
-  filename: (req, file, callback) => {
-    const safeName = `${Date.now()}-${file.originalname.replace(/\s+/g, "-")}`;
-    callback(null, safeName);
-  },
-});
-
 const upload = multer({
-  storage,
+  storage: multer.memoryStorage(),
   limits: { fileSize: 500 * 1024 * 1024 },
+  fileFilter: (req, file, callback) => {
+    if (file.mimetype?.startsWith("video/")) {
+      callback(null, true);
+      return;
+    }
+
+    callback(new Error("Seuls les fichiers vidéo sont autorisés"));
+  },
 });
 
 videoRouter.get("/", VideoController.getPublicVideos);
@@ -46,6 +39,12 @@ videoRouter.post(
 ); // User
 
 videoRouter.post(
+  "/youtube/resolve",
+  (req, res, next) => AuthMiddleware(req, res, next, ["ADMIN", "JURY", "PRODUCER"]),
+  VideoController.resolveYoutube,
+);
+
+videoRouter.post(
   "/submit",
   (req, res, next) => AuthMiddleware(req, res, next, ["ADMIN", "JURY", "PRODUCER"]),
   VideoController.submitVideo,
@@ -61,6 +60,12 @@ videoRouter.patch(
   "/:id/phase3-award",
   (req, res, next) => AuthMiddleware(req, res, next, ["ADMIN"]),
   VideoController.setPhase3Award,
+);
+
+videoRouter.patch(
+  "/:id/phase2-selection",
+  (req, res, next) => AuthMiddleware(req, res, next, ["ADMIN"]),
+  VideoController.setPhase2Selection,
 );
 
 videoRouter.patch(

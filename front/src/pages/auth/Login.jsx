@@ -7,6 +7,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useLanguage } from "../../i18n/LanguageContext.jsx";
+import { clearAuthSession, setAuthSession, useAuthSession } from "../../utils/authSession.js";
+import { usePhase3Closure } from "../../utils/usePhase3Closure.js";
 import "./Auth.css";
 
 const loginSchema = z.object({
@@ -16,35 +18,16 @@ const loginSchema = z.object({
 
 export function Login() {
   const { tr } = useLanguage();
-  const connectedUsername = localStorage.getItem("username");
+  const { username: connectedUsername } = useAuthSession();
+  const { isCheckingPhaseStatus, isPhase3Closed } = usePhase3Closure();
   const [searchParams] = useSearchParams();
   const next = searchParams.get("next");
 
   let navigate = useNavigate();
 
   function handleLogout() {
-    localStorage.removeItem("username");
-    localStorage.removeItem("role");
-    localStorage.removeItem("token");
-    localStorage.removeItem("tempAdminAccess");
+    clearAuthSession();
     window.location.href = "/auth/login";
-  }
-
-  if (connectedUsername) {
-    return (
-      <div className="auth-page">
-        <div className="auth-card auth-card-sm">
-          <h1 className="auth-title">{tr("DÉJÀ CONNECTÉ", "ALREADY LOGGED IN")}</h1>
-          <p className="auth-subtitle">{tr("Vous êtes connecté en tant que", "You are logged in as")} {connectedUsername}</p>
-          <button className="auth-primary-button" type="button" onClick={handleLogout}>
-            {tr("SE DÉCONNECTER", "LOG OUT")}
-          </button>
-          <Link className="auth-primary-button auth-link-btn" to="/">
-            {tr("RETOUR ACCUEIL", "BACK HOME")}
-          </Link>
-        </div>
-      </div>
-    );
   }
 
   const { register, handleSubmit } = useForm({
@@ -57,9 +40,11 @@ export function Login() {
     },
     onSuccess: (response, variables, context) => {
       // If you are logged
-      localStorage.setItem("username", response.data?.username);
-      localStorage.setItem("role", response.data?.role);
-      localStorage.setItem("token", response.data?.token);
+      setAuthSession({
+        username: response.data?.username,
+        role: response.data?.role,
+        token: response.data?.token,
+      });
 
       const safeNext = next && next.startsWith("/") ? next : null;
       if (safeNext) {
@@ -94,6 +79,34 @@ export function Login() {
       alert(message);
     },
   });
+
+  if (isCheckingPhaseStatus) {
+    return (
+      <div className="auth-page">
+        <div className="auth-card auth-card-sm">
+          <h1 className="auth-title">{tr("Chargement", "Loading")}</h1>
+          <p className="auth-subtitle">{tr("Verification de l'etat de la phase...", "Checking phase status...")}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (connectedUsername) {
+    return (
+      <div className="auth-page">
+        <div className="auth-card auth-card-sm">
+          <h1 className="auth-title">{tr("DÉJÀ CONNECTÉ", "ALREADY LOGGED IN")}</h1>
+          <p className="auth-subtitle">{tr("Vous êtes connecté en tant que", "You are logged in as")} {connectedUsername}</p>
+          <button className="auth-primary-button" type="button" onClick={handleLogout}>
+            {tr("SE DÉCONNECTER", "LOG OUT")}
+          </button>
+          <Link className="auth-primary-button auth-link-btn" to="/">
+            {tr("RETOUR ACCUEIL", "BACK HOME")}
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   function onSubmit(data) {
     return loginMutation.mutate(data);
@@ -144,10 +157,12 @@ export function Login() {
           </button>
         </form>
 
-        <p className="auth-footer-text">
-          {tr("Nouveau sur MARS.A.I ?", "New to MARS.A.I?")}
-          <Link to="/auth/register"> {tr("Inscrivez-vous", "Sign up")}</Link>
-        </p>
+        {!isCheckingPhaseStatus && !isPhase3Closed && (
+          <p className="auth-footer-text">
+            {tr("Nouveau sur MARS.A.I ?", "New to MARS.A.I?")}
+            <Link to="/auth/register"> {tr("Inscrivez-vous", "Sign up")}</Link>
+          </p>
+        )}
 
         <Link className="auth-secondary-link" to="/">
           ← {tr("RETOUR ACCUEIL", "BACK HOME")}

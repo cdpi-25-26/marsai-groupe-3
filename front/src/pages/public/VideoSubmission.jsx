@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { submitVideo, uploadVideoFile } from "../../api/videos";
+import { resolveYoutubeLink, submitVideo, uploadVideoFile } from "../../api/videos";
 import { useLanguage } from "../../i18n/LanguageContext.jsx";
+import { useAuthSession } from "../../utils/authSession.js";
+import { usePhase3Closure } from "../../utils/usePhase3Closure.js";
+import PhaseClosedNotice from "../../components/PhaseClosedNotice.jsx";
 import "./VideoSubmission.css";
 
 const FormInput = ({ label, required, wrapperClassName = "", tr, ...props }) => (
@@ -45,12 +48,20 @@ const TeamMemberForm = ({ member, index, onChange, tr }) => (
   </div>
 );
 
+const FIXED_YOUTUBE_LINK = "https://www.youtube.com/watch?v=zBjJUV-lzHo";
+
+const pickRandom = (items) => items[Math.floor(Math.random() * items.length)];
+
 export default function VideoSubmission() {
   const { tr } = useLanguage();
-  const isAuthenticated = Boolean(localStorage.getItem("token"));
+  const { token } = useAuthSession();
+  const { isCheckingPhaseStatus, isPhase3Closed } = usePhase3Closure();
+  const isAuthenticated = Boolean(token);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isResolvingYoutube, setIsResolvingYoutube] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+  const [youtubeMeta, setYoutubeMeta] = useState(null);
 
   const [formData, setFormData] = useState({
     title: "", titleEnglish: "", duration: "", language: "",
@@ -81,6 +92,97 @@ export default function VideoSubmission() {
     updateField("mediaGallery", newMedia);
   };
 
+  const handleAutofillForm = () => {
+    const themesFr = ["Horizons Numériques", "Les Sables du Futur", "Mémoire Synthétique", "La Dernière Interface", "Échos Quantiques"];
+    const themesEn = ["Digital Horizons", "Sands of Tomorrow", "Synthetic Memory", "The Last Interface", "Quantum Echoes"];
+    const languages = ["Français", "English", "Español", "Deutsch", "العربية"];
+    const jobsFr = ["Réalisateur", "Scénariste", "Compositeur", "Monteur", "Directeur photo"];
+    const jobsEn = ["Director", "Screenwriter", "Composer", "Editor", "Director of Photography"];
+    const firstNames = ["Alex", "Maya", "Nora", "Idriss", "Lina", "Sam"];
+    const lastNames = ["Martin", "Diallo", "Garcia", "Nguyen", "Khan", "Rossi"];
+
+    const projectTitleFr = pickRandom(themesFr);
+    const projectTitleEn = pickRandom(themesEn);
+    const language = pickRandom(languages);
+    const firstName = pickRandom(firstNames);
+    const lastName = pickRandom(lastNames);
+
+    setYoutubeMeta(null);
+    setError(null);
+
+    setFormData((prev) => ({
+      ...prev,
+      title: `${projectTitleFr} ${Math.floor(Math.random() * 90) + 10}`,
+      titleEnglish: `${projectTitleEn} ${Math.floor(Math.random() * 90) + 10}`,
+      duration: "60",
+      language,
+      synopsisOriginal: "Un créateur tente de préserver une émotion humaine dans un monde dominé par les intelligences artificielles.",
+      synopsisEnglish: "A creator tries to preserve human emotion in a world driven by artificial intelligence.",
+      classification: Math.random() > 0.5 ? "generation_integrale" : "production_hybride",
+      techStack: "Midjourney, Runway, ElevenLabs, DaVinci Resolve",
+      methodology: "Écriture humaine, génération visuelle assistée par IA, puis montage et sound design supervisés par une équipe artistique.",
+      youtubeLink: FIXED_YOUTUBE_LINK,
+      hasSubtitles: Math.random() > 0.5,
+      subtitlesFile: null,
+      thumbnail: "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1600&q=80",
+      videoFile: null,
+      mediaGallery: [
+        "https://images.unsplash.com/photo-1440404653325-ab127d49abc1?auto=format&fit=crop&w=1600&q=80",
+        "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=1600&q=80",
+        "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1600&q=80",
+      ],
+      team: [
+        {
+          civility: Math.random() > 0.5 ? "Mr" : "Mme",
+          firstName,
+          lastName,
+          profession: pickRandom(tr("Réalisateur", "Director") === "Réalisateur" ? jobsFr : jobsEn),
+          email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@example.com`,
+        },
+      ],
+      certifiedOwnership: true,
+    }));
+  };
+
+  const handleResolveYoutube = async () => {
+    if (!formData.youtubeLink) {
+      setYoutubeMeta(null);
+      return;
+    }
+
+    setIsResolvingYoutube(true);
+    setError(null);
+
+    try {
+      const response = await resolveYoutubeLink(formData.youtubeLink);
+      const metadata = response.data;
+
+      setYoutubeMeta(metadata);
+      updateField("youtubeLink", metadata.canonicalUrl || formData.youtubeLink);
+
+      if (!formData.thumbnail && metadata.thumbnail) {
+        updateField("thumbnail", metadata.thumbnail);
+      }
+
+      if (!formData.duration && metadata.durationSeconds) {
+        updateField("duration", String(metadata.durationSeconds));
+      }
+    } catch (err) {
+      setYoutubeMeta(null);
+      setError(err.response?.data?.error || tr("Lien YouTube invalide", "Invalid YouTube link"));
+    } finally {
+      setIsResolvingYoutube(false);
+    }
+  };
+
+  if (isCheckingPhaseStatus) {
+    return null;
+  }
+
+  if (isPhase3Closed) {
+    return <PhaseClosedNotice />;
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -99,6 +201,18 @@ export default function VideoSubmission() {
 
     try {
       let uploadedVideoUrl = "";
+      let resolvedYoutubeUrl = formData.youtubeLink;
+
+      if (formData.youtubeLink) {
+        const ytResponse = await resolveYoutubeLink(formData.youtubeLink);
+        const metadata = ytResponse.data;
+        setYoutubeMeta(metadata);
+        resolvedYoutubeUrl = metadata.canonicalUrl || formData.youtubeLink;
+
+        if (!formData.thumbnail && metadata.thumbnail) {
+          updateField("thumbnail", metadata.thumbnail);
+        }
+      }
 
       if (formData.videoFile) {
         const uploadResponse = await uploadVideoFile(formData.videoFile);
@@ -107,6 +221,7 @@ export default function VideoSubmission() {
 
       const submissionData = {
         ...formData,
+        youtubeLink: resolvedYoutubeUrl,
         duration: parseInt(formData.duration),
         mediaGallery: formData.mediaGallery.filter((url) => url.trim() !== ""),
         videoFileUrl: uploadedVideoUrl,
@@ -157,6 +272,12 @@ export default function VideoSubmission() {
         </header>
 
         <form onSubmit={handleSubmit} className="space-y-8">
+          <div className="flex justify-end">
+            <button type="button" onClick={handleAutofillForm} className="add-btn">
+              {tr("REMPLIR AUTOMATIQUEMENT LE FORMULAIRE", "AUTO-FILL FORM")}
+            </button>
+          </div>
+
           <div className="info">
             <div className="icon-p2">☑️</div>
             <p className="text">
@@ -217,7 +338,26 @@ export default function VideoSubmission() {
               <h2 className="section-title">{tr("03. LIVRABLES & ACCESSIBILITÉ", "03. DELIVERABLES & ACCESSIBILITY")}</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormInput tr={tr} className="input-ytb" label={tr("LIEN YOUTUBE (OPTIONNEL SI FICHIER VIDÉO)", "YOUTUBE LINK (OPTIONAL IF VIDEO FILE)")} required={false} type="url" value={formData.youtubeLink} onChange={(e) => updateField("youtubeLink", e.target.value)} placeholder="https://youtube.com/..." />
+              <div>
+                <FormInput tr={tr} className="input-ytb" label={tr("LIEN YOUTUBE (OPTIONNEL SI FICHIER VIDÉO)", "YOUTUBE LINK (OPTIONAL IF VIDEO FILE)")} required={false} type="url" value={formData.youtubeLink} onChange={(e) => updateField("youtubeLink", e.target.value)} placeholder="https://youtube.com/..." />
+                <div className="mt-2">
+                  <button
+                    type="button"
+                    onClick={handleResolveYoutube}
+                    disabled={!formData.youtubeLink || isResolvingYoutube}
+                    className="add-btn"
+                  >
+                    {isResolvingYoutube
+                      ? tr("VÉRIFICATION DU LIEN...", "CHECKING LINK...")
+                      : tr("VÉRIFIER LE LIEN YOUTUBE", "CHECK YOUTUBE LINK")}
+                  </button>
+                  {youtubeMeta && (
+                    <p className="text mt-2">
+                      {tr("Vidéo détectée", "Detected video")} : {youtubeMeta.title || tr("Titre indisponible", "Title unavailable")}
+                    </p>
+                  )}
+                </div>
+              </div>
               <div>
                 <label className="label">{tr("FICHIER VIDÉO (OPTIONNEL SI YOUTUBE)", "VIDEO FILE (OPTIONAL IF YOUTUBE)")}</label>
                 <label className="file-label">

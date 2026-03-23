@@ -18,7 +18,7 @@ function Videos() {
     return <div>{tr("Une erreur est survenue", "An error occurred")}: {error.message}</div>;
   }
 
-  const videos = data?.data || [];
+  const videos = (data?.data || []).filter((video) => video.status !== "refusé");
 
   if (videos.length === 0) {
     return <div>{tr("Aucune vidéo trouvée.", "No videos found.")}</div>;

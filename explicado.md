@@ -1,249 +1,156 @@
-# Explication des pages et de la Navbar
+# Explicado - Recapitulatif des ajouts et realisations
 
-## Methodes CSS utilisees
+## 1. Vue d'ensemble
+Le projet est maintenant organise autour de 3 parcours principaux:
+- parcours public (pages vitrines, galerie, detail film, programme, participation)
+- parcours utilisateur connecte (auth + soumission video)
+- parcours staff (jury + administration)
 
-- **background / background-color**: met une couleur ou une image en fond.
-- **linear-gradient**: fait un fond en degrade (transition de couleurs).
-- **border / border-radius**: ajoute une bordure et arrondit les coins.
-- **box-shadow**: ajoute une ombre autour des blocs.
-- **display: flex / grid**: sert a aligner les elements facilement (en ligne ou en grille).
-- **gap / padding / margin**: gere les espaces entre et autour des elements.
-- **transition / animation / keyframes**: fait des effets doux quand on survole ou quand la page charge.
-- **transform (translate, scale, rotate)**: bouge, agrandit ou tourne un element.
-- **hover / focus**: change le style quand on passe la souris ou quand un champ est clique.
-- **max-width / min-height / width**: controle la taille des blocs.
-- **position / z-index**: place un element par dessus ou a un endroit precis.
-- **backdrop-filter**: ajoute un flou derriere un bloc transparent.
-- **@media**: adapte le design aux ecrans plus petits.
+Le front est en React/Vite et le back en Express + Sequelize.
 
-## Exemples de classes et composants (CSS utilitaire - Tailwind CSS)
+## 2. Parcours public (front)
 
-- **`<div className="grid grid-cols-1 md:grid-cols-2 gap-6">`(dans Videosubmission.jsx ligne 175)**
-	- `grid`: active la grille CSS.
-	- `grid-cols-1`: 1 colonne par defaut.
-	- `md:grid-cols-2`: 2 colonnes a partir des ecrans moyens.
-	- `gap-6`: espace entre les elements de la grille.
+### Home
+- Landing page en sections (hero, objectifs, conferences, soiree, lieu, chiffres, partenaires).
+- Ajout d'une carte Google Maps integree (iframe) pour localiser La Plateforme.
+- Mise en forme responsive (desktop/tablette/mobile).
 
-- **`<FormTextarea ... maxLength={500} rows={6} />`(dans Videosubmission.jsx ligne 176)**
-	- `FormTextarea`: petit composant React qui affiche un label + un textarea.
-	- `required`: rend le champ obligatoire.
-	- `value` + `onChange`: permet de lier le champ a l'etat du formulaire.
-	- `placeholder`: texte d'exemple affiche quand le champ est vide.
-	- `maxLength`: limite le nombre de caracteres.
-	- `rows`: hauteur du champ (nombre de lignes visibles).
+### Navbar
+- Navigation principale responsive.
+- Menu burger mobile.
+- Gestion de la fermeture automatique du menu apres clic.
 
-- **`{totalPages > 1 && ( ... )}` (pagination - GALLERY.jsx ligne 220)**
-	- `totalPages > 1`: affiche la pagination seulement s'il y a plus d'une page.
-	- `Array.from({ length: totalPages }, ...)`: cree une liste de pages (1, 2, 3...).
-	- `map((page) => ...)`: genere un bouton pour chaque page.
-	- `onClick={() => handlePageChange(page)}`: change la page quand on clique.
-	- `disabled={currentPage === 1}`: desactive le bouton precedent si on est a la page 1.
-	- `className={...}`: change la couleur du bouton actif (degrade rose/violet) et les autres en gris.
+### Gallery publique
+- Affichage des videos exposees au public.
+- Cartes video avec statut, vignette, et lien vers le detail.
+- Page conditionnee par l'etat "galerie publique ouverte" (controle admin).
 
-## ADDON SUPPLEMENTAIRE (Google Maps sur HOME)
+### FilmDetail
+- Page detail d'un film via `/films/:id`.
+- Lecture media (YouTube embed ou video locale), infos techniques, synopsis FR/EN, votes jury, equipe, commentaires.
+- Gestion des etats de chargement/erreur et bouton retour intelligent.
 
-### Ce que l'addon fait:
-- Ajoute une vraie carte interactive Google Maps dans la section **LA PLATEFORME** de la page Home.
-- Permet de voir directement la localisation du lieu (Marseille) sans quitter le site.
-- Améliore l'experience utilisateur parce qu'on a le contexte geographique en direct.
+### Programme
+- Affichage du planning de conference + ateliers.
+- Modal de reservation avec participants multiples.
+- Envoi des reservations vers l'API.
+- Carte Google Maps et bloc acces (transports, voiture, adresse).
 
-### Comment c'est fait techniquement:
-- Utilisation d'une balise **iframe** dans `Home.jsx` avec un lien `google.com/maps` en mode `output=embed`.
-- Attribut `loading="lazy"`: la carte charge seulement quand on en a besoin (meilleure perf).
-- Attribut `referrerPolicy="no-referrer-when-downgrade"`: comportement plus propre au niveau securite/navigation.
-- Un conteneur avec `border-radius` + `overflow: hidden` est utilise pour garder un rendu propre.
+### Jury (page publique)
+- Section president du jury + presentation narrative.
+- Carousel auto des membres du jury (avec pause au hover).
+- Fallback local si l'API jury ne renvoie rien.
+- Texte bilingue via contexte langue (`useLanguage`).
 
-### Classes / styles utilises pour l'addon:
-- `.home-platform-map-wrap`: encadre la carte (fond sombre, coins arrondis, bordure legere).
-- `.home-platform-map`: donne la hauteur/largeur de la carte et retire la bordure native de l'iframe.
-- `.home-platform-map-caption`: ajoute le petit texte de contexte en surimpression.
+## 3. Authentification et roles
 
-## PAGE HOME (Home.jsx et Home.css)
+### Auth
+- Connexion/inscription connectees au back.
+- Stockage local des informations de session (`token`, `role`, etc.).
+- Correction de la deconnexion avec purge complete de session locale.
 
-### Ce que la page fait en general:
-La page Home est une landing page complete en sections successives (hero, infos, films, objectifs, protocole, conferences, soiree, lieu, chiffres, soutiens), avec un style suivant celui du figma (bleu/violet/rose).
+### Protection des routes
+- `RoleGuard` cote front pour restreindre l'acces selon le role.
+- Roles utilises: `ADMIN`, `JURY`, `PRODUCER`.
 
-### CSS (Home.css):
-- **Section Hero video**: video en fond (`fond2.mp4`) + overlay sombre pour la lisibilite + gros titre `MARSAI` + boutons.
-- **Bloc piliers (1 minute / gratuite / pour tous / expertise)**: 4 cartes sombres arrondies avec bordures colorées et textes uppercase.
-- **Films en competition**: grand titre dégradé blanc/gris + cards de films avec visuels abstraits (gradients CSS) et meta (dir.).
-- **Objectifs du festival**: 3 grandes cartes avec icones colorées, titres en 2 lignes, paragraphes uppercase.
-- **Protocole temporel**: section centrée avec kicker, mega-titre, 4 stats cards (`2 MOIS`, `50 FILMS`, `WEB 3.0`, `J4`) + CTA dégradé.
-- **Conferences gratuites**: titre sur 2 lignes avec underline violet, liste numerotée, bouton agenda, 3 cartes (projection/workshop/awards).
-- **Mars.A.I Night**: grand panneau avec badge, titre principal, texte descriptif et carte de reservation (date/heure + bouton reserver).
-- **La plateforme**: grand titre avec effet contour bleu sur `PLATEFORME`, infos adresse/transports, 2 cartes de salles + carte Google Maps.
-- **Chiffres projetes**: bloc gauche titre + baseline, bloc droite avec 2 KPI cards (`+120`, `+600`).
-- **Ils soutiennent le futur**: titre centre + grille de 12 cases partenaires (placeholder `image manquante` pour chaque case).
-- **Responsive**: media queries présentes pour desktop/tablette/mobile, avec adaptation des grilles, tailles de typo et espacements.
+## 4. Soumission video (front + back)
 
-### JavaScript / JSX (Home.jsx):
-- La page est composee de plusieurs sections `<section>` avec classes dédiées (organisation claire).
-- Beaucoup de blocs sont générés via `map(...)` (cards, stats, supports) pour éviter la repetition de code.
-- Les CTA sont déja places au bon endroit visuel (hero, films, protocole, reservation).
-- L'addon Google Maps est integre directement dans le flux de la page via un `iframe`.
-- Les 12 logos de soutiens utilisent un placeholder uniforme tant que les vrais logos ne sont pas disponibles.
+### Front - VideoSubmission
+- Formulaire complet en 4 sections:
+  - identite du film
+  - declaration d'usage IA
+  - livrables/accessibilite
+  - composition de l'equipe
+- Verification: utilisateur connecte obligatoire.
+- Verification: au moins un media principal requis (lien YouTube ou fichier video).
+- Upload video via `multipart/form-data` si fichier fourni.
+- Soumission finale du payload normalise vers l'API.
+- Ecran de succes apres envoi.
 
-## NAVBAR (Navbar.jsx et Navbar.css)
+### Back - Upload et submit
+- Route upload protegee: `POST /videos/upload`.
+- Stockage local des videos dans `uploads/videos` via `multer`.
+- Route soumission protegee: `POST /videos/submit`.
+- Mapping des champs front vers le modele `Videos` (titre, duree, langue, synopsis, classification, media, equipe, etc.).
 
-### CSS (Navbar.css):
-- **Le fond**: La navbar a un fond blanc semi-transparent avec du flou (blur). Elle a une forme arrondie (border-radius: 50px).
-- **Les boutons**: Les trois boutons (GALERIE, PARTICIPER, DÉPOSER UN FILM) ont un dégradé de couleur (gradient) qui va du bleu au violet et au rose (GALERIE et DÉPOSER UN FILM sont des boutons temporaires).
-- **Effets au survol**: Quand on passes la souris sur les boutons, le hover s'active de 2px et ils deviennent plus brillants avec une ombre.
-- **Le logo**: Le logo "MARS" est blanc et "AI" a un dégradé de couleur bleu-violet-rose. Le logo se grandit légèrement avec un hover.
-- **Le menu burger**: Sur les petits écrans (téléphones), le menu devient un menu burger. Quand on cliques dessus, les 3 lignes se transforment en un X qui prend un rotate.
-- **Responsive**: Le design s'adapte à tous les tailles d'écrans (ordinateur, tablette, téléphone).
+## 5. Workflow de moderation video (admin + jury)
 
-### JavaScript (Navbar.jsx):
-- Le menu burger peut s'ouvrir et se fermer
-- Les boutons redirigent vers les différentes pages
-- Quand tu cliques sur un lien, le menu se referme automatiquement
+Le workflow est maintenant structure en phases:
+- `soumis` -> video envoyee par un utilisateur.
+- `retenue` -> validee par l'admin pour passage jury (phase 1).
+- `a discuter` -> au moins un vote jury recu (phase 2).
+- `finaliste` -> selection Top 50 par l'admin (phase 3).
+- `refuse` -> rejet admin.
 
+## 6. Espace jury
 
-## PAGE GALERIE (Gallery.jsx et Gallery.css)
+### JuryGallery
+- Endpoint dedie: `GET /videos/jury`.
+- Affiche les videos `retenue`.
+- Un compte `JURY` peut voter `OUI` ou `NON` avec commentaire optionnel.
+- Endpoint vote: `POST /videos/:id/jury-vote`.
+- Apres premier vote jury, la video passe automatiquement en `a discuter`.
+- Les comptes non-jury sont en lecture seule.
 
-### Ce que ça fait en général:
-La Galerie affiche une collection de films avec la possibilité de les filtrer et possède une pagination.
+## 7. Espace administration
 
-### CSS (Gallery.css):
-- **Le fond**: C'est un dégradé gris-noir qui va du haut vers le bas, avec du noir au centre.
-- **Les cartes de films**: Chaque film est montré dans une petite carte avec une image du film, le titre, et des infos. Quand on survoles une carte, l'image se zoome de 10%, créant un effet de profondeur. (normalement, c'est encore en test vu que je n'ai pas de back)
-- **Les filtres**: Il y a 3 menus déroulants (Select) avec des gradient rose: un pour le type d'IA, un pour le pays, un pour le statut. Ils deviennent plus brillants avec le hover.
-- **La pagination**: En bas, il y a des boutons pour passer d'une page à l'autre. Le bouton de la page actuelle a un dégradé rose-violet, les autres sont gris.(normalement (encore) n'ayant pas plusieurs vidéo, impossible de savoir si ce que j'ai fait marche réelement)
-- **Animations**: Tout s'affiche progressivement quand la page charge (fade in - apparition progressive). Les cartes ont aussi des animations qui les font apparaître avec un délai. (normalement (again))
+### AdminLayout
+- Sidebar de navigation admin.
+- Conservation de la navbar principale pour coherence de navigation.
 
-### JavaScript (Gallery.jsx):
-- Charge les vidéos depuis une API (subjective)
-- Permet de filtrer par type d'IA, pays ou statut
-- Affiche 6 films par page
-- Crée dynamiquement les options de filtre à partir des données réelles (subjectivement)
+### Users admin
+- Liste utilisateurs (ID, email, nom, prenom, role).
+- Recherche, filtre par role, tri.
+- Creation/modification/suppression utilisateur.
+- Recuperation dynamique des roles disponibles depuis l'API.
+- Gestion des erreurs d'acces (ex: compte non admin).
 
+### Videos admin
+- Liste de toutes les videos avec apercu et lien detail.
 
-## PAGE PARTICIPATION (Participation.jsx et Participation.css)
+### AdminGallery
+- Pilotage complet des phases 1/2/3.
+- Decisions admin phase 1: valider (`eligible`) ou refuser (`rejected`).
+- Phase 2: ajouter/retenir du Top 50.
+- Phase 3: marquer/demarquer une video primee.
+- Suppression video cote admin.
+- Toggle ouverture/fermeture galerie publique (`videos/public-status`).
+- Section dediee des videos refusees avec contexte de refus.
 
-### Ce que ça fait en général:
-Cette page demande aux utilisateurs d'accepter le règlement avant de s'inscrire. C'est une étape importante avant de participer. (d'après Samy en tout cas ?..)
+## 8. API videos principales
+- `GET /videos` -> videos publiques selon etat de la galerie.
+- `GET /videos/public-status` -> etat d'ouverture galerie publique.
+- `PATCH /videos/public-status` -> admin ouvre/ferme la galerie publique.
+- `GET /videos/admin` -> liste complete pour administration.
+- `GET /videos/jury` -> liste pour vote jury.
+- `GET /videos/:id` -> detail d'une video.
+- `POST /videos/upload` -> upload fichier video.
+- `POST /videos/submit` -> soumission complete.
+- `PATCH /videos/:id/admin-eligibility` -> decision admin en phase 1.
+- `PATCH /videos/:id/phase2-selection` -> passage phase 2 <-> phase 3.
+- `PATCH /videos/:id/phase3-award` -> marquage prime.
+- `DELETE /videos/:id` -> suppression admin.
+- `POST /videos/:id/jury-vote` -> vote jury.
 
-### CSS (Participation.css):
-- **Le fond**: C'est un dégradé noir-gris avec une image de fond (background.png) fixe qui reste en place quand on scrolles.
-- **La carte principale**: Il y a une grande box noire avec une bordure blanche au centre. Elle contient le titre "Participez dès maintenant" et un sous-titre.
-- **La carte du règlement**: La page affiche une petite carte avec du texte gris clair. Pendant le Hover, elle monte de 5px et a une ombre bleue.
-- **La case à cocher**: Il y a une checkbox avec le texte "J'accepte le règlement général". Si on la coches, le bouton "S'inscrire" devient actif (avant c'est gris et désactivé).
-- **Le bouton S'inscrire**: Il a un dégradé bleu-violet-rose. Il est grisé si on n'as pas coché la case.
-- **La deuxième carte**: En bas, il y a une autre box noire avec un lien pour se connecter si on es déjà inscrit.
-- **Responsive**: Sur petits écrans, les éléments se redimensionnent et s'adaptent à la largeur de l'écran.
+## 9. Normalisation des donnees video
+Le controller video renvoie maintenant un format front unique et coherent:
+- identifiants et metadonnees (titre, statut, duree, langue)
+- infos IA (classification, tech stack, methodologie)
+- medias (youtube, thumbnail, galerie)
+- vote summary (`yesVotes`, `noVotes`, `comments`)
+- equipe (`team`) parsee depuis les donnees stockees
 
-### JavaScript (Participation.jsx):
-- Gère une variable qui suit si on as coché la case
-- Rend le bouton "S'inscrire" activé ou désactivé selon la case
-- Redirection vers l'inscription seulement si on as accepté
+## 10. Internationalisation
+- Utilisation du contexte langue (`useLanguage`) sur les pages majeures.
+- Textes FR/EN sur pages publiques, jury, admin et formulaires principaux.
 
+## 11. Comptes de test
+- test: `authtest@gmail.com` / `Password123!`
+- admin: `admin@gmail.com` / `Admin123!`
+- jury: `Jury@gmaiL.com` / `Jury123!`
+- producer: `Prod@gmail.com` / `Prod123!`
 
-## PAGE SOUMISSION VIDEO (VideoSubmission.jsx et VideoSubmission.css)
-
-### Ce que ça fait en général:
-Cette page est un grand formulaire pour soumettre un film à l'événement.
-
-### CSS (VideoSubmission.css):
-- **Le fond**: Fond très foncé (bleu très sombre presque noir). 
-- **Les sections**: Le formulaire est divisé en 4 grandes sections : Identité du film, Déclaration IA, Livrables, Équipe. Chaque section a un fond gris-bleu foncé avec une bordure grise.
-- **Les icônes**: Chaque section a un emoji (🎞️) pour l'identifier facilement.
-- **Les inputs**: Les champs de texte et autres inputs ont du texte blanc sur fond sombre. Ils ont des coins arrondis.
-- **Les textareas**: Les zones de texte plus grandes pour le synopsis. Il y a un compteur qui montre combien de caractères on as écrit (ex: 150 / 300).
-- **Les radios et checkboxes**: Les choix style "génération intégrale" ou "production hybride" sont présentés comme des boutons radio. Les checkboxes sont là pour les accords.
-- **L'upload d'image**: Il y a des zones pour uploader une vignette (image du film) et une galerie media. Ils ont des icônes (🖼️) et du texte explicatif.
-- **La section équipe**: Il y a des champs pour ajouter les membres de l'équipe un par un. On peux en ajouter plusieurs avec le bouton "+ AJOUTER COLLABORATEUR".
-- **Le bouton submit**: En bas, le bouton "FINALISER MA SOUMISSION →" est un dégradé rose-violet. Il est grisé si on n'as pas accepté le certificat.
-- **Animation de succès**: Si la soumission réussit, une page s'affiche avec un emoji 🎉.
-
-### JavaScript (VideoSubmission.jsx):
-- **Composants réutilisables**: Des composants petits comme FormInput et FormTextarea pour pas répéter le code
-- **Gestion du formulaire**: Stocke toutes les infos du formulaire dans une variable (state)
-- **Ajout d'équipe dynamique**: On peux ajouter autant de collaborateurs que on veux
-- **Galerie média**: 3 champs pour ajouter des images
-- **Validation**: Le formulaire ne peut pas être envoyé si la checkbox "Je certifie" n'est pas cochée
-- **Envoi**: Quand on envoies, ça va chercher à la base de données et affiche un message de succès (pas encore implémenter)
-- **Compteur de caractères**: Pour le synopsis, montre combien on as écrit sur le max autorisé
-
-
-
-## MISES A JOUR RECENTES (DERNIERS AJOUTS)
-
-### 1) Dashboard Admin (UI + navigation)
-- Le dashboard admin a ete refait avec un style moderne en gardant l'esprit visuel du site (dark + accents violet/rose).
-- Ajout d'une **sidebar gauche** pour naviguer dans les sections admin (vue d'ensemble, utilisateurs, videos, sections a venir).
-- La **Navbar principale** a ete remise dans l'admin pour garder l'acces aux pages publiques.
-
-### 2) Gestion utilisateurs dans l'admin
-- La liste users affiche maintenant des infos utiles (ID, email, nom, prenom, role).
-- Ajout d'une vraie gestion des roles avec select + bouton de mise a jour.
-- Les roles proposes sont recuperes depuis Sequelize (ENUM du modele Users).
-- Ajout de filtres pratiques: recherche, filtre par role, tri.
-- Ajout d'etats UX (chargement/erreur) pour eviter un tableau vide sans explication.
-
-### 3) Auth / deconnexion
-- Correction de la deconnexion: suppression complete de la session locale (`username`, `role`, `token`, `tempAdminAccess`).
-- Redirection avec rechargement de page pour eviter l'ecran noir observe apres logout.
-
-### 4) Compte admin cree
-- Compte admin cree/assure en base (Sequelize):
-	- email: `admin@marsai.local`
-	- mot de passe temporaire: `Admin12345!`
-	- role: `ADMIN`
-
-### 5) Soumission video: securisation + envoi reel + affichage galerie
-
-#### 5.1 Acces soumission uniquement aux utilisateurs connectes
-- Le front bloque la soumission si aucun token n'est present (message clair + lien vers login).
-- Le back protege les routes sensibles:
-	- `POST /videos/upload`
-	- `POST /videos/submit`
-- Ces routes exigent une session valide via `AuthMiddleware`.
-
-#### 5.2 Upload video depuis VideoSubmission (systeme existant back + Sequelize)
-- L'upload fichier video est maintenant implemente (multipart) dans le back avec **multer**.
-- Les fichiers sont stockes localement dans `back/uploads/videos` et servis via `/uploads/...`.
-- Le front envoie le fichier avec `FormData` via `uploadVideoFile()` puis recupere `fileUrl`.
-
-#### 5.3 Enregistrement des soumissions avec Sequelize
-- Le payload de `VideoSubmission` est mappe vers le modele Sequelize existant `Videos`.
-- Champs importants stockes: titre, duree, langue, synopsis, classification, liens media, status, id_user.
-- Si un fichier video est upload, son URL est sauvegardee (sinon le lien YouTube est utilise).
-
-#### 5.4 Visibilite dans Gallery apres envoi
-- Le endpoint `GET /videos` renvoie maintenant un format normalise compatible avec la page Gallery.
-- Apres soumission reussie, les videos recuperees par la galerie deviennent affichables (titre, vignette, statut, classification...).
-
-### 6) Fichiers principaux modifies sur ces derniers ajouts
-- Back:
-	- `back/src/controllers/UserController.js`
-	- `back/src/routes/User.route.js`
-	- `back/src/controllers/VideoController.js`
-	- `back/src/routes/Video.route.js`
-	- `back/index.js`
-- Front:
-	- `front/src/layouts/AdminLayout.jsx`
-	- `front/src/layouts/AdminLayout.css`
-	- `front/src/pages/admin/Dashboard.css`
-	- `front/src/pages/admin/Users.jsx`
-	- `front/src/pages/auth/Login.jsx`
-	- `front/src/pages/auth/Register.jsx`
-	- `front/src/api/users.js`
-	- `front/src/api/videos.js`
-	- `front/src/pages/public/VideoSubmission.jsx`
-
-### 7) Etat actuel
-- Build front: OK
-- Verifications syntaxe back: OK
-- Flux cible maintenant en place: utilisateur connecte -> upload video (optionnel) -> soumission -> persistance Sequelize -> affichage en galerie.
-
-
-
-(users :
-
-test : authtest@gmail.com / Password123!
-
-admin : admin@gmail.com / Admin123!
-
-Jury : Jury@gmaiL.com / Jury123!
-
-Producer : Prod@gmail.com / Prod123! )
+## 12. Etat actuel
+- Flux principal en place de bout en bout:
+  - utilisateur connecte -> soumission video -> moderation admin -> vote jury -> selection finale -> publication publique
+- Base technique prete pour les evolutions (assignation fine jury, scoring avance, analytics, etc.).

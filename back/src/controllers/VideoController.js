@@ -1,6 +1,15 @@
 import jwt from "jsonwebtoken";
-import { Op } from "sequelize";
+import fs from "fs";
+import path from "path";
 import { Evaluations, SystemSettings, Users, Videos } from "../models/index.js";
+import mailer from "../config/mailer.js";
+import { videoSubmissionConfirmationTemplate } from "../templates/videoSubmissionConfirmation.js";
+import { videoPhase1AcceptTemplate } from "../templates/videoPhase1Accept.js";
+import { videoPhase1RejectTemplate } from "../templates/videoPhase1Reject.js";
+import { videoTop50Template } from "../templates/videoTop50.js";
+import { videoAwardedTemplate } from "../templates/videoAwarded.js";
+import { isS3Configured, uploadBufferToS3 } from "../utils/s3.js";
+import { resolveYouTubeVideo } from "../utils/youtube.js";
 
 function truncateValue(value, maxLength = 255) {
   if (typeof value !== "string") {
@@ -96,6 +105,17 @@ async function normalizeVideo(video) {
   };
 }
 
+async function sendMailToVideoOwner(idUser, subject, templateFn, videoTitle) {
+  try {
+    const owner = await Users.findOne({ where: { id: idUser } });
+    if (!owner?.email) return;
+    const displayName = [owner.name, owner.surname].filter(Boolean).join(" ").trim() || owner.email;
+    await mailer.sendMail(owner.email, subject, templateFn(displayName, videoTitle));
+  } catch (mailError) {
+    console.error("Email de statut non envoye:", mailError?.message || mailError);
+  }
+}
+
 async function getRequester(req) {
   const authHeader = req.header("Authorization");
   const [prefix, token] = authHeader?.split(" ") || [null, undefined];
@@ -117,6 +137,18 @@ async function mapVideos(videos) {
   return Promise.all(videos.map((video) => normalizeVideo(video)));
 }
 
+function saveFileLocally(req, file) {
+  const uploadDirectory = path.resolve(process.cwd(), "uploads", "videos");
+  fs.mkdirSync(uploadDirectory, { recursive: true });
+
+  const safeOriginalName = file.originalname?.replace(/[^a-zA-Z0-9._-]/g, "-") || "video.bin";
+  const filename = `${Date.now()}-${safeOriginalName}`;
+  const filePath = path.join(uploadDirectory, filename);
+
+  fs.writeFileSync(filePath, file.buffer);
+  return `${req.protocol}://${req.get("host")}/uploads/videos/${filename}`;
+}
+
 // Liste
 function getVideos(req, res) {
   return getPublicVideos(req, res);
@@ -130,9 +162,7 @@ async function getAdminVideos(req, res) {
 async function getJuryVideos(req, res) {
   const videos = await Videos.findAll({
     where: {
-      statusSelection: {
-        [Op.in]: ["retenue", "à discuter"],
-      },
+      statusSelection: "retenue",
     },
     order: [["createdAt", "DESC"]],
   });
@@ -179,6 +209,67 @@ async function setPhase3Award(req, res) {
   }
 
   video.isPriority = isAwarded;
+  await video.save();
+
+  if (isAwarded) {
+    sendMailToVideoOwner(
+      video.id_user,
+      `[MARS.AI] 🌟 Votre film "${video.title}" est primé !`,
+      videoAwardedTemplate,
+      video.title,
+    );
+  }
+
+  return res.json(await normalizeVideo(video));
+}
+
+async function setPhase2Selection(req, res) {
+  const { id } = req.params;
+  const { isSelected } = req.body;
+
+  if (typeof isSelected !== "boolean") {
+    return res.status(400).json({ error: "Le champ isSelected doit etre un booleen" });
+  }
+
+  const video = await Videos.findOne({ where: { id_video: id } });
+
+  if (!video) {
+    return res.status(404).json({ error: "Vidéo non trouvée" });
+  }
+
+  if (isSelected) {
+    if (video.statusSelection !== "à discuter") {
+      return res.status(409).json({
+        error: "Seules les videos de phase 2 peuvent passer en phase 3",
+      });
+    }
+
+    const currentTop50Count = await Videos.count({ where: { statusSelection: "finaliste" } });
+    if (currentTop50Count >= 50) {
+      return res.status(409).json({
+        error: "Le Top 50 est deja complet",
+      });
+    }
+
+    video.statusSelection = "finaliste";
+    await video.save();
+    sendMailToVideoOwner(
+      video.id_user,
+      `[MARS.AI] 🏆 Votre film "${video.title}" est dans le Top 50 !`,
+      videoTop50Template,
+      video.title,
+    );
+    return res.json(await normalizeVideo(video));
+  }
+
+  if (video.statusSelection !== "finaliste") {
+    return res.status(409).json({
+      error: "Seules les videos de phase 3 peuvent revenir en phase 2",
+    });
+  }
+
+  video.statusSelection = "à discuter";
+  video.isPriority = false;
   await video.save();
 
   return res.json(await normalizeVideo(video));
@@ -242,8 +333,44 @@ function uploadVideo(req, res) {
     return res.status(400).json({ error: "Aucun fichier vidéo reçu" });
   }
 
-  const fileUrl = `${req.protocol}://${req.get("host")}/uploads/videos/${req.file.filename}`;
-  return res.status(201).json({ fileUrl });
+  const maxFileSizeBytes = 500 * 1024 * 1024;
+  if (req.file.size > maxFileSizeBytes) {
+    return res.status(400).json({ error: "Le fichier dépasse la limite de 500MB" });
+  }
+
+  if (isS3Configured()) {
+    return uploadBufferToS3({
+      buffer: req.file.buffer,
+      mimeType: req.file.mimetype,
+      originalFilename: req.file.originalname,
+    })
+      .then(({ fileUrl, objectKey }) => {
+        res.status(201).json({ fileUrl, storage: "s3", objectKey });
+      })
+      .catch((error) => {
+        console.error("Erreur upload S3:", error?.message || error);
+        res.status(500).json({ error: "Échec de l'upload vers S3" });
+      });
+  }
+
+  const fileUrl = saveFileLocally(req, req.file);
+  return res.status(201).json({ fileUrl, storage: "local" });
+}
+
+async function resolveYoutube(req, res) {
+  const { url } = req.body || {};
+
+  if (!url || typeof url !== "string") {
+    return res.status(400).json({ error: "Le champ url est requis" });
+  }
+
+  try {
+    const metadata = await resolveYouTubeVideo(url);
+    return res.status(200).json(metadata);
+  } catch (error) {
+    const statusCode = error?.statusCode || 400;
+    return res.status(statusCode).json({ error: error.message || "Lien YouTube invalide" });
+  }
 }
 
 async function setAdminEligibility(req, res) {
@@ -269,12 +396,24 @@ async function setAdminEligibility(req, res) {
   if (decision === "eligible") {
     video.statusSelection = "retenue";
     video.id_assigned_jury = null;
+    await video.save();
+    sendMailToVideoOwner(
+      video.id_user,
+      `[MARS.AI] Votre film "${video.title}" est retenu en Phase 2`,
+      videoPhase1AcceptTemplate,
+      video.title,
+    );
   } else {
     video.statusSelection = "refusé";
     video.id_assigned_jury = null;
+    await video.save();
+    sendMailToVideoOwner(
+      video.id_user,
+      `[MARS.AI] Résultat de votre soumission – "${video.title}"`,
+      videoPhase1RejectTemplate,
+      video.title,
+    );
   }
-
-  await video.save();
 
   return res.json(await normalizeVideo(video));
 }
@@ -315,7 +454,7 @@ async function juryVote(req, res) {
 
     const requesterId = Number(req.user.id);
 
-    if (!["retenue", "à discuter"].includes(video.statusSelection)) {
+    if (video.statusSelection !== "retenue") {
       return res.status(400).json({
         error: "Cette vidéo n'est pas disponible pour le vote jury",
       });
@@ -364,18 +503,9 @@ async function juryVote(req, res) {
       }
     }
 
-    const voteSummary = await getVoteSummary(video.id_video);
-
-    if (voteSummary.yesVotes > voteSummary.noVotes) {
-      video.statusSelection = "finaliste";
-    } else if (voteSummary.noVotes > voteSummary.yesVotes) {
-      video.statusSelection = "refusé";
-      video.id_assigned_jury = null;
-      video.isPriority = false;
-    } else {
-      video.statusSelection = "à discuter";
-      video.isPriority = false;
-    }
+    // New workflow: first jury vote moves the video from phase 1 to phase 2.
+    video.statusSelection = "à discuter";
+    video.isPriority = false;
 
     await video.save();
     return res.json(await normalizeVideo(video));
@@ -434,7 +564,7 @@ async function getVideoById(req, res) {
 }
 
 // Soumission complète d'une vidéo
-function submitVideo(req, res) {
+async function submitVideo(req, res) {
   if (!req.body) {
     return res.status(400).json({ error: "Données manquantes" });
   }
@@ -457,10 +587,26 @@ function submitVideo(req, res) {
     team,
   } = req.body;
 
+  let resolvedYoutubeMetadata = null;
+  if (youtubeLink) {
+    try {
+      resolvedYoutubeMetadata = await resolveYouTubeVideo(youtubeLink);
+    } catch {
+      return res.status(400).json({
+        error: "Le lien YouTube fourni est invalide ou inaccessible",
+      });
+    }
+  }
+
+  const parsedDuration = Number.parseInt(duration, 10);
+  const selectedDuration = Number.isFinite(parsedDuration) && parsedDuration > 0
+    ? parsedDuration
+    : resolvedYoutubeMetadata?.durationSeconds;
+
   // Validation des champs obligatoires
   if (
     !title ||
-    !duration ||
+    !selectedDuration ||
     !language ||
     !synopsisOriginal ||
     !classification ||
@@ -481,46 +627,64 @@ function submitVideo(req, res) {
 
   const images = Array.isArray(mediaGallery) ? mediaGallery : [];
 
-  Videos.create({
-    title: truncateValue(title),
-    traduction: truncateValue(titleEnglish),
-    duration,
-    FirstLanguage: truncateValue(language),
-    synopsis: truncateValue(synopsisOriginal),
-    synopsisEnglish: truncateValue(synopsisEnglish),
-    YoutubeLink: truncateValue(videoFileUrl || youtubeLink),
-    subTitles: hasSubtitles ? "yes" : "no",
-    toolsAI: truncateValue(techStack, 1000),
-    methodology: truncateValue(methodology, 1000),
-    teamData: JSON.stringify(team),
-    category: truncateValue(classification),
-    image1: truncateValue(thumbnail || images[0]),
-    image2: truncateValue(images[1]),
-    image3: truncateValue(images[2]),
-    statusSelection: "soumis",
-    isPriority: false,
-    id_user: req.user.id,
-  })
-    .then((newVideo) => {
-      res.status(201).json(normalizeVideo(newVideo));
-    })
-    .catch((error) => {
-      console.error("Erreur lors de la création de la vidéo:", error);
+  const resolvedYoutubeUrl = resolvedYoutubeMetadata?.canonicalUrl;
+  const resolvedThumbnail = resolvedYoutubeMetadata?.thumbnail;
 
-      if (error?.name === "SequelizeUniqueConstraintError") {
-        return res.status(409).json({
-          error: "Une vidéo avec ce titre existe déjà. Merci de changer le titre.",
-        });
-      }
-
-      if (error?.name === "SequelizeValidationError") {
-        return res.status(400).json({
-          error: "Certaines données de la soumission sont invalides.",
-        });
-      }
-
-      res.status(500).json({ error: "Erreur lors de la soumission" });
+  try {
+    const newVideo = await Videos.create({
+      title: truncateValue(title),
+      traduction: truncateValue(titleEnglish),
+      duration: selectedDuration,
+      FirstLanguage: truncateValue(language),
+      synopsis: truncateValue(synopsisOriginal),
+      synopsisEnglish: truncateValue(synopsisEnglish),
+      YoutubeLink: truncateValue(videoFileUrl || resolvedYoutubeUrl || youtubeLink),
+      subTitles: hasSubtitles ? "yes" : "no",
+      toolsAI: truncateValue(techStack, 1000),
+      methodology: truncateValue(methodology, 1000),
+      teamData: JSON.stringify(team),
+      category: truncateValue(classification),
+      image1: truncateValue(thumbnail || resolvedThumbnail || images[0]),
+      image2: truncateValue(images[1]),
+      image3: truncateValue(images[2]),
+      statusSelection: "soumis",
+      isPriority: false,
+      id_user: req.user.id,
     });
+
+    const accountEmail = req.user?.email;
+    if (accountEmail) {
+      const displayName = [req.user?.name, req.user?.surname].filter(Boolean).join(" ").trim();
+
+      try {
+        await mailer.sendMail(
+          accountEmail,
+          `Confirmation de soumission - ${title}`,
+          videoSubmissionConfirmationTemplate(displayName || accountEmail, title),
+        );
+      } catch (mailError) {
+        console.error("Soumission video enregistree mais email de confirmation non envoye:", mailError?.message || mailError);
+      }
+    }
+
+    return res.status(201).json(await normalizeVideo(newVideo));
+  } catch (error) {
+    console.error("Erreur lors de la création de la vidéo:", error);
+
+    if (error?.name === "SequelizeUniqueConstraintError") {
+      return res.status(409).json({
+        error: "Une vidéo avec ce titre existe déjà. Merci de changer le titre.",
+      });
+    }
+
+    if (error?.name === "SequelizeValidationError") {
+      return res.status(400).json({
+        error: "Certaines données de la soumission sont invalides.",
+      });
+    }
+
+    return res.status(500).json({ error: "Erreur lors de la soumission" });
+  }
 }
 
 export default {
@@ -530,11 +694,13 @@ export default {
   getPublicVideos,
   getPublicGalleryStatus,
   setPublicGalleryStatus,
+  setPhase2Selection,
   setPhase3Award,
   getVideoById,
   createVideo,
   submitVideo,
   uploadVideo,
+  resolveYoutube,
   setAdminEligibility,
   deleteAdminVideo,
   juryVote,

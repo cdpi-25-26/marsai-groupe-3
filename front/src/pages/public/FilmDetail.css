@@ -14,11 +14,23 @@
   padding: 1.2rem;
 }
 
+.film-detail-card.film-detail-card-awarded {
+  border: 2px solid #fbbf24;
+  box-shadow: 0 0 0 1px rgba(251, 191, 36, 0.35), 0 10px 30px rgba(217, 119, 6, 0.25);
+}
+
 .film-detail-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
+}
+
+.film-detail-status-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .film-detail-header h1 {
@@ -31,6 +43,16 @@
   padding: 0.3rem 0.7rem;
   font-size: 0.75rem;
   background: rgba(59, 130, 246, 0.25);
+}
+
+.film-detail-awarded-badge {
+  border-radius: 999px;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fef3c7;
+  border: 1px solid rgba(251, 191, 36, 0.6);
+  background: rgba(146, 64, 14, 0.45);
 }
 
 .film-detail-subtitle {

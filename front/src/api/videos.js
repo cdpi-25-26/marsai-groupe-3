@@ -43,12 +43,20 @@ async function uploadVideoFile(file) {
   });
 }
 
+async function resolveYoutubeLink(url) {
+  return await instance.post("videos/youtube/resolve", { url });
+}
+
 async function setVideoEligibility(id, decision) {
   return await instance.patch(`videos/${id}/admin-eligibility`, { decision });
 }
 
 async function setPhase3Award(id, isAwarded) {
   return await instance.patch(`videos/${id}/phase3-award`, { isAwarded });
+}
+
+async function setPhase2Selection(id, isSelected) {
+  return await instance.patch(`videos/${id}/phase2-selection`, { isSelected });
 }
 
 async function deleteAdminVideo(id) {
@@ -69,7 +77,9 @@ export {
   getVideoDetail,
   submitVideo,
   uploadVideoFile,
+  resolveYoutubeLink,
   setVideoEligibility,
+  setPhase2Selection,
   setPhase3Award,
   deleteAdminVideo,
   submitJuryVote,

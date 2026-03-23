@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "name": "Lisa Emrald",
+    "role": "Expert IA",
+    "roleEn": "IA Expert",
+    "description": "Description jury a completer.",
+    "descriptionEn": "Jury description to be completed.",
+    "image": "/src/assets/person.svg"
+  },
+  {
+    "id": 2,
+    "name": "Marc Aubin",
+    "role": "Directeur Artistique",
+    "roleEn": "Art Director",
+    "description": "Description jury a completer.",
+    "descriptionEn": "Jury description to be completed.",
+    "image": "/src/assets/person.svg"
+  },
+  {
+    "id": 3,
+    "name": "Aiko Sato",
+    "role": "Experte innovation",
+    "roleEn": "Innovation Expert",
+    "description": "Description jury a completer.",
+    "descriptionEn": "Jury description to be completed.",
+    "image": "/src/assets/person.svg"
+  },
+  {
+    "id": 4,
+    "name": "Lina Robert",
+    "role": "Scenariste",
+    "roleEn": "Screenwriter",
+    "description": "Description jury a completer.",
+    "descriptionEn": "Jury description to be completed.",
+    "image": "/src/assets/person.svg"
+  }
+]

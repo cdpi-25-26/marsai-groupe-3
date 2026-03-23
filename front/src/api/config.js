@@ -1,4 +1,5 @@
 import axios from "axios";
+import { clearAuthSession } from "../utils/authSession.js";
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
 
@@ -8,10 +9,7 @@ const instance = axios.create({
 });
 
 function clearSessionAndRedirectToLogin() {
-  localStorage.removeItem("username");
-  localStorage.removeItem("role");
-  localStorage.removeItem("token");
-  localStorage.removeItem("tempAdminAccess");
+  clearAuthSession();
 
   if (!window.location.pathname.startsWith("/auth/")) {
     window.location.href = "/auth/login";

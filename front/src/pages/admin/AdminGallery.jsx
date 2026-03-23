@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import {
+  notifyPublicGalleryStatusChanged,
+} from "../../utils/usePhase3Closure.js";
+import {
   deleteAdminVideo,
   getAdminVideos,
   getPublicGalleryStatus,
+  setPhase2Selection,
   setPhase3Award,
   setPublicGalleryStatus,
   setVideoEligibility,
@@ -15,29 +19,31 @@ import "./AdminGallery.css";
 const PHASES = {
   phase1: {
     title: "Phase 1 · Validation admin",
-    description: "Nouvelles soumissions à traiter.",
-    statuses: ["soumis"],
+    description: "Soumissions en attente et vidéos validées en attente du vote jury.",
+    statuses: ["soumis", "retenue"],
   },
   phase2: {
-    title: "Phase 2 · Vote jury",
-    description: "Vidéos en cours côté jury.",
-    statuses: ["retenue", "à discuter"],
+    title: "Phase 2 · Sélection Top 50",
+    description: "Vidéos ayant reçu au moins un vote jury, à sélectionner pour la phase 3.",
+    statuses: ["à discuter"],
   },
   phase3: {
-    title: "Phase 3 · Résultats",
-    description: "Vidéos finalisées par le processus.",
+    title: "Phase 3 · Palmarès",
+    description: "Vidéos du Top 50. Marquez les vidéos primées.",
     statuses: ["finaliste"],
   },
 };
 
 function AdminGallery() {
   const { tr } = useLanguage();
+  const [cardSize, setCardSize] = useState("medium");
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activePhase, setActivePhase] = useState("phase1");
   const [publicGalleryOpen, setPublicGalleryOpen] = useState(false);
   const [galleryToggleLoading, setGalleryToggleLoading] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState(null);
 
   const fetchVideos = async () => {
     try {
@@ -58,9 +64,12 @@ function AdminGallery() {
 
       try {
         const statusResponse = await getPublicGalleryStatus();
-        setPublicGalleryOpen(Boolean(statusResponse.data?.isOpen));
+        const nextIsOpen = Boolean(statusResponse.data?.isOpen);
+        setPublicGalleryOpen(nextIsOpen);
+        notifyPublicGalleryStatusChanged(nextIsOpen);
       } catch {
         setPublicGalleryOpen(false);
+        notifyPublicGalleryStatusChanged(false);
       }
     };
 
@@ -102,12 +111,23 @@ function AdminGallery() {
     }
   };
 
+  const handlePhase2Selection = async (video, isSelected) => {
+    try {
+      await setPhase2Selection(video.id, isSelected);
+      await fetchVideos();
+    } catch (err) {
+      alert(err.response?.data?.error || tr("Mise à jour phase 2 impossible", "Phase 2 update failed"));
+    }
+  };
+
   const handleTogglePublicGallery = async () => {
     try {
       setGalleryToggleLoading(true);
       const nextValue = !publicGalleryOpen;
       const response = await setPublicGalleryStatus(nextValue);
-      setPublicGalleryOpen(Boolean(response.data?.isOpen));
+      const nextIsOpen = Boolean(response.data?.isOpen);
+      setPublicGalleryOpen(nextIsOpen);
+      notifyPublicGalleryStatusChanged(nextIsOpen);
     } catch (err) {
       alert(err.response?.data?.error || tr("Mise à jour impossible", "Update failed"));
     } finally {
@@ -185,8 +205,8 @@ function AdminGallery() {
               <strong>{videos.length}</strong>
             </article>
             <article className="admin-gallery-kpi-card">
-              <p>{tr("EN JURY", "IN JURY")}</p>
-              <strong>{phase2Videos.length}</strong>
+              <p>{tr("EN ATTENTE JURY", "WAITING JURY")}</p>
+              <strong>{videos.filter((video) => video.status === "retenue").length}</strong>
             </article>
             <article className="admin-gallery-kpi-card">
               <p>{tr("FINALISTES", "FINALISTS")}</p>
@@ -215,93 +235,160 @@ function AdminGallery() {
 
         <p className="admin-phase-description">{PHASES[activePhase].description}</p>
 
+        <div className="gallery-view-controls">
+          <label htmlFor="gallery-size-admin">{tr("Affichage", "View")}</label>
+          <select
+            id="gallery-size-admin"
+            className="gallery-size-select"
+            value={cardSize}
+            onChange={(event) => setCardSize(event.target.value)}
+          >
+            <option value="small">{tr("Petite", "Small")}</option>
+            <option value="medium">{tr("Moyenne", "Medium")}</option>
+            <option value="large">{tr("Grande", "Large")}</option>
+          </select>
+        </div>
+
         {videos.length === 0 ? (
           <div className="text-white">{tr("Aucune vidéo pour le moment.", "No videos for now.")}</div>
         ) : activeVideos.length === 0 ? (
           <div className="text-white">{tr("Aucune vidéo dans cette phase actuellement.", "No videos in this phase right now.")}</div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          <>
+          <div className={`grid gallery-cards-grid gallery-size-${cardSize} mb-12`}>
             {activeVideos.map((video) => (
-              <div key={video.id} className={`card group ${video.isAwarded ? "card-awarded" : ""}`}>
-                <div className="image relative overflow-hidden rounded-2xl mb-4">
+              <div
+                key={video.id}
+                className={`card group card-clickable ${video.isAwarded ? "card-awarded" : ""}`}
+                onClick={() => setSelectedVideo(video)}
+              >
+                <div className="image relative overflow-hidden rounded-2xl mb-3">
                   <img
                     src={video.thumbnail || "https://via.placeholder.com/300x200"}
                     alt={video.title}
-                    className="w-full h-48 object-cover rounded-2xl group-hover:scale-110 transition-transform duration-300"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   />
                   <div className="badge absolute top-3 right-3 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold">
                     {video.status || "soumis"}
                   </div>
-                  <div className="overlay absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl flex items-end p-4">
-                    <Link
-                      to={`/films/${video.id}`}
-                      className="w-full py-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-lg font-semibold hover:from-pink-600 hover:to-purple-700 transition-colors text-center"
-                    >
-                      {tr("VOIR PLUS", "SEE MORE")}
-                    </Link>
-                  </div>
                 </div>
-
                 <div className="info">
-                  <h3 className="text-white font-bold text-lg mb-2 line-clamp-2">{video.title}</h3>
-                  <p className="text-gray-300 text-sm mb-3">{video.synopsisOriginal || "Sans synopsis"}</p>
-
-                  {video.assignedJuryId ? (
-                    <p className="admin-assigned-jury">Jury assigné: #{video.assignedJuryId}</p>
-                  ) : null}
-
-                  {video.status === "soumis" ? (
-                    <div className="admin-gallery-actions">
-                      <button
-                        type="button"
-                        className="admin-eligible-btn"
-                        onClick={() => handleDecision(video.id, "eligible")}
-                      >
-                        {tr("ÉLIGIBLE JURY", "JURY ELIGIBLE")}
-                      </button>
-                      <button
-                        type="button"
-                        className="admin-reject-btn"
-                        onClick={() => handleDecision(video.id, "rejected")}
-                      >
-                        {tr("REFUSER", "REJECT")}
-                      </button>
-                    </div>
-                  ) : (
-                    <p className="text-xs text-gray-400">{tr("Statut verrouillé après décision initiale admin.", "Status locked after initial admin decision.")}</p>
-                  )}
-
-                  {video.status === "finaliste" ? (
-                    <div className="admin-phase3-actions">
-                      <button
-                        type="button"
-                        className={`admin-priority-btn ${video.isAwarded ? "is-active" : ""}`}
-                        onClick={() => handlePhase3Award(video, !video.isAwarded)}
-                      >
-                        {video.isAwarded ? tr("RETIRER PRIMÉ", "UNMARK AWARDED") : tr("MARQUER PRIMÉ", "MARK AWARDED")}
-                      </button>
-
-                      <button
-                        type="button"
-                        className="admin-delete-btn"
-                        onClick={() => handleDelete(video)}
-                      >
-                        {tr("SUPPRIMER", "DELETE")}
-                      </button>
-                    </div>
-                  ) : (
-                    <button
-                      type="button"
-                      className="admin-delete-btn"
-                      onClick={() => handleDelete(video)}
-                    >
-                      {tr("SUPPRIMER", "DELETE")}
-                    </button>
-                  )}
+                  <h3 className="text-white font-bold text-sm line-clamp-2">{video.title}</h3>
                 </div>
               </div>
             ))}
           </div>
+
+          {selectedVideo && (
+            <div className="video-modal-backdrop" onClick={() => setSelectedVideo(null)}>
+              <div className="video-modal" onClick={(e) => e.stopPropagation()}>
+                <button
+                  type="button"
+                  className="video-modal-close"
+                  onClick={() => setSelectedVideo(null)}
+                >
+                  ✕
+                </button>
+                <img
+                  src={selectedVideo.thumbnail || "https://via.placeholder.com/480x270"}
+                  alt={selectedVideo.title}
+                  className="video-modal-img"
+                />
+                <div className="video-modal-body">
+                  <span className="video-modal-status">{selectedVideo.status || "soumis"}</span>
+                  <h3 className="video-modal-title">{selectedVideo.title}</h3>
+                  <p className="video-modal-synopsis">
+                    {selectedVideo.synopsisOriginal || tr("Sans synopsis", "No synopsis")}
+                  </p>
+
+                  {selectedVideo.assignedJuryId ? (
+                    <p className="admin-assigned-jury">{tr("Jury assigné", "Assigned jury")}: #{selectedVideo.assignedJuryId}</p>
+                  ) : null}
+
+                  {selectedVideo.status === "soumis" && (
+                    <div className="admin-gallery-actions">
+                      <button
+                        type="button"
+                        className="admin-eligible-btn"
+                        onClick={() => { handleDecision(selectedVideo.id, "eligible"); setSelectedVideo(null); }}
+                      >
+                        {tr("VALIDER POUR JURY", "APPROVE FOR JURY")}
+                      </button>
+                      <button
+                        type="button"
+                        className="admin-reject-btn"
+                        onClick={() => { handleDecision(selectedVideo.id, "rejected"); setSelectedVideo(null); }}
+                      >
+                        {tr("REFUSER", "REJECT")}
+                      </button>
+                    </div>
+                  )}
+
+                  {selectedVideo.status === "retenue" && (
+                    <p className="text-xs text-gray-400">
+                      {tr("En attente du premier vote jury.", "Waiting for first jury vote.")}
+                    </p>
+                  )}
+
+                  {selectedVideo.status === "à discuter" && (
+                    <div className="admin-phase3-actions">
+                      <button
+                        type="button"
+                        className="admin-priority-btn"
+                        onClick={() => { handlePhase2Selection(selectedVideo, true); setSelectedVideo(null); }}
+                      >
+                        {tr("AJOUTER AU TOP 50", "ADD TO TOP 50")}
+                      </button>
+                      <button
+                        type="button"
+                        className="admin-delete-btn"
+                        onClick={() => { setSelectedVideo(null); handleDelete(selectedVideo); }}
+                      >
+                        {tr("SUPPRIMER", "DELETE")}
+                      </button>
+                    </div>
+                  )}
+
+                  {selectedVideo.status === "finaliste" && (
+                    <div className="admin-phase3-actions">
+                      <button
+                        type="button"
+                        className="admin-priority-btn"
+                        onClick={() => { handlePhase2Selection(selectedVideo, false); setSelectedVideo(null); }}
+                      >
+                        {tr("RETOUR PHASE 2", "BACK TO PHASE 2")}
+                      </button>
+                      <button
+                        type="button"
+                        className={`admin-priority-btn ${selectedVideo.isAwarded ? "is-active" : ""}`}
+                        onClick={() => { handlePhase3Award(selectedVideo, !selectedVideo.isAwarded); setSelectedVideo(null); }}
+                      >
+                        {selectedVideo.isAwarded ? tr("RETIRER PRIMÉ", "UNMARK AWARDED") : tr("MARQUER PRIMÉ", "MARK AWARDED")}
+                      </button>
+                    </div>
+                  )}
+
+                  {selectedVideo.status !== "soumis" &&
+                    selectedVideo.status !== "à discuter" &&
+                    selectedVideo.status !== "finaliste" && (
+                      <button
+                        type="button"
+                        className="admin-delete-btn"
+                        style={{ marginTop: "0.75rem" }}
+                        onClick={() => { setSelectedVideo(null); handleDelete(selectedVideo); }}
+                      >
+                        {tr("SUPPRIMER", "DELETE")}
+                      </button>
+                  )}
+
+                  <Link to={`/films/${selectedVideo.id}`} className="video-modal-see-more">
+                    {tr("VOIR PLUS", "SEE MORE")}
+                  </Link>
+                </div>
+              </div>
+            </div>
+          )}
+          </>
         )}
 
         <section className="admin-refused-section">

@@ -100,6 +100,20 @@
   cursor: pointer;
 }
 
+.newsletter-feedback {
+  margin: 10px 0 0;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.newsletter-feedback.success {
+  color: #5de3b0;
+}
+
+.newsletter-feedback.error {
+  color: #ff8b9e;
+}
+
 @media (max-width: 900px) {
   .footer {
     grid-template-columns: 1fr 1fr;

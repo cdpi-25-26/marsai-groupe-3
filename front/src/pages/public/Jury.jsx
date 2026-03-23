@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
+import { getJuryMembers } from "../../api/juryMembers.js";
 import { useLanguage } from "../../i18n/LanguageContext.jsx";
 import "./Jury.css";
 
 const CAROUSEL_DELAY_MS = 5000;
 const CAROUSEL_TICK_MS = 50;
 
-const juryMembers = [
+const fallbackJuryMembers = [
   {
     id: 1,
     name: "Julie Masson",
@@ -77,17 +78,51 @@ const charterItems = [
 
 export default function Jury() {
   const { tr } = useLanguage();
+  const [juryMembers, setJuryMembers] = useState(fallbackJuryMembers);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isCarouselHovered, setIsCarouselHovered] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  const activeMember = useMemo(() => juryMembers[activeIndex], [activeIndex]);
+  const activeMember = useMemo(() => {
+    if (juryMembers.length === 0) {
+      return null;
+    }
+
+    const safeIndex = Math.min(activeIndex, juryMembers.length - 1);
+    return juryMembers[safeIndex];
+  }, [activeIndex, juryMembers]);
+
+  useEffect(() => {
+    getJuryMembers()
+      .then((response) => {
+        const fetchedMembers = Array.isArray(response.data) ? response.data : [];
+        if (fetchedMembers.length > 0) {
+          setJuryMembers(fetchedMembers);
+        }
+      })
+      .catch(() => {
+        setJuryMembers(fallbackJuryMembers);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (activeIndex <= juryMembers.length - 1) {
+      return;
+    }
+    setActiveIndex(0);
+  }, [activeIndex, juryMembers.length]);
 
   const showPrevious = () => {
+    if (juryMembers.length <= 1) {
+      return;
+    }
     setActiveIndex((current) => (current === 0 ? juryMembers.length - 1 : current - 1));
   };
 
   const showNext = () => {
+    if (juryMembers.length <= 1) {
+      return;
+    }
     setActiveIndex((current) => (current === juryMembers.length - 1 ? 0 : current + 1));
   };
 
@@ -98,7 +133,7 @@ export default function Jury() {
   useEffect(() => {
     setProgress(0);
 
-    if (isCarouselHovered) {
+    if (isCarouselHovered || juryMembers.length <= 1) {
       return undefined;
     }
 
@@ -115,7 +150,11 @@ export default function Jury() {
     }, CAROUSEL_TICK_MS);
 
     return () => window.clearInterval(interval);
-  }, [activeIndex, isCarouselHovered]);
+  }, [activeIndex, isCarouselHovered, juryMembers.length]);
+
+  if (!activeMember) {
+    return null;
+  }
 
   return (
     <div className="jury-page">
@@ -132,7 +171,7 @@ export default function Jury() {
 
             <div className="jury-president-image-caption">
               <p className="jury-president-label">{tr("Président du jury", "Jury president")}</p>
-              <h2>Julien Valros</h2>
+              <h2>Julien Varlos</h2>
             </div>
           </div>
 
