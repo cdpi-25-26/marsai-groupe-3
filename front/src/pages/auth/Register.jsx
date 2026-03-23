@@ -1,4 +1,5 @@
 import { Link, useNavigate, useSearchParams } from "react-router";
+import { useState } from "react";
 
 import { signIn } from "../../api/auth.js";
 import { useMutation } from "@tanstack/react-query";
@@ -23,6 +24,7 @@ export function Register() {
   const { isCheckingPhaseStatus, isPhase3Closed } = usePhase3Closure();
   const [searchParams] = useSearchParams();
   const next = searchParams.get("next");
+  const [feedback, setFeedback] = useState(null); // { type: "success" | "error", message: string }
 
   let navigate = useNavigate();
 
@@ -42,16 +44,19 @@ export function Register() {
     onSuccess: (data, variables, context) => {
       // If you are logged
       //
-      alert(data.data?.message);
+      const successMsg = data.data?.message || tr("Inscription réussie", "Registration successful");
+      setFeedback({ type: "success", message: successMsg });
       const safeNext = next && next.startsWith("/") ? next : "";
-      navigate(safeNext ? `/auth/login?next=${encodeURIComponent(safeNext)}` : "/auth/login");
+      setTimeout(() => {
+        navigate(safeNext ? `/auth/login?next=${encodeURIComponent(safeNext)}` : "/auth/login");
+      }, 600);
     },
     onError: (error) => {
       const message =
         error.response?.data?.error ||
         error.message ||
         tr("Inscription impossible, vérifie que le backend est démarré.", "Registration failed, check that backend is running.");
-      alert(message);
+      setFeedback({ type: "error", message });
     },
   });
 
@@ -145,6 +150,20 @@ export function Register() {
           ← {tr("RETOUR ACCUEIL", "BACK HOME")}
         </Link>
       </section>
+
+      {feedback && (
+        <div className={`toast ${feedback.type}`}>
+          <span className="toast-dot" aria-hidden="true"></span>
+          <span className="toast-text">{feedback.message}</span>
+          <button
+            type="button"
+            className="toast-close"
+            onClick={() => setFeedback(null)}
+          >
+            OK
+          </button>
+        </div>
+      )}
     </div>
   );
 }
