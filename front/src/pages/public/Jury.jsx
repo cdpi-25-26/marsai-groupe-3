@@ -166,12 +166,12 @@ export default function Jury() {
 
         <div className="jury-president-card">
           <div className="jury-president-visual">
-            <img src="/src/assets/samy.png" alt={tr("Président du jury", "Jury president")} className="jury-president-image" />
+            <img src="/src/assets/pres-jury.png" alt={tr("Président du jury", "Jury president")} className="jury-president-image" />
             <div className="jury-president-image-overlay" aria-hidden="true" />
 
             <div className="jury-president-image-caption">
               <p className="jury-president-label">{tr("Président du jury", "Jury president")}</p>
-              <h2>Samy Akam Akam</h2>
+              <h2>Julien Varlos</h2>
             </div>
           </div>
 

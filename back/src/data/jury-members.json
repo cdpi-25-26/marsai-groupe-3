@@ -1,12 +1,12 @@
 [
   {
     "id": 1,
-    "name": "Cartman",
-    "role": "L'enflure de South Park",
-    "roleEn": "The brat of South Park",
-    "description": "Je vous emmerde, et je rentre à ma maison",
-    "descriptionEn": "blasphem",
-    "image": "https://static.wikia.nocookie.net/villains-fr/images/9/9e/Eric_cartman.png/revision/latest?cb=20200511123710&path-prefix=fr"
+    "name": "Lisa Emrald",
+    "role": "Expert IA",
+    "roleEn": "IA Expert",
+    "description": "Description jury a completer.",
+    "descriptionEn": "Jury description to be completed.",
+    "image": "/src/assets/person.svg"
   },
   {
     "id": 2,
