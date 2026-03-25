@@ -71,14 +71,14 @@
   position: absolute;
   inset: 0;
   display: block;
-  width: 115%;
-  height: 115%;
+  width: 120%;
+  height: 120%;
   object-fit: cover;
   /* object-position: center 18%; */
   background: rgba(255, 255, 255, 0.08);
   filter: grayscale(100%);
   left: 0px;
-  top: -10px;
+  top: -20px;
 }
 
 .jury-president-image-overlay {

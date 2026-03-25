@@ -171,7 +171,7 @@ export default function Jury() {
 
             <div className="jury-president-image-caption">
               <p className="jury-president-label">{tr("Président du jury", "Jury president")}</p>
-              <h2>Julien Varlos</h2>
+              <h2>Julien Valros</h2>
             </div>
           </div>
 
