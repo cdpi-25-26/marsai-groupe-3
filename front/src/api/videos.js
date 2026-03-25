@@ -63,6 +63,18 @@ async function deleteAdminVideo(id) {
   return await instance.delete(`videos/${id}`);
 }
 
+async function getAwardedVideos() {
+  return await instance.get("videos/awarded");
+}
+
+async function getAwardedGalleryStatus() {
+  return await instance.get("videos/awarded-status");
+}
+
+async function setAwardedGalleryStatus(isOpen) {
+  return await instance.patch("videos/awarded-status", { isOpen });
+}
+
 async function submitJuryVote(id, vote, commentary = "") {
   return await instance.post(`videos/${id}/jury-vote`, { vote, commentary });
 }
@@ -72,6 +84,9 @@ export {
   getPublicVideos,
   getPublicGalleryStatus,
   setPublicGalleryStatus,
+  getAwardedVideos,
+  getAwardedGalleryStatus,
+  setAwardedGalleryStatus,
   getAdminVideos,
   getJuryVideos,
   getVideoDetail,

@@ -11,6 +11,8 @@ import { videoAwardedTemplate } from "../templates/videoAwarded.js";
 import { isS3Configured, uploadBufferToS3 } from "../utils/s3.js";
 import { resolveYouTubeVideo } from "../utils/youtube.js";
 
+const PUBLIC_GALLERY_STATUSES = ["à discuter", "finaliste"];
+
 function truncateValue(value, maxLength = 255) {
   if (typeof value !== "string") {
     return value ?? null;
@@ -63,7 +65,7 @@ async function getPublicGalleryStatusPayload() {
   });
 
   const totalPublicVideos = await Videos.count({
-    where: { statusSelection: "finaliste" },
+    where: { statusSelection: PUBLIC_GALLERY_STATUSES },
   });
 
   return {
@@ -178,7 +180,7 @@ async function getPublicVideos(req, res) {
   }
 
   const videos = await Videos.findAll({
-    where: { statusSelection: ["finaliste"] },
+    where: { statusSelection: PUBLIC_GALLERY_STATUSES },
     order: [["createdAt", "DESC"]],
   });
 
@@ -252,6 +254,7 @@ async function setPhase2Selection(req, res) {
     }
 
     video.statusSelection = "finaliste";
+    video.isPriority = true;
     await video.save();
     sendMailToVideoOwner(
       video.id_user,
@@ -277,6 +280,60 @@ async function setPhase2Selection(req, res) {
 
 async function getPublicGalleryStatus(req, res) {
   return res.json(await getPublicGalleryStatusPayload());
+}
+
+async function getAwardedGalleryStatusPayload() {
+  const [gallerySetting] = await SystemSettings.findOrCreate({
+    where: { key: "awarded_gallery_open" },
+    defaults: { isEnabled: false },
+  });
+
+  const totalAwardedVideos = await Videos.count({
+    where: { statusSelection: "finaliste", isPriority: true },
+  });
+
+  return {
+    totalAwardedVideos,
+    isOpen: gallerySetting.isEnabled,
+    controlledByAdmin: true,
+  };
+}
+
+async function getAwardedGalleryStatus(req, res) {
+  return res.json(await getAwardedGalleryStatusPayload());
+}
+
+async function setAwardedGalleryStatus(req, res) {
+  const { isOpen } = req.body;
+
+  if (typeof isOpen !== "boolean") {
+    return res.status(400).json({ error: "Le champ isOpen doit être un booléen" });
+  }
+
+  const [gallerySetting] = await SystemSettings.findOrCreate({
+    where: { key: "awarded_gallery_open" },
+    defaults: { isEnabled: false },
+  });
+
+  gallerySetting.isEnabled = isOpen;
+  await gallerySetting.save();
+
+  return res.json(await getAwardedGalleryStatusPayload());
+}
+
+async function getAwardedVideos(req, res) {
+  const galleryStatus = await getAwardedGalleryStatusPayload();
+
+  if (!galleryStatus.isOpen) {
+    return res.json([]);
+  }
+
+  const videos = await Videos.findAll({
+    where: { statusSelection: "finaliste", isPriority: true },
+    order: [["createdAt", "DESC"]],
+  });
+
+  res.json(await mapVideos(videos));
 }
 
 async function setPublicGalleryStatus(req, res) {
@@ -545,7 +602,7 @@ async function getVideoById(req, res) {
   const isJury = role === "JURY";
   const isPublic = !role;
 
-  if (isPublic && video.statusSelection !== "finaliste") {
+  if (isPublic && !PUBLIC_GALLERY_STATUSES.includes(video.statusSelection)) {
     return res.status(403).json({ error: "Accès interdit" });
   }
 
@@ -556,7 +613,7 @@ async function getVideoById(req, res) {
     return res.status(403).json({ error: "Accès interdit" });
   }
 
-  if (!isAdmin && !isJury && !isPublic && video.statusSelection !== "finaliste") {
+  if (!isAdmin && !isJury && !isPublic && !PUBLIC_GALLERY_STATUSES.includes(video.statusSelection)) {
     return res.status(403).json({ error: "Accès interdit" });
   }
 
@@ -694,6 +751,9 @@ export default {
   getPublicVideos,
   getPublicGalleryStatus,
   setPublicGalleryStatus,
+  getAwardedGalleryStatus,
+  setAwardedGalleryStatus,
+  getAwardedVideos,
   setPhase2Selection,
   setPhase3Award,
   getVideoById,

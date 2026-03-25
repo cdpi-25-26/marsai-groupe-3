@@ -11,6 +11,8 @@ import {
   setPhase3Award,
   setPublicGalleryStatus,
   setVideoEligibility,
+  getAwardedGalleryStatus,
+  setAwardedGalleryStatus,
 } from "../../api/videos";
 import { useLanguage } from "../../i18n/LanguageContext.jsx";
 import "../public/Gallery.css";
@@ -29,7 +31,7 @@ const PHASES = {
   },
   phase3: {
     title: "Phase 3 · Palmarès",
-    description: "Vidéos du Top 50. Marquez les vidéos primées.",
+    description: "Vidéos du Top 50 – primées automatiquement. Utilisez « Retirer primé » pour en exclure.",
     statuses: ["finaliste"],
   },
 };
@@ -43,6 +45,8 @@ function AdminGallery() {
   const [activePhase, setActivePhase] = useState("phase1");
   const [publicGalleryOpen, setPublicGalleryOpen] = useState(false);
   const [galleryToggleLoading, setGalleryToggleLoading] = useState(false);
+  const [awardedGalleryOpen, setAwardedGalleryOpen] = useState(false);
+  const [awardedGalleryToggleLoading, setAwardedGalleryToggleLoading] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState(null);
 
   const fetchVideos = async () => {
@@ -70,6 +74,13 @@ function AdminGallery() {
       } catch {
         setPublicGalleryOpen(false);
         notifyPublicGalleryStatusChanged(false);
+      }
+
+      try {
+        const awardedStatusResponse = await getAwardedGalleryStatus();
+        setAwardedGalleryOpen(Boolean(awardedStatusResponse.data?.isOpen));
+      } catch {
+        setAwardedGalleryOpen(false);
       }
     };
 
@@ -135,6 +146,19 @@ function AdminGallery() {
     }
   };
 
+  const handleToggleAwardedGallery = async () => {
+    try {
+      setAwardedGalleryToggleLoading(true);
+      const nextValue = !awardedGalleryOpen;
+      const response = await setAwardedGalleryStatus(nextValue);
+      setAwardedGalleryOpen(Boolean(response.data?.isOpen));
+    } catch (err) {
+      alert(err.response?.data?.error || tr("Mise à jour impossible", "Update failed"));
+    } finally {
+      setAwardedGalleryToggleLoading(false);
+    }
+  };
+
   if (loading) {
     return <div className="content py-12 text-white">{tr("Chargement des vidéos...", "Loading videos...")}</div>;
   }
@@ -196,6 +220,19 @@ function AdminGallery() {
                 : publicGalleryOpen
                   ? tr("Galerie publique visible", "Public gallery visible")
                   : tr("Afficher le bouton Gallery publique", "Show public gallery button")}
+            </button>
+
+            <button
+              type="button"
+              className={`admin-public-gallery-toggle ${awardedGalleryOpen ? "is-open" : "is-closed"}`}
+              onClick={handleToggleAwardedGallery}
+              disabled={awardedGalleryToggleLoading}
+            >
+              {awardedGalleryToggleLoading
+                ? tr("Mise à jour...", "Updating...")
+                : awardedGalleryOpen
+                  ? tr("Galerie des primés visible", "Awarded gallery visible")
+                  : tr("Afficher la Galerie des primés", "Show awarded gallery")}
             </button>
           </div>
 

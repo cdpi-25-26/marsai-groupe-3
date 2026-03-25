@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./index.css";
 import Home from "./pages/public/Home.jsx";
 import Gallery from "./pages/public/Gallery.jsx";
+import AwardedGallery from "./pages/public/AwardedGallery.jsx";
 import Jury from "./pages/public/Jury.jsx";
 import JuryGallery from "./pages/public/JuryGallery.jsx";
 import Participation from "./pages/public/Participation.jsx";
@@ -40,6 +41,7 @@ createRoot(document.getElementById("root")).render(
             <Route path="/" element={<PublicLayout />}>
               <Route index element={<Home />} />
               <Route path="/gallery" element={<Gallery />} />
+              <Route path="/awarded-gallery" element={<AwardedGallery />} />
               <Route path="/programme" element={<Programme />} />
               <Route path="/jury" element={<Jury />} />
               <Route path="/films/:id" element={<FilmDetail />} />

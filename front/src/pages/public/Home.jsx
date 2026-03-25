@@ -2,6 +2,7 @@ import "./Home.css";
 import { Link } from "react-router";
 import { useEffect, useState } from "react";
 import { getPublicGalleryStatus } from "../../api/videos";
+import { getAwardedGalleryStatus } from "../../api/videos";
 import { useLanguage } from "../../i18n/LanguageContext.jsx";
 import { SUPPORTS_STORAGE_KEY, getSupports } from "../../utils/supportsStorage.js";
 
@@ -11,6 +12,7 @@ function Home() {
     isOpen: false,
     totalPublicVideos: 0,
   });
+  const [awardedGalleryStatus, setAwardedGalleryStatus] = useState({ isOpen: false });
   const [supports, setSupports] = useState(() => getSupports());
 
   useEffect(() => {
@@ -20,6 +22,13 @@ function Home() {
         setGalleryStatus(response.data || {});
       } catch {
         setGalleryStatus({ isOpen: false, totalPublicVideos: 0 });
+      }
+
+      try {
+        const awardedRes = await getAwardedGalleryStatus();
+        setAwardedGalleryStatus(awardedRes.data || { isOpen: false });
+      } catch {
+        setAwardedGalleryStatus({ isOpen: false });
       }
     };
 
@@ -88,6 +97,14 @@ function Home() {
               {tr("MEMBRES DU JURY", "JURY MEMBERS")} <span aria-hidden="true">→</span>
             </Link>
           </div>
+
+          {awardedGalleryStatus.isOpen ? (
+            <div className="flex gap-4 justify-center flex-wrap mt-4">
+              <Link className="home-hero-btn home-hero-btn-secondary" to="/awarded-gallery">
+                {tr("GALERIE DES PRIMÉS", "AWARDED FILMS")} <span aria-hidden="true">🏆</span>
+              </Link>
+            </div>
+          ) : null}
         </div>
       </section>
 
@@ -123,7 +140,7 @@ function Home() {
         </div>
       </section>
 
-      <section className="home-films-section px-4">
+      {/* <section className="home-films-section px-4">
         <div className="home-films-wrap max-w-6xl mx-auto">
           <div className="home-films-header">
             <div>
@@ -173,7 +190,7 @@ function Home() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       <section className="home-objectives-section px-4">
         <div className="max-w-6xl mx-auto">
@@ -242,7 +259,7 @@ function Home() {
             ))}
           </div>
 
-          <button className="home-protocol-btn">{tr("REJOINDRE L'AVENTURE", "JOIN THE ADVENTURE")}</button>
+          <button className="home-protocol-btn" onClick={() => window.location.href = "/Participation"}>{tr("REJOINDRE L'AVENTURE", "JOIN THE ADVENTURE")}</button>
         </div>
       </section>
 

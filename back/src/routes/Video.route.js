@@ -25,6 +25,13 @@ videoRouter.patch(
   (req, res, next) => AuthMiddleware(req, res, next, ["ADMIN"]),
   VideoController.setPublicGalleryStatus,
 );
+videoRouter.get("/awarded-status", VideoController.getAwardedGalleryStatus);
+videoRouter.patch(
+  "/awarded-status",
+  (req, res, next) => AuthMiddleware(req, res, next, ["ADMIN"]),
+  VideoController.setAwardedGalleryStatus,
+);
+videoRouter.get("/awarded", VideoController.getAwardedVideos);
 videoRouter.get("/admin", (req, res, next) => AuthMiddleware(req, res, next, ["ADMIN"]), VideoController.getAdminVideos);
 videoRouter.get("/jury", (req, res, next) => AuthMiddleware(req, res, next, ["JURY", "ADMIN"]), VideoController.getJuryVideos);
 videoRouter.get("/:id", VideoController.getVideoById);
